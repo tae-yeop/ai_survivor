@@ -1,0 +1,144 @@
+---
+title: "Cursor로 Astro 블로그를 만들어본 과정과 실패한 점"
+description: "AI 코딩 도구 Cursor로 Astro + MDX 기반 정적 블로그를 만들면서 실제로 막혔던 부분, SPA로 빠질 뻔한 순간, SEO에서 터진 문제와 그 해결 과정."
+slug: "cursor-astro-blog-build-review"
+publishedAt: "2026-05-04"
+updatedAt: "2026-05-04"
+draft: false
+category: "vibe-coding-lab"
+tags:
+  - cursor
+  - astro
+  - vibe-coding
+  - mdx
+  - seo
+series: "building-ai-blog"
+seriesOrder: 2
+author: "owner"
+difficulty: "intermediate"
+tools:
+  - Cursor
+  - Astro
+  - MDX
+ogImage: null
+canonical: null
+---
+
+## 결론 먼저
+
+- **무엇이 잘 됐는가**: Cursor에 문서를 넘겨주니 페이지·라우팅·SEO 메타데이터까지 한 번에 생성됨.
+- **무엇이 아쉬웠는가**: 처음에는 "글 본문을 React 컴포넌트로 fetch해서 보여주자"는 SPA 패턴을 자꾸 제안했다.
+- **누구에게 추천하는가**: 정적 사이트 구조를 이해하지만 직접 손으로 짜기는 귀찮은 개발자.
+- **다시 쓴다면**: 첫 프롬프트부터 "정적 HTML로 빌드 시에 모든 글을 만든다"를 명시한다.
+
+## 왜 이걸 해봤나
+
+블로그를 빨리 시작하고 싶었고, AI 코딩 도구가 정말로 "정적 블로그처럼 단순한 구조"를 잘 만드는지
+검증하고 싶었다.
+
+## 사용 환경
+
+- 도구: Cursor (Composer + Chat)
+- 프레임워크: Astro 5 + MDX
+- OS: Windows 11
+- 비용: Cursor 구독 외 추가 비용 없음
+
+## 목표
+
+1. 문서 7개를 컨텍스트로 넣고 한 번에 뼈대 생성
+2. 글 상세, 카테고리, 태그, 시리즈 페이지가 정적으로 빌드되는지 확인
+3. sitemap.xml, RSS, robots.txt가 자동 생성되는지 확인
+
+## 진행 과정
+
+### 1단계 — 문서 컨텍스트 주입
+
+Cursor의 `@docs` 기능으로 `docs/` 전체와 `CLAUDE.md`를 한 번에 첨부했다. 이 단계가 결과의 품질을
+가장 크게 좌우했다. 첨부 없이 "Astro 블로그 만들어줘"라고만 하면 매번 다른 폴더 구조를 만들었다.
+
+### 2단계 — 첫 시도에서 SPA로 빠진 순간
+
+처음 만들어진 코드는 글 본문을 클라이언트에서 fetch해서 렌더링하고 있었다.
+
+```tsx
+useEffect(() => {
+  fetch(`/api/posts/${slug}`).then(...);
+}, []);
+```
+
+이러면 검색 엔진이 빈 HTML만 보게 된다. CLAUDE.md에 "글 본문을 클라이언트 SPA로 렌더링하지 마라"가
+적혀 있었지만, 명시적으로 다시 환기시켜야 했다.
+
+> 글 상세는 Astro의 정적 페이지 라우트(`src/pages/posts/[slug].astro`)로 만들고,
+> MDX는 `astro:content`의 `render`로 컴파일하라.
+
+이 한 줄을 추가한 뒤 다음 시도부터 정적 라우트로 잘 만들었다.
+
+### 3단계 — 메타데이터 누락
+
+생성된 페이지에 `<meta name="description">`이 없었다. 글마다 description이 다르게 들어가야
+검색 결과에서 중복 페널티를 받지 않는다. SeoHead 컴포넌트를 따로 만들고 모든 레이아웃이 이걸
+거치도록 강제했다.
+
+```astro
+---
+const seo = buildPostSeo(post, path);
+---
+<SeoHead seo={seo} jsonLd={jsonLd} />
+```
+
+### 4단계 — sitemap에 draft가 섞이는 문제
+
+`@astrojs/sitemap`은 라우트만 보고 sitemap을 만들기 때문에, draft 페이지를 라우트로 노출해 두면
+sitemap에도 들어간다. 해결책은 두 가지다.
+
+1. `getCollection`에서 production일 때 draft를 제외 (현재 채택)
+2. sitemap의 `filter` 옵션으로 특정 path 제외
+
+## 사용한 프롬프트
+
+특히 효과 있던 프롬프트는 "역할 분리"였다.
+
+```text
+너는 Astro 5 정적 블로그를 만드는 시니어다.
+docs/ 와 CLAUDE.md를 모두 source of truth로 본다.
+구현하기 전에 어느 문서 어느 절을 근거로 결정하는지 한 줄로 적어라.
+근거가 없으면 추가 질문하거나 OPEN_QUESTIONS에 기록할 것을 제안하라.
+```
+
+## 결과
+
+- **성공한 부분**: 12개 페이지(홈, posts, categories, tags, series, tools, about, contact, privacy, 404, rss, sitemap)가 한 번에 생성됨.
+- **예상과 달랐던 부분**: TOC를 만들기 위해 `rehype-slug`와 `rehype-autolink-headings` 두 플러그인이 필요한 줄 몰랐다.
+- **걸린 시간**: 약 2시간 (디버깅 포함).
+
+## 실패한 부분
+
+- 카테고리 페이지의 description이 모두 같은 문장이었다. → 카테고리별로 다른 설명을 `labels.ts`에 분리.
+- 태그 URL이 raw tag 문자열이라 한국어 태그에서 깨졌다. → `toSlug` 유틸을 만들어 통일.
+- `trailingSlash: 'always'`를 켰더니 `rss.xml`로 가는 링크가 `rss.xml/`로 리다이렉트됐다.
+  → 라우트 자체는 그대로 두고, header 링크만 trailing slash 없이 사용.
+
+## 사람이 수정한 부분
+
+- AI가 만든 색상 팔레트가 너무 화려했다. ink 톤만 사용하는 무채색 팔레트로 교체.
+- AdSlot 컴포넌트가 처음에는 항상 placeholder를 보여줬다. production에서는 ADS_ENABLED=false일 때 아예 렌더링하지 않도록 수정.
+
+## 최종 평가
+
+| 항목 | 평가 |
+|---|---|
+| 재현성 | 문서를 같이 주면 결과 거의 동일 |
+| 시간 절약 | 손으로 짜면 1~2일, AI로 2시간 |
+| 품질 | SEO·메타데이터까지 챙겨주면 충분 |
+| 비용 대비 효율 | 좋음 |
+| 추천 여부 | 추천. 단, 첫 프롬프트가 핵심 |
+
+## 이런 사람에게 추천
+
+- **추천 대상**: Astro/Next.js 기초를 알고 정적 블로그를 빨리 만들고 싶은 사람
+- **비추천 대상**: 디자인을 처음부터 직접 잡고 싶은 사람
+
+## 다음 글
+
+이렇게 만든 블로그로 광고 신청을 하기 전에 [AdSense 신청 전 체크리스트](/posts/adsense-pre-application-checklist/)를 정리했다.

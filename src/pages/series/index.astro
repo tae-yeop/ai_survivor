@@ -1,0 +1,47 @@
+---
+import ListLayout from '../../layouts/ListLayout.astro';
+import { getAllPosts, postUrl } from '../../lib/posts';
+import { seriesBuckets } from '../../lib/taxonomy';
+import { buildPageSeo } from '../../lib/seo';
+
+const posts = await getAllPosts();
+const buckets = seriesBuckets(posts);
+
+const seo = buildPageSeo({
+  title: '시리즈',
+  description: '여러 글을 묶어 단계적으로 따라갈 수 있는 시리즈 모음.',
+  path: '/series/',
+});
+---
+
+<ListLayout
+  seo={seo}
+  title="시리즈"
+  description="여러 글을 묶어 처음부터 끝까지 따라갈 수 있는 연재 콘텐츠."
+  breadcrumbs={[{ href: '/', label: 'Home' }, { label: 'Series' }]}
+>
+  {buckets.length === 0 ? (
+    <p class="rounded border border-dashed border-ink-200 bg-ink-50 p-6 text-center text-sm text-ink-500">
+      아직 시리즈가 없습니다.
+    </p>
+  ) : (
+    <ul class="grid gap-5 sm:grid-cols-2">
+      {buckets.map((s) => (
+        <li class="rounded-lg border border-ink-100 p-5">
+          <a href={`/series/${s.slug}/`} class="block">
+            <p class="text-xs uppercase tracking-wide text-ink-500">시리즈 · 글 {s.count}편</p>
+            <p class="mt-1 text-lg font-semibold text-ink-900 hover:underline">{s.label}</p>
+          </a>
+          <ol class="mt-3 space-y-1 text-sm text-ink-600">
+            {s.posts.slice(0, 4).map((p, i) => (
+              <li class="flex gap-2">
+                <span class="text-ink-300">{i + 1}.</span>
+                <a href={postUrl(p)} class="hover:text-ink-900 hover:underline">{p.data.title}</a>
+              </li>
+            ))}
+          </ol>
+        </li>
+      ))}
+    </ul>
+  )}
+</ListLayout>

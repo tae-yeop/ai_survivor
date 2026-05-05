@@ -1,0 +1,32 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '../components/post/Breadcrumbs.astro';
+import type { SeoMeta } from '../lib/seo';
+
+interface Crumb { href?: string; label: string }
+
+interface Props {
+  seo: SeoMeta;
+  jsonLd?: unknown;
+  title: string;
+  description?: string;
+  breadcrumbs?: Crumb[];
+}
+
+const { seo, jsonLd, title, description, breadcrumbs } = Astro.props;
+---
+
+<BaseLayout seo={seo} jsonLd={jsonLd}>
+  <div class="container-wide py-10">
+    {breadcrumbs && breadcrumbs.length > 0 && (
+      <div class="mb-6"><Breadcrumbs items={breadcrumbs} /></div>
+    )}
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">{title}</h1>
+      {description && (
+        <p class="mt-3 max-w-2xl text-ink-500">{description}</p>
+      )}
+    </header>
+    <slot />
+  </div>
+</BaseLayout>

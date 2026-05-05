@@ -1,0 +1,66 @@
+---
+import type { Post } from '../../lib/posts';
+import { postUrl } from '../../lib/posts';
+import { categoryLabel, toSlug } from '../../lib/labels';
+import { formatDate, formatIso } from '../../lib/dates';
+
+interface Props {
+  post: Post;
+  hideCategory?: boolean;
+}
+
+const { post, hideCategory = false } = Astro.props;
+const { data } = post;
+---
+
+<article
+  class="group flex flex-col gap-2.5 border-b border-ink-100 py-6 last:border-b-0 transition-all hover:-translate-x-1"
+>
+  <div class="flex items-center gap-2 text-xs text-ink-500">
+    <time datetime={formatIso(data.publishedAt)}>{formatDate(data.publishedAt)}</time>
+    {!hideCategory && (
+      <>
+        <span aria-hidden="true" class="text-ink-300">·</span>
+        <a
+          href={`/categories/${data.category}/`}
+          class="rounded-full bg-accent-soft/60 px-2.5 py-0.5 text-xs font-medium text-accent hover:bg-accent-soft transition-colors"
+        >
+          {categoryLabel(data.category)}
+        </a>
+      </>
+    )}
+    {data.draft && (
+      <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 animate-pulse-soft">Draft</span>
+    )}
+  </div>
+
+  <h2 class="text-xl font-bold text-ink-900 leading-snug tracking-tight">
+    <a
+      href={postUrl(post)}
+      class="group-hover:text-accent transition-colors"
+    >
+      {data.title}
+    </a>
+  </h2>
+
+  <p class="text-ink-500 leading-relaxed line-clamp-2">{data.description}</p>
+
+  {data.tags.length > 0 && (
+    <ul class="mt-1 flex flex-wrap gap-2 text-xs">
+      {data.tags.slice(0, 5).map((tag) => (
+        <li>
+          <a
+            href={`/tags/${toSlug(tag)}/`}
+            class="rounded-full bg-ink-50 px-2.5 py-0.5 text-ink-500 hover:bg-ink-100 hover:text-ink-700 transition-colors"
+          >#{tag}</a>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <!-- Reading time pill -->
+  <div class="flex items-center gap-1.5 text-xs text-ink-400">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    <span>{data.category ? `${Math.ceil(data.description.length / 500)}분` : ''}</span>
+  </div>
+</article>

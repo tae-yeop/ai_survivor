@@ -1,0 +1,45 @@
+---
+import ListLayout from '../../layouts/ListLayout.astro';
+import { getAllPosts } from '../../lib/posts';
+import { categoryBuckets } from '../../lib/taxonomy';
+import { CATEGORY_DESCRIPTIONS, categoryLabel } from '../../lib/labels';
+import { buildPageSeo } from '../../lib/seo';
+
+const posts = await getAllPosts();
+const buckets = categoryBuckets(posts);
+
+const seo = buildPageSeo({
+  title: '카테고리',
+  description: 'AI Vibe Lab의 글 카테고리 목록과 각 카테고리 설명.',
+  path: '/categories/',
+});
+---
+
+<ListLayout
+  seo={seo}
+  title="카테고리"
+  description="블로그의 글 카테고리와 각 카테고리에서 다루는 주제."
+  breadcrumbs={[{ href: '/', label: 'Home' }, { label: 'Categories' }]}
+>
+  {buckets.length === 0 ? (
+    <p class="rounded border border-dashed border-ink-200 bg-ink-50 p-6 text-center text-sm text-ink-500">
+      아직 발행된 글이 없습니다.
+    </p>
+  ) : (
+    <ul class="grid gap-5 sm:grid-cols-2">
+      {buckets.map((b) => (
+        <li class="rounded-lg border border-ink-100 p-5">
+          <a href={`/categories/${b.slug}/`} class="block">
+            <p class="text-xs uppercase tracking-wide text-ink-500">글 {b.count}편</p>
+            <p class="mt-1 text-lg font-semibold text-ink-900 hover:underline">
+              {categoryLabel(b.slug)}
+            </p>
+            <p class="mt-2 text-sm text-ink-500">
+              {CATEGORY_DESCRIPTIONS[b.slug as keyof typeof CATEGORY_DESCRIPTIONS] ?? ''}
+            </p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</ListLayout>

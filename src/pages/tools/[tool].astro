@@ -1,0 +1,38 @@
+---
+import ListLayout from '../../layouts/ListLayout.astro';
+import PostList from '../../components/post/PostList.astro';
+import { getAllPosts } from '../../lib/posts';
+import { toolBuckets } from '../../lib/taxonomy';
+import { buildPageSeo } from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  const buckets = toolBuckets(posts);
+  return buckets.map((b) => ({
+    params: { tool: b.slug },
+    props: { entry: b },
+  }));
+}
+
+const { entry } = Astro.props;
+const description = `"${entry.label}"을(를) 사용한 글 ${entry.count}편.`;
+
+const seo = buildPageSeo({
+  title: `도구: ${entry.label}`,
+  description,
+  path: `/tools/${entry.slug}/`,
+});
+---
+
+<ListLayout
+  seo={seo}
+  title={entry.label}
+  description={description}
+  breadcrumbs={[
+    { href: '/', label: 'Home' },
+    { href: '/tools/', label: 'Tools' },
+    { label: entry.label },
+  ]}
+>
+  <PostList posts={entry.posts} />
+</ListLayout>

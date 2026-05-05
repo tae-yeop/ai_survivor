@@ -1,0 +1,26 @@
+---
+import type { Post } from '../../lib/posts';
+import PostCard from './PostCard.astro';
+
+interface Props {
+  posts: Post[];
+  emptyText?: string;
+  hideCategory?: boolean;
+}
+
+const { posts, emptyText = '아직 발행된 글이 없습니다.', hideCategory = false } = Astro.props;
+---
+
+{posts.length === 0 ? (
+  <p class="rounded border border-dashed border-ink-200 bg-ink-50 p-6 text-center text-sm text-ink-500">
+    {emptyText}
+  </p>
+) : (
+  <ol class="list-none">
+    {posts.map((p) => (
+      <li>
+        <PostCard post={p} hideCategory={hideCategory} />
+      </li>
+    ))}
+  </ol>
+)}

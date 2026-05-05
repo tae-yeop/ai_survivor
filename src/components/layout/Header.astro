@@ -1,0 +1,135 @@
+---
+import { NAV_PRIMARY, SITE_NAME } from '../../lib/site';
+import ThemeToggle from './ThemeToggle.astro';
+
+const path = Astro.url.pathname;
+function isActive(href: string) {
+  if (href === '/') return path === '/';
+  return path === href || path.startsWith(href);
+}
+---
+
+<header class="glass sticky top-0 z-30 transition-shadow header-main" id="site-header">
+  <div class="container-wide flex items-center justify-between gap-6 py-3">
+    <a href="/" class="font-bold text-lg tracking-tight text-ink-900 hover:text-accent transition-colors">
+      {SITE_NAME}
+    </a>
+
+    <!-- Desktop nav + theme toggle -->
+    <div class="hidden sm:flex items-center gap-2">
+      <nav aria-label="Primary">
+        <ul class="flex items-center gap-0.5 text-sm">
+          {NAV_PRIMARY.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={[
+                  'relative rounded-full px-3.5 py-2 transition-all duration-200 hover:bg-ink-100',
+                  isActive(item.href)
+                    ? 'text-ink-900 font-semibold'
+                    : 'text-ink-500 hover:text-ink-700',
+                ]}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+                {isActive(item.href) && (
+                  <span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-0.5 w-5 rounded-full bg-accent"></span>
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div class="ml-2 border-l border-ink-200 pl-2">
+        <ThemeToggle />
+      </div>
+    </div>
+
+    <!-- Mobile menu button -->
+    <button
+      id="mobile-menu-btn"
+      class="flex flex-col gap-1.5 p-2 sm:hidden"
+      aria-label="메뉴 열기"
+      aria-expanded="false"
+    >
+      <span class="block h-0.5 w-5 rounded bg-ink-700 transition-all duration-300 menu-bar-top"></span>
+      <span class="block h-0.5 w-5 rounded bg-ink-700 transition-all duration-300 menu-bar-mid"></span>
+      <span class="block h-0.5 w-5 rounded bg-ink-700 transition-all duration-300 menu-bar-bot"></span>
+    </button>
+  </div>
+
+  <!-- Mobile overlay menu -->
+  <div
+    id="mobile-menu"
+    class="fixed inset-0 top-0 z-40 hidden flex-col bg-bg-primary/95 backdrop-blur-xl"
+    aria-hidden="true"
+  >
+    <nav class="flex flex-1 flex-col items-center justify-center gap-2">
+      {NAV_PRIMARY.map((item, i) => (
+        <a
+          href={item.href}
+          class:list={[
+            'text-2xl font-semibold py-3 px-6 rounded-xl transition-all duration-300',
+            'opacity-0 translate-x-8 mobile-menu-item',
+            isActive(item.href) ? 'text-accent' : 'text-ink-700 hover:text-ink-900',
+          ]}
+          style={`transition-delay:${i * 70}ms`}
+          aria-current={isActive(item.href) ? 'page' : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+      <div class="mt-6 opacity-0 translate-x-8 mobile-menu-item" style="transition-delay:350ms">
+        <ThemeToggle />
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style is:global>
+  .header-scrolled {
+    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid var(--ink-100);
+  }
+
+  /* Mobile menu states */
+  .mobile-menu-open .menu-bar-top {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .mobile-menu-open .menu-bar-mid {
+    opacity: 0;
+  }
+  .mobile-menu-open .menu-bar-bot {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+  .mobile-menu-open #mobile-menu {
+    display: flex !important;
+  }
+  .mobile-menu-open .mobile-menu-item {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+  }
+</style>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  if (btn && menu) {
+    btn.addEventListener('click', () => {
+      const isOpen = document.documentElement.classList.toggle('mobile-menu-open');
+      btn.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
+      btn.setAttribute('aria-expanded', String(isOpen));
+      menu.setAttribute('aria-hidden', String(!isOpen));
+    });
+
+    // Close on link click
+    menu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        document.documentElement.classList.remove('mobile-menu-open');
+        btn.setAttribute('aria-label', '메뉴 열기');
+        btn.setAttribute('aria-expanded', 'false');
+        menu.setAttribute('aria-hidden', 'true');
+      });
+    });
+  }
+</script>

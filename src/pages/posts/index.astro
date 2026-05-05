@@ -1,0 +1,40 @@
+---
+import ListLayout from '../../layouts/ListLayout.astro';
+import PostList from '../../components/post/PostList.astro';
+import { getAllPosts } from '../../lib/posts';
+import { categoryBuckets } from '../../lib/taxonomy';
+import { categoryLabel } from '../../lib/labels';
+import { buildPageSeo } from '../../lib/seo';
+
+const posts = await getAllPosts();
+const categories = categoryBuckets(posts);
+
+const seo = buildPageSeo({
+  title: '전체 글',
+  description:
+    'AI 도구, 바이브코딩, 업무 자동화, 생산성 실험을 다룬 모든 글을 최신순으로 모았다.',
+  path: '/posts/',
+});
+---
+
+<ListLayout
+  seo={seo}
+  title="전체 글"
+  description="AI 도구, 바이브코딩, 업무 자동화 실험을 정리한 글을 최신순으로 보여준다."
+  breadcrumbs={[{ href: '/', label: 'Home' }, { label: 'Posts' }]}
+>
+  {categories.length > 0 && (
+    <nav aria-label="카테고리" class="mb-8 flex flex-wrap gap-2">
+      {categories.map((c) => (
+        <a
+          href={`/categories/${c.slug}/`}
+          class="rounded-full border border-ink-200 bg-white px-3 py-1 text-sm text-ink-600 hover:border-ink-300 hover:bg-ink-50"
+        >
+          {categoryLabel(c.slug)}
+          <span class="ml-1 text-xs text-ink-400">{c.count}</span>
+        </a>
+      ))}
+    </nav>
+  )}
+  <PostList posts={posts} />
+</ListLayout>

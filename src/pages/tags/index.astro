@@ -1,0 +1,42 @@
+---
+import ListLayout from '../../layouts/ListLayout.astro';
+import { getAllPosts } from '../../lib/posts';
+import { tagBuckets } from '../../lib/taxonomy';
+import { buildPageSeo } from '../../lib/seo';
+
+const posts = await getAllPosts();
+const buckets = tagBuckets(posts);
+
+const seo = buildPageSeo({
+  title: '태그',
+  description: 'AI Vibe Lab의 글에 사용된 태그 목록과 각 태그별 글 수.',
+  path: '/tags/',
+});
+---
+
+<ListLayout
+  seo={seo}
+  title="태그"
+  description="글 본문에서 자주 다룬 도구, 워크플로우, 키워드를 모았다."
+  breadcrumbs={[{ href: '/', label: 'Home' }, { label: 'Tags' }]}
+>
+  {buckets.length === 0 ? (
+    <p class="rounded border border-dashed border-ink-200 bg-ink-50 p-6 text-center text-sm text-ink-500">
+      아직 태그가 없습니다.
+    </p>
+  ) : (
+    <ul class="flex flex-wrap gap-2">
+      {buckets.map((b) => (
+        <li>
+          <a
+            href={`/tags/${b.slug}/`}
+            class="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-3 py-1.5 text-sm text-ink-700 hover:border-ink-300 hover:bg-ink-50"
+          >
+            <span>#{b.label}</span>
+            <span class="text-xs text-ink-400">{b.count}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</ListLayout>

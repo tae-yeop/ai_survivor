@@ -1,0 +1,38 @@
+---
+import ListLayout from '../../layouts/ListLayout.astro';
+import PostList from '../../components/post/PostList.astro';
+import { getAllPosts } from '../../lib/posts';
+import { tagBuckets } from '../../lib/taxonomy';
+import { buildPageSeo } from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  const buckets = tagBuckets(posts);
+  return buckets.map((b) => ({
+    params: { tag: b.slug },
+    props: { entry: b },
+  }));
+}
+
+const { entry } = Astro.props;
+const description = `"${entry.label}" 태그가 달린 글 ${entry.count}편.`;
+
+const seo = buildPageSeo({
+  title: `#${entry.label}`,
+  description,
+  path: `/tags/${entry.slug}/`,
+});
+---
+
+<ListLayout
+  seo={seo}
+  title={`#${entry.label}`}
+  description={description}
+  breadcrumbs={[
+    { href: '/', label: 'Home' },
+    { href: '/tags/', label: 'Tags' },
+    { label: entry.label },
+  ]}
+>
+  <PostList posts={entry.posts} />
+</ListLayout>

@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/post/Breadcrumbs.astro';
+import { buildPageSeo } from '../lib/seo';
+import { SITE_NAME } from '../lib/site';
+import { formatDate } from '../lib/dates';
+
+// Starter Privacy Policy. Review and adapt before launch — see
+// docs/30_seo_monetization/SEO_ADSENSE_CHECKLIST.md and the SCREEN_INVENTORY
+// "Privacy" section. Update the contact email and effective date below.
+const CONTACT_EMAIL = 'contact@example.com';
+const EFFECTIVE_DATE = new Date('2026-05-05');
+
+const seo = buildPageSeo({
+  title: 'Privacy Policy',
+  description:
+    `${SITE_NAME}이 수집하는 정보, 쿠키, 광고 서비스, 분석 도구에 대한 안내.`,
+  path: '/privacy/',
+});
+---
+
+<BaseLayout seo={seo}>
+  <article class="container-prose py-12">
+    <div class="mb-6">
+      <Breadcrumbs items={[{ href: '/', label: 'Home' }, { label: 'Privacy' }]} />
+    </div>
+    <h1 class="text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">개인정보처리방침</h1>
+    <p class="mt-3 text-sm text-ink-500">시행일 · {formatDate(EFFECTIVE_DATE)}</p>
+
+    <div class="prose prose-lg mt-8 max-w-none">
+      <p>
+        {SITE_NAME}(이하 "본 사이트")은 방문자의 개인정보를 소중히 여기며,
+        관련 법령에 따라 다음과 같이 정보를 수집·이용한다.
+      </p>
+
+      <h2>1. 수집하는 정보</h2>
+      <p>
+        본 사이트는 회원가입·로그인·댓글 기능을 제공하지 않는다. 따라서
+        이름·이메일·전화번호 같은 개인 식별 정보를 직접 수집하지 않는다.
+      </p>
+      <p>
+        다만 방문자가 <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>로
+        문의할 경우, 회신을 위해 보내주신 이메일 주소와 본문 내용이 처리된다.
+      </p>
+
+      <h2>2. 쿠키 사용</h2>
+      <p>
+        본 사이트는 광고·분석 도구가 필요로 할 때 브라우저 쿠키를 사용할 수
+        있다. 쿠키는 방문자의 브라우저 설정에서 거부할 수 있으며, 거부 시 일부
+        기능이 제한될 수 있다.
+      </p>
+
+      <h2>3. 광고 서비스</h2>
+      <p>
+        본 사이트는 향후 Google AdSense를 통해 광고를 게재할 수 있다. AdSense는
+        쿠키와 기기 식별자 등을 이용해 방문자의 관심 기반 광고를 제공한다.
+        Google의 광고 정책과 개인정보 처리에 대한 자세한 내용은 아래 링크에서
+        확인할 수 있다.
+      </p>
+      <ul>
+        <li>
+          <a href="https://policies.google.com/technologies/ads" rel="noopener noreferrer" target="_blank">
+            Google 광고가 사용하는 정보
+          </a>
+        </li>
+        <li>
+          <a href="https://adssettings.google.com/" rel="noopener noreferrer" target="_blank">
+            Google 광고 설정에서 맞춤 광고 비활성화
+          </a>
+        </li>
+      </ul>
+
+      <h2>4. 분석 도구</h2>
+      <p>
+        본 사이트는 방문 통계와 검색 유입을 분석하기 위해 Google Search
+        Console, Naver Search Advisor, 그리고 익명 통계만 수집하는 웹 분석
+        도구를 사용할 수 있다. 이러한 도구는 방문자의 IP 주소, 브라우저 정보,
+        방문 페이지 등 비식별 정보를 처리한다.
+      </p>
+
+      <h2>5. 제3자 제공</h2>
+      <p>
+        본 사이트는 방문자의 개인정보를 제3자에게 판매하거나 임의로 제공하지
+        않는다. 다만 위에서 언급한 광고·분석 서비스는 자체 정책에 따라 정보를
+        처리할 수 있다.
+      </p>
+
+      <h2>6. 보관 기간</h2>
+      <p>
+        문의 메일은 회신 종료 후 1년 이내 파기한다. 광고·분석 도구가 처리한
+        정보는 해당 서비스의 정책을 따른다.
+      </p>
+
+      <h2>7. 이용자의 권리</h2>
+      <p>
+        방문자는 자신의 정보 열람·정정·삭제를 요청할 수 있다. 요청은 아래
+        연락처로 보내주면 영업일 기준 3~5일 내 처리한다.
+      </p>
+
+      <h2>8. 정책 변경</h2>
+      <p>
+        본 정책의 변경이 있을 경우 본 페이지를 통해 사전에 공지한다.
+      </p>
+
+      <h2>9. 문의</h2>
+      <p>
+        개인정보 처리에 대한 문의는
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>로 보내주세요.
+      </p>
+    </div>
+  </article>
+</BaseLayout>

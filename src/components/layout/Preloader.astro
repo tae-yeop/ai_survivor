@@ -1,0 +1,39 @@
+<!-- Preloader — full-screen overlay, removed by motion.js -->
+<div
+  id="preloader"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-bg-primary"
+  style="transition: opacity 0.4s ease, visibility 0.4s ease;"
+>
+  <div class="flex flex-col items-center gap-4">
+    <!-- Logo mark — indigo rounded square with "A" letterform -->
+    <svg
+      class="animate-pulse-soft"
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="48" height="48" rx="12" fill="var(--accent)" />
+      <text
+        x="50%"
+        y="55%"
+        dominant-baseline="middle"
+        text-anchor="middle"
+        fill="var(--accent-fg)"
+        font-family="Pretendard, system-ui, sans-serif"
+        font-weight="700"
+        font-size="24"
+      >A</text>
+    </svg>
+    <span class="text-sm font-medium text-ink-400">AI Vibe Lab</span>
+  </div>
+</div>
+
+<style is:global>
+  .preloader-hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+</style>

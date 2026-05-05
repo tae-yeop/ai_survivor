@@ -1,0 +1,33 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+const items = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{items.length > 0 && (
+  <nav
+    aria-label="목차"
+    class="rounded-xl border border-ink-100 bg-surface p-5 text-sm"
+  >
+    <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-ink-400">목차</p>
+    <ol class="space-y-1.5">
+      {items.map((h) => (
+        <li class:list={[h.depth === 3 && 'pl-4 border-l-2 border-ink-100']}>
+          <a
+            href={`#${h.slug}`}
+            class="block rounded-md px-2 py-1 text-ink-500 hover:bg-ink-50 hover:text-ink-900 transition-colors"
+          >{h.text}</a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}

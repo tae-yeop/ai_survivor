@@ -1,0 +1,49 @@
+---
+import { ADS_ENABLED, ADSENSE_CLIENT } from '../../lib/site';
+
+interface Props {
+  slot?: string;
+  format?: string;
+  responsive?: boolean;
+  label?: string;
+  class?: string;
+}
+
+const {
+  slot,
+  format = 'auto',
+  responsive = true,
+  label = 'Ad',
+  class: className,
+} = Astro.props;
+
+const enabled = ADS_ENABLED && ADSENSE_CLIENT && slot;
+const showPlaceholder = !enabled && import.meta.env.DEV;
+---
+
+{enabled && (
+  <div class:list={['ad-slot', className]}>
+    <ins
+      class="adsbygoogle"
+      style="display:block"
+      data-ad-client={ADSENSE_CLIENT}
+      data-ad-slot={slot}
+      data-ad-format={format}
+      data-full-width-responsive={responsive ? 'true' : 'false'}
+    ></ins>
+    <script set:html={`(adsbygoogle = window.adsbygoogle || []).push({});`} />
+  </div>
+)}
+
+{showPlaceholder && (
+  <div
+    class:list={[
+      'ad-slot rounded-xl border-2 border-dashed border-ink-200 bg-ink-50/50 px-6 py-10 text-center',
+      className,
+    ]}
+    aria-hidden="true"
+  >
+    <p class="text-xs font-medium uppercase tracking-wider text-ink-400">광고 영역</p>
+    <p class="mt-1 text-xs text-ink-300">{label} · 승인 후 활성화</p>
+  </div>
+)}

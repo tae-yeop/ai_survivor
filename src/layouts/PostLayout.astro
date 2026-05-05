@@ -1,0 +1,148 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ScrollProgress from '../components/layout/ScrollProgress.astro';
+import Breadcrumbs from '../components/post/Breadcrumbs.astro';
+import PostMeta from '../components/post/PostMeta.astro';
+import TableOfContents from '../components/post/TableOfContents.astro';
+import RelatedPosts from '../components/post/RelatedPosts.astro';
+import SeriesNav from '../components/post/SeriesNav.astro';
+import AuthorBox from '../components/post/AuthorBox.astro';
+import AdSlot from '../components/ads/AdSlot.astro';
+import type { Post } from '../lib/posts';
+import type { SeoMeta } from '../lib/seo';
+import { categoryLabel, toSlug } from '../lib/labels';
+
+interface Heading { depth: number; slug: string; text: string }
+
+interface Props {
+  post: Post;
+  seo: SeoMeta;
+  jsonLd: unknown;
+  headings: Heading[];
+  related: Post[];
+  prev?: Post;
+  next?: Post;
+  readingMinutes: number;
+}
+
+const { post, seo, jsonLd, headings, related, prev, next, readingMinutes } = Astro.props;
+const { data } = post;
+
+const breadcrumbs = [
+  { href: '/', label: 'Home' },
+  { href: '/posts/', label: 'Posts' },
+  {
+    href: `/categories/${data.category}/`,
+    label: categoryLabel(data.category),
+  },
+  { label: data.title },
+];
+---
+
+<BaseLayout seo={seo} jsonLd={jsonLd} showPreloader={false}>
+  <ScrollProgress />
+
+  <article class="container-wide py-10">
+    <div class="mb-6" data-reveal="fade-down">
+      <Breadcrumbs items={breadcrumbs} />
+    </div>
+
+    <header class="mx-auto max-w-3xl">
+      <h1
+        class="text-3xl font-bold leading-tight tracking-tight text-ink-900 sm:text-4xl lg:text-display"
+        data-reveal="fade-up"
+      >
+        {data.title}
+      </h1>
+      <p
+        class="mt-4 text-lg leading-relaxed text-ink-500"
+        data-reveal="fade-up"
+        data-reveal-delay="1"
+      >
+        {data.description}
+      </p>
+      <div class="mt-5" data-reveal="fade-up" data-reveal-delay="2">
+        <PostMeta post={post} readingMinutes={readingMinutes} />
+      </div>
+
+      {data.tools && data.tools.length > 0 && (
+        <ul class="mt-4 flex flex-wrap gap-2 text-xs" data-reveal="fade-up" data-reveal-delay="2">
+          {data.tools.map((tool) => (
+            <li>
+              <a
+                href={`/tools/${toSlug(tool)}/`}
+                class="rounded-full bg-accent-soft px-3 py-1 text-sm font-medium text-accent hover:bg-accent hover:text-accent-fg transition-colors"
+              >{tool}</a>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {typeof data.coverImage === 'string' && data.coverImage && (
+        <figure
+          class="mt-10 overflow-hidden rounded-xl border border-ink-100 shadow-md"
+          data-reveal="scale-in"
+          data-reveal-delay="3"
+        >
+          <img
+            src={data.coverImage}
+            alt={data.coverAlt ?? ''}
+            loading="eager"
+            class="w-full"
+          />
+          {data.coverAlt && (
+            <figcaption class="border-t border-ink-100 px-5 py-3 text-xs text-ink-500">{data.coverAlt}</figcaption>
+          )}
+        </figure>
+      )}
+    </header>
+
+    <div class="mx-auto mt-12 grid max-w-5xl gap-12 lg:grid-cols-[minmax(0,1fr)_260px]">
+      <div class="min-w-0">
+        <div class="lg:hidden mb-6">
+          <TableOfContents headings={headings} />
+        </div>
+
+        <div class="prose prose-lg max-w-none first-letter:text-5xl first-letter:font-bold first-letter:leading-none first-letter:mr-2 first-letter:float-left">
+          <slot />
+        </div>
+
+        <AdSlot label="post-bottom" class="mt-12" />
+
+        <div class="mt-10">
+          <SeriesNav series={data.series ?? null} prev={prev} next={next} />
+        </div>
+
+        {data.tags.length > 0 && (
+          <section class="mt-12">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-ink-400">태그</h2>
+            <ul class="mt-3 flex flex-wrap gap-2 text-sm">
+              {data.tags.map((tag) => (
+                <li>
+                  <a
+                    href={`/tags/${toSlug(tag)}/`}
+                    class="inline-block rounded-full bg-ink-50 px-3.5 py-1.5 text-ink-600 hover:bg-accent-soft hover:text-accent transition-colors"
+                  >#{tag}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <div class="mt-12">
+          <AuthorBox authorKey={data.author} />
+        </div>
+
+        <div class="mt-12">
+          <RelatedPosts posts={related} />
+        </div>
+      </div>
+
+      <aside class="hidden lg:block">
+        <div class="sticky top-24">
+          <TableOfContents headings={headings} />
+        </div>
+      </aside>
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,39 @@
+---
+import { render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getAllPosts, getRelatedPosts, getSeriesNeighbors, postUrl } from '../../lib/posts';
+import { buildPostSeo, buildArticleJsonLd } from '../../lib/seo';
+import { estimateReadingTime } from '../../lib/reading-time';
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  return posts.map((post) => ({
+    params: { slug: post.data.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const allPosts = await getAllPosts();
+const path = postUrl(post);
+const seo = buildPostSeo(post, path);
+const jsonLd = buildArticleJsonLd(post, path);
+const related = getRelatedPosts(post, allPosts, 4);
+const { prev, next } = getSeriesNeighbors(post, allPosts);
+
+const { Content, headings } = await render(post);
+const reading = estimateReadingTime(post.body ?? '');
+---
+
+<PostLayout
+  post={post}
+  seo={seo}
+  jsonLd={jsonLd}
+  headings={headings}
+  related={related}
+  prev={prev}
+  next={next}
+  readingMinutes={reading.minutes}
+>
+  <Content />
+</PostLayout>

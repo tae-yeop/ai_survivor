@@ -1,0 +1,42 @@
+---
+import ListLayout from '../../layouts/ListLayout.astro';
+import PostList from '../../components/post/PostList.astro';
+import { getAllPosts } from '../../lib/posts';
+import { categoryBuckets } from '../../lib/taxonomy';
+import { CATEGORY_DESCRIPTIONS, categoryLabel } from '../../lib/labels';
+import { buildPageSeo } from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  const buckets = categoryBuckets(posts);
+  return buckets.map((b) => ({
+    params: { category: b.slug },
+    props: { entry: b },
+  }));
+}
+
+const { entry } = Astro.props;
+const label = categoryLabel(entry.slug);
+const description =
+  CATEGORY_DESCRIPTIONS[entry.slug as keyof typeof CATEGORY_DESCRIPTIONS] ??
+  `카테고리 "${label}"에 속한 글 목록.`;
+
+const seo = buildPageSeo({
+  title: `카테고리: ${label}`,
+  description,
+  path: `/categories/${entry.slug}/`,
+});
+---
+
+<ListLayout
+  seo={seo}
+  title={label}
+  description={description}
+  breadcrumbs={[
+    { href: '/', label: 'Home' },
+    { href: '/categories/', label: 'Categories' },
+    { label },
+  ]}
+>
+  <PostList posts={entry.posts} hideCategory />
+</ListLayout>

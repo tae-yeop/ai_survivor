@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/post/Breadcrumbs.astro';
+import { buildPageSeo } from '../lib/seo';
+import { SITE_NAME } from '../lib/site';
+
+const seo = buildPageSeo({
+  title: 'About',
+  description:
+    `${SITE_NAME}을 운영하는 사람과 글의 작성 원칙, AI 사용 방식을 소개한다.`,
+  path: '/about/',
+});
+---
+
+<BaseLayout seo={seo}>
+  <article class="container-prose py-12">
+    <div class="mb-6"><Breadcrumbs items={[{ href: '/', label: 'Home' }, { label: 'About' }]} /></div>
+    <h1 class="text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">About</h1>
+    <p class="mt-4 text-lg text-ink-500">
+      {SITE_NAME}은 AI 도구, 바이브코딩, 업무 자동화, 리서치 워크플로우를
+      직접 실험하고 검증한 결과를 기록하는 블로그다.
+    </p>
+
+    <div class="prose prose-lg mt-10 max-w-none">
+      <h2>이 블로그가 다루는 것</h2>
+      <ul>
+        <li>AI 코딩 도구(Cursor, Claude Code 등)로 실제 기능을 만들고 검증한 기록</li>
+        <li>LLM과 리서치 도구로 문서·논문·데이터를 다루는 워크플로우</li>
+        <li>업무·개발에서 반복 작업을 자동화한 사례</li>
+        <li>도구 사용기와 비교, 한계, 비추천 대상</li>
+      </ul>
+
+      <h2>이 블로그가 다루지 않는 것</h2>
+      <ul>
+        <li>AI로 대량 생산한 일반론 글</li>
+        <li>출처 없는 도구 추천</li>
+        <li>제목만 SEO에 맞춘 얕은 글</li>
+      </ul>
+
+      <h2>글의 원칙</h2>
+      <ol>
+        <li>문제 상황과 사용 환경을 구체적으로 적는다.</li>
+        <li>실패한 부분과 한계를 숨기지 않는다.</li>
+        <li>독자가 따라 할 수 있는 단계를 제공한다.</li>
+        <li>AI 결과를 그대로 옮기지 않고, 사람이 검증한 부분을 표시한다.</li>
+      </ol>
+
+      <h2>AI 사용 방식</h2>
+      <p>
+        글 작성 과정에서 LLM을 보조로 사용한다. 그러나 본문의 주장, 코드, 결론은
+        운영자가 직접 검증한다. 단순 요약이나 일반론은 글의 본문이 되지 않는다.
+      </p>
+
+      <h2>연락</h2>
+      <p>
+        의견·제안·정정 요청은 <a href="/contact/">Contact</a> 페이지를 참고해주세요.
+      </p>
+    </div>
+  </article>
+</BaseLayout>

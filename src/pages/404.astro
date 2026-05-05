@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { buildPageSeo } from '../lib/seo';
+
+const seo = buildPageSeo({
+  title: '페이지를 찾을 수 없습니다',
+  description: '요청하신 페이지를 찾을 수 없습니다. 홈 또는 글 목록으로 이동해주세요.',
+  path: '/404/',
+  noindex: true,
+});
+---
+
+<BaseLayout seo={seo}>
+  <section class="container-prose flex flex-col items-center py-24 sm:py-32 text-center">
+    <p class="text-8xl font-bold text-accent/20 select-none" aria-hidden="true">404</p>
+    <h1 class="mt-2 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
+      페이지를 찾을 수 없습니다
+    </h1>
+    <p class="mt-4 text-ink-500 max-w-md">
+      이동하려던 글이 옮겨졌거나, 주소가 잘못되었을 수 있습니다.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <a
+        href="/"
+        class="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-accent-fg shadow-lg shadow-accent/20 transition-all hover:bg-accent/90 hover:-translate-y-0.5"
+      >홈으로</a>
+      <a
+        href="/posts/"
+        class="rounded-xl border border-ink-200 px-6 py-3 text-sm font-semibold text-ink-700 shadow-sm transition-all hover:border-ink-300 hover:bg-ink-50 hover:-translate-y-0.5"
+      >글 전체 보기</a>
+    </div>
+  </section>
+</BaseLayout>
