@@ -20,7 +20,7 @@ const { posts } = Astro.props;
         <li>
           <a
             href={postUrl(p)}
-            class="block rounded-xl border border-ink-100 bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-ink-200 hover:shadow-md"
+            class="block rounded-xl border border-ink-100 bg-white p-5 shadow-sm transition-colors transition-shadow transition-transform hover:-translate-y-1 hover:border-ink-200 hover:shadow-md"
           >
             <p class="text-xs font-medium text-accent">{categoryLabel(p.data.category)}</p>
             <p class="mt-2 font-bold text-ink-900 leading-snug">{p.data.title}</p>
