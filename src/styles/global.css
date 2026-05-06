@@ -392,6 +392,55 @@ html.no-js [data-reveal] { opacity: 1 !important; transform: none !important; }
 }
 
 /* ============================================================
+   Hero masthead character animation — blur-stagger reveal
+   Outside @layer to prevent PostCSS rule pruning.
+   Each char uses CSS custom property --ci (character index).
+   ============================================================ */
+@keyframes char-blur-in {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+}
+
+.char-mast .char {
+  display: inline-block;
+  opacity: 0;
+  animation: char-blur-in 0.45s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+  animation-delay: calc(var(--ci) * 0.045s + 0.15s);
+}
+
+.char-mast .char-accent-bar {
+  opacity: 0;
+  animation: char-blur-in 0.4s ease-out forwards;
+  animation-delay: calc(18 * 0.045s + 0.55s);
+}
+
+html.no-js .char-mast .char,
+html.no-js .char-mast .char-accent-bar {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .char-mast .char,
+  .char-mast .char-accent-bar {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    animation: none;
+  }
+}
+
+/* ============================================================
    Utility layer
    ============================================================ */
 @layer utilities {

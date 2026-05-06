@@ -37,36 +37,16 @@ const todayLabel = `${today.getFullYear()}.${String(today.getMonth() + 1).padSta
 
 <BaseLayout seo={seo} jsonLd={websiteJsonLd}>
   <!-- ============================================================
-       § Lede — magazine cover headline + dateline + manifesto
+       § Lede — metadata bar + full-width headline + manifesto
        ============================================================ -->
   <section class="container-mast pt-10 sm:pt-16 pb-20 sm:pb-28">
-    <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-      <div>
-        <p class="kicker" data-reveal="fade-up">
-          DISPATCH · <time datetime={todayIso} class="tabular-nums">{todayLabel}</time>
-          · 한국어 / Korean Edition
-        </p>
-
-        <h1
-          class="mt-6 font-display text-mast text-ink-800 leading-[0.95] tracking-tightest text-balance"
-          data-reveal="fade-up"
-          data-reveal-delay="1"
-        >
-          AI를 써본 결과를<br />
-          그대로
-          <span class="relative inline-block">
-            <span class="relative z-10">기록</span>
-            <span aria-hidden="true" class="absolute inset-x-[-0.05em] bottom-[0.08em] h-[0.4em] bg-accent/45 -z-0"></span>
-          </span>한다.
-        </h1>
-      </div>
-
-      <!-- Right rail — issue stamp -->
-      <aside
-        class="hidden lg:flex flex-col items-end gap-3 pb-2 text-right"
-        data-reveal="fade-up"
-        data-reveal-delay="2"
-      >
+    <!-- Metadata bar: kicker and issue stamp share same row/weight -->
+    <div class="flex items-start justify-between gap-6">
+      <p class="kicker">
+        DISPATCH · <time datetime={todayIso} class="tabular-nums">{todayLabel}</time>
+        · 한국어 / Korean Edition
+      </p>
+      <aside class="hidden sm:flex flex-col items-end gap-2 text-right shrink-0">
         <div class="border border-ink-800 px-3 py-2">
           <p class="kicker tabular-nums">총 기록</p>
           <p class="font-display text-4xl text-ink-800 tabular-nums leading-none mt-1">
@@ -77,11 +57,33 @@ const todayLabel = `${today.getFullYear()}.${String(today.getMonth() + 1).padSta
       </aside>
     </div>
 
-    <!-- Manifesto + CTA row -->
-    <div class="mt-14 grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-20 items-start">
-      <div class="rule-thick pb-6"></div>
-      <div></div>
+    <!-- Hero headline — full width, character blur-stagger reveal -->
+    <h1 class="char-mast mt-6 font-display text-mast text-ink-800 leading-[0.95] tracking-tightest">
+      {'AI를 써본 결과를'.split('').map((ch, i) => (
+        <span class="char" style={`--ci:${i}`}>{ch === ' ' ? ' ' : ch}</span>
+      ))}
+      <br />
+      {'그대로 '.split('').map((ch, i) => (
+        <span class="char" style={`--ci:${10 + i}`}>{ch}</span>
+      ))}
+      <span class="relative inline-block">
+        <span class="relative z-10">
+          {'기록'.split('').map((ch, i) => (
+            <span class="char" style={`--ci:${14 + i}`}>{ch}</span>
+          ))}
+        </span>
+        <span aria-hidden="true" class="char-accent-bar absolute inset-x-[-0.05em] bottom-[0.08em] h-[0.4em] bg-accent/45 -z-0"></span>
+      </span>
+      {'한다.'.split('').map((ch, i) => (
+        <span class="char" style={`--ci:${16 + i}`}>{ch}</span>
+      ))}
+    </h1>
 
+    <!-- Full-width rule anchors the headline -->
+    <div class="rule-thick mt-10"></div>
+
+    <!-- Manifesto + About: 2-col below the rule -->
+    <div class="mt-10 grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-20 items-start">
       <blockquote
         class="border-l-2 border-accent pl-5 text-base sm:text-lg text-ink-600 leading-relaxed max-w-prose text-pretty"
         data-reveal="fade-up"
