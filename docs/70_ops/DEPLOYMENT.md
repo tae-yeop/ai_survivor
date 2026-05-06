@@ -154,3 +154,23 @@ For a bad post only, revert the content commit or set the post to `status: draft
 ## 11. Deferred Supabase Note
 
 Supabase Auth, Supabase Postgres, Supabase Storage, OAuth redirects, RLS policies, and admin CMS deployment checks belong to the deferred ADR-002 path. They are not part of the active deployment runbook and should not be required for launch until a new ADR reactivates that architecture.
+
+## GitHub-backed admin editor env
+
+The `/admin` editor is disabled until these server-only variables are configured in Vercel Production/Preview:
+
+- `ADMIN_GITHUB_LOGIN`: the only GitHub login allowed to administer the site.
+- `ADMIN_GITHUB_ID`: optional numeric GitHub user ID for rename-safe owner checks.
+- `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`: OAuth app credentials.
+- `ADMIN_SESSION_SECRET`: 32+ random characters for HMAC session signing.
+- `GITHUB_CONTENT_TOKEN`: fine-grained GitHub token with repository Contents read/write access.
+- `GITHUB_REPO`: `tae-yeop/ai_survivor`.
+- `GITHUB_BRANCH`: `master` unless the production branch changes.
+
+GitHub OAuth callback URL for production should be:
+
+```text
+https://aivibelab.com/api/admin/github/callback
+```
+
+Saving from `/admin` creates a GitHub commit. If Vercel Git integration is enabled, that commit can trigger the normal redeploy pipeline.

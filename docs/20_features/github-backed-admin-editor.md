@@ -40,3 +40,29 @@ Related ADR: `docs/60_decisions/ADR-004-github-backed-admin-editor.md`
 ## Main Risk
 
 브라우저 editor를 너무 빨리 만들면 글쓰기보다 인증, 파일 업로드, 권한, 에러 처리, 에디터 UX에 시간이 많이 든다. 그래서 우선은 `articles/` + Git commit workflow를 유지하고, 반복 작업이 충분히 불편해졌을 때 구현한다.
+
+## Phase B MVP implementation notes
+
+Status: Implemented locally on 2026-05-06.
+
+The site now includes a minimal GitHub-backed admin editor:
+
+- `/admin/login` uses GitHub OAuth for owner login.
+- `/admin` requires a signed httpOnly owner session.
+- `/admin/posts/new` creates draft MDX posts.
+- `/admin/posts/[slug]` edits existing MDX posts by reading the current file from GitHub.
+- Save uses a server action and GitHub Contents API to commit `apps/web/content/posts/<slug>/index.mdx`.
+- The public site still builds without admin secrets; missing admin env vars are shown only inside the admin UI.
+
+Required Vercel env vars:
+
+- `ADMIN_GITHUB_LOGIN`
+- optional `ADMIN_GITHUB_ID`
+- `GITHUB_CLIENT_ID`
+- `GITHUB_CLIENT_SECRET`
+- `ADMIN_SESSION_SECRET`
+- `GITHUB_CONTENT_TOKEN`
+- `GITHUB_REPO`
+- `GITHUB_BRANCH`
+
+For media, keep the current manual workflow first: place images under `apps/web/public/media/posts/<slug>/` and reference them from the body/frontmatter. Browser upload can be added later with Blob/R2 after writing frequency proves it is needed.

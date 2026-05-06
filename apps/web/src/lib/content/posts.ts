@@ -88,6 +88,14 @@ function parseScalar(value: string): string | number | null | string[] {
     (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
     (trimmed.startsWith("'") && trimmed.endsWith("'"))
   ) {
+    if (trimmed.startsWith('"')) {
+      try {
+        return JSON.parse(trimmed) as string;
+      } catch {
+        return trimmed.slice(1, -1);
+      }
+    }
+    if (trimmed.startsWith("'")) return trimmed.slice(1, -1).replaceAll("''", "'");
     return trimmed.slice(1, -1);
   }
   if (/^-?\d+$/.test(trimmed)) return Number(trimmed);
