@@ -1,5 +1,19 @@
-﻿import type { AdminPostDraft } from "@/lib/admin/mdx";
+"use client";
+
+import { useState } from "react";
+import dynamic from "next/dynamic";
+import type { AdminPostDraft } from "@/lib/admin/mdx";
 import { savePostAction } from "../actions";
+
+const NovelBodyEditor = dynamic(
+  () => import("@/components/admin/NovelBodyEditor").then((m) => ({ default: m.NovelBodyEditor })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="min-h-[520px] animate-pulse rounded-md border border-paper-rule bg-paper" />
+    ),
+  },
+);
 
 const STATUS_OPTIONS = ["draft", "published", "scheduled", "archived"] as const;
 const DIFFICULTY_OPTIONS = ["beginner", "intermediate", "advanced"] as const;
@@ -32,10 +46,13 @@ export function AdminPostForm({
   mode: "new" | "edit";
   error?: string;
 }) {
+  const [bodyMarkdown, setBodyMarkdown] = useState(post.body);
+
   return (
     <form action={savePostAction} className="space-y-8">
       <input type="hidden" name="_mode" value={mode} />
       <input type="hidden" name="_originalSlug" value={post.slug} />
+      <input type="hidden" name="body" value={bodyMarkdown} />
 
       {error ? (
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
@@ -149,18 +166,13 @@ export function AdminPostForm({
       </section>
 
       <section className="rounded-2xl border border-paper-rule bg-paper/80 p-5 shadow-sm">
-        <Field label="Body (Markdown or safe HTML)">
-          <textarea
-            className={`${inputClass} min-h-[520px] font-mono leading-relaxed`}
-            name="body"
-            required
-            defaultValue={post.body}
-          />
-        </Field>
-        <p className="mt-3 text-xs leading-relaxed text-ink-500">
-          Images can be referenced with paths such as /media/posts/&lt;slug&gt;/image.webp. Upload
-          UI is deferred; keep large videos outside git.
-        </p>
+        <div className="mb-3 text-sm font-medium text-ink-700">
+          Body
+          <span className="ml-2 text-xs font-normal text-ink-400">
+            / 로 블록 삽입 · 텍스트 선택 시 서식 메뉴
+          </span>
+        </div>
+        <NovelBodyEditor initialContent={post.body} onChange={setBodyMarkdown} />
       </section>
 
       <div className="flex flex-wrap items-center gap-3">
