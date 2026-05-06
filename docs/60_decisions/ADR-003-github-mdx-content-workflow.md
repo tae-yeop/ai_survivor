@@ -3,52 +3,39 @@
 Status: Accepted
 Date: 2026-05-06
 Owner: 개인 운영자
-Supersedes: ADR-002 data, auth, storage, and web-admin CMS scope
+Supersedes: ADR-002 data, auth, storage, and web-admin CMS scope for the current MVP
 
 ## Context
 
 ADR-002 selected Supabase Postgres, Supabase Auth, Supabase Storage, and a Tiptap-based `/admin` CMS. During execution, Supabase free-project limits became a near-term blocker. Sharing an existing Supabase project was rejected because it risks mixing unrelated project data and policies.
 
-The product is primarily a personal blog and documentation site. The content is important, but it does not require runtime database writes for the MVP. GitHub already provides version history, review, rollback, and a safe publishing trail.
+The product is primarily a personal blog and documentation site. The content matters, but the MVP does not require runtime database writes. GitHub already provides version history, review, rollback, and a safe publishing trail.
+
+The operator also writes drafts in `articles/`. Those drafts are useful as a working area, but they should not automatically become public pages.
 
 ## Decision
 
 The current implementation path uses GitHub as the content source of truth.
 
-- Framework remains: Next.js App Router in `apps/web/`
-- Content source: repository files under `content/` or `apps/web/content/`
+- Framework: Next.js App Router in `apps/web/`
+- Draft workspace: `articles/`
+- Published content source: `apps/web/content/posts/<slug>/index.mdx`
 - Authoring format: MDX with frontmatter metadata
-- Rendered output: static/server-rendered HTML generated from MDX
-- Media: colocated image/assets folders committed to Git
-- Publishing workflow: Git commit or pull request; optional Pages CMS/Decap CMS UI later
+- Rendered output: static/server-rendered HTML generated at build time
+- Small media: Git-tracked public assets under `apps/web/public/media/posts/<slug>/`
+- Large media: external object/video storage, not Git
+- Publishing workflow: Git commit or pull request
 - Database/Auth/Storage/admin CMS: deferred until a real need appears
 
-The preferred content unit is a folder per post:
+The preferred published content unit is a folder per post:
 
 ```text
-content/posts/<slug>/
-├─ index.mdx
-├─ cover.png
-└─ assets/
-```
+apps/web/content/posts/<slug>/
+└─ index.mdx
 
-`index.mdx` frontmatter is the typed metadata contract:
-
-```mdx
----
-title: "Post title"
-description: "Search result summary"
-date: "2026-05-06"
-updated: "2026-05-06"
-category: "vibe-coding-lab"
-tags: ["nextjs", "seo"]
-series: "building-ai-blog"
-status: "published"
----
-
-# Body
-
-Markdown, MDX components, and limited safe HTML are allowed.
+apps/web/public/media/posts/<slug>/
+├─ cover.webp
+└─ screenshot-01.webp
 ```
 
 ## Consequences
@@ -63,9 +50,10 @@ Benefits:
 
 Costs:
 
-- New posts require a Git commit/PR or a Git-backed CMS UI.
+- New posts require a Git commit/PR or a future Git-backed editor UI.
 - Publishing is build-triggered, not instant database-driven ISR.
-- Non-technical editing needs a later UI layer such as Pages CMS or Decap CMS.
+- Non-technical browser-only editing needs a later UI layer.
+- Large media needs an external storage decision.
 - Runtime comments, memberships, or personalized content would require a new data decision.
 
 ## Non-Negotiables
@@ -73,8 +61,30 @@ Costs:
 - MDX frontmatter must validate before build succeeds.
 - `draft`, `scheduled`, and `archived` content must never appear in sitemap, RSS, or public listing pages.
 - Public pages must render meaningful HTML without relying on client-only body rendering.
-- Media paths must be repository-local or explicitly allowlisted remote URLs.
+- `articles/` is not a public content source.
+- Media paths must be repository-local public assets or explicitly allowlisted remote URLs.
 - Raw HTML in MDX is allowed only when it remains safe, reviewable, and lintable.
+
+## Media Policy
+
+- Optimized images may be committed under `apps/web/public/media/posts/<slug>/`.
+- Very small demo videos may be committed only when they are essential and optimized.
+- Long videos, audio, large originals, and frequent uploads should go to external storage such as Vercel Blob, Cloudflare R2, YouTube, or Vimeo.
+- The repository should not become the media archive.
+
+## Browser Editor Direction
+
+A browser login/editor is desirable later, but it should not revive the full Supabase CMS by default.
+
+Preferred future path:
+
+1. Login with GitHub OAuth or another single-owner auth provider.
+2. Write posts through a private `/admin` UI.
+3. Save post changes by committing MDX files back to GitHub.
+4. Upload media to Vercel Blob or another object store.
+5. Trigger normal Vercel deployment from the Git commit.
+
+This future path is captured in `ADR-004-github-backed-admin-editor.md` as a proposed extension.
 
 ## Deferred Scope
 
