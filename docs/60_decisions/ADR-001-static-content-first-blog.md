@@ -1,7 +1,10 @@
 # ADR-001: Static Content First Blog
 
-Status: Accepted  
+Status: Superseded by ADR-002, partially; partially restored by ADR-003
 Date: 2026-05-05
+
+> 2026-05-06: 공개 글을 SEO 친화적으로 제공한다는 원칙은 유지한다. 다만 구현 스택과 콘텐츠 저장 방식은 `ADR-002-nextjs-supabase-admin-cms.md`가 우선한다.
+> 2026-05-06 update: `ADR-003-github-mdx-content-workflow.md` restores the Git/MDX content-source approach for the current MVP while keeping the Next.js app direction.
 
 ## Context
 

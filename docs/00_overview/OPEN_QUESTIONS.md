@@ -1,8 +1,8 @@
 # Open Questions
 
-Status: Active  
-Owner: 개인 운영자  
-Last Updated: 2026-05-05
+Status: Active
+Owner: 개인 운영자
+Last Updated: 2026-05-06
 
 아직 확정하지 않은 질문을 모아둔다. LLM은 이 문서의 항목을 임의로 결정하지 않는다.
 
@@ -10,17 +10,17 @@ Last Updated: 2026-05-05
 
 ## 브랜드 / 도메인
 
-- [ ] 블로그 이름은 무엇으로 할 것인가?
-- [ ] 도메인은 `.com`, `.dev`, `.io`, `.kr` 중 무엇으로 할 것인가?
-- [ ] 개인 실명 브랜드로 갈 것인가, 독립 브랜드명으로 갈 것인가?
+- [x] 블로그 이름은 무엇으로 할 것인가? → `AI Vibe Lab`
+- [x] 도메인은 `.com`, `.dev`, `.io`, `.kr` 중 무엇으로 할 것인가? → `aivibelab.com`
+- [x] 개인 실명 브랜드로 갈 것인가, 독립 브랜드명으로 갈 것인가? → 독립 브랜드명
 
 ---
 
 ## 기술 스택
 
-- [ ] Astro로 시작할 것인가, Next.js로 시작할 것인가?
-- [ ] 배포는 Vercel, Cloudflare Pages, Netlify 중 어디로 할 것인가?
-- [ ] MDX를 사용할 것인가, 순수 Markdown만 사용할 것인가?
+- [x] Astro로 시작할 것인가, Next.js로 시작할 것인가? → Next.js App Router
+- [x] 배포는 Vercel, Cloudflare Pages, Netlify 중 어디로 할 것인가? → Vercel
+- [x] MDX를 사용할 것인가, 순수 Markdown만 사용할 것인가? → ADR-003 기준 MDX를 primary 저장소로 사용하고, GitHub commit/PR로 관리
 - [ ] 검색 기능은 빌드 시 인덱스 기반으로 할 것인가, 외부 검색 서비스를 쓸 것인가?
 
 ---

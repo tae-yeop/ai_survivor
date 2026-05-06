@@ -1,0 +1,48 @@
+﻿---
+title: Next.js 정적 블로그에서 먼저 고정한 SEO 기본기
+description: Next.js App Router 기반 블로그를 검색엔진이 읽기 쉽게 만들기 위해 title, description, canonical, sitemap, RSS, JSON-LD를 먼저 연결한 과정.
+slug: nextjs-static-blog-seo-foundation
+publishedAt: 2026-05-06
+updatedAt: 2026-05-06
+status: published
+category: ai-productivity
+tags:
+  - nextjs
+  - seo
+  - sitemap
+  - rss
+series: null
+seriesOrder: null
+author: owner
+difficulty: intermediate
+tools:
+  - Next.js
+  - Vercel
+  - Google Search Console
+---
+
+<h2>결론 먼저</h2>
+<p>
+  블로그의 첫 SEO 작업은 화려한 최적화가 아니라 검색엔진이 읽을 기본 구조를 빠뜨리지 않는 것이다. 글
+  상세 HTML, canonical URL, sitemap, RSS, Article JSON-LD가 먼저 연결되어야 한다.
+</p>
+
+<h2>먼저 확인한 항목</h2>
+<ul>
+  <li>각 글의 title과 description이 frontmatter에서 나온다.</li>
+  <li>존재하지 않는 slug는 404를 반환한다.</li>
+  <li>sitemap과 RSS에는 published 글만 들어간다.</li>
+  <li>draft와 scheduled 글은 라우트가 생성되지 않는다.</li>
+</ul>
+
+<h2>왜 RSS까지 만들었나</h2>
+<p>
+  RSS는 검색엔진 제출 도구는 아니지만, 글 목록이 서버에서 안정적으로 생성되는지 확인하는 좋은
+  신호다. 사람이 구독할 수도 있고, 자동화된 품질 점검에도 쓰기 쉽다.
+</p>
+
+<h2>남은 작업</h2>
+<p>
+  도메인 연결 후에는 Google Search Console과 Naver Search Advisor에 sitemap을 제출하고, 실제 색인
+  상태를 기준으로 오래된 글을 업데이트한다.
+</p>

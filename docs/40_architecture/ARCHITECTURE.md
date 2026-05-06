@@ -1,145 +1,197 @@
 # Architecture
 
-Status: Active  
-Owner: 개인 운영자  
-Last Updated: 2026-05-05
+Status: Active
+Owner: Solo operator
+Last Updated: 2026-05-06
+Decision Source: `docs/60_decisions/ADR-003-github-mdx-content-workflow.md`
 
-## 1. 아키텍처 원칙
+## 1. Architecture Summary
 
-- 콘텐츠 페이지는 정적 HTML을 우선한다.
-- 블로그 MVP에서는 서버 기능을 최소화한다.
-- 댓글, 로그인, CMS, 복잡한 DB는 초기 범위에서 제외한다.
-- SEO에 필요한 메타데이터는 빌드 시 생성한다.
-- 글은 Markdown/MDX 파일로 관리한다.
-- 클라이언트 JavaScript는 필요한 곳에만 쓴다.
+AI Vibe Lab is a public blog built with **Next.js App Router + Git-backed MDX**.
 
----
+The current source of truth for post content is repository files under `apps/web/content/posts/<slug>/index.mdx`. The operator writes, reviews, and publishes posts through Git commits or pull requests. The deployed site reads those files at build time and serves static, SEO-friendly public pages.
 
-## 2. 기본 기술 스택 가정
+Supabase Auth, Supabase Postgres, Supabase Storage, Tiptap, and a browser `/admin` CMS are deferred ADR-002 material. Do not implement them, add required environment variables for them, or expose admin routes without a new ADR.
 
-MVP 기본안:
+## 2. Locked Values
 
-```text
-Framework: Astro
-Content: MDX / Markdown
-Styling: CSS Modules 또는 Tailwind CSS
-Hosting: Vercel 또는 Cloudflare Pages
-Analytics: Google Search Console + 필요 시 간단한 웹 분석
-Ads: Google AdSense, 승인 후 활성화
-```
+| Area                  | Decision                                  |
+| --------------------- | ----------------------------------------- |
+| Product name          | `AI Vibe Lab`                             |
+| Production domain     | `aivibelab.com`                           |
+| Active app            | `apps/web/`                               |
+| Content source        | Git-tracked MDX files                     |
+| Post location         | `apps/web/content/posts/<slug>/index.mdx` |
+| Deployment            | Vercel project rooted at `apps/web`       |
+| Database/Auth/Storage | None for the active MVP                   |
+| Active CMS            | GitHub pull request workflow              |
 
-대안:
+## 3. Design Principles
 
-```text
-Next.js SSG/ISR
-```
+- Public pages should be readable by crawlers without client-side rendering dependencies.
+- Content must be reviewable as plain repository files.
+- Draft, scheduled, and archived posts must not appear in public lists, detail pages, taxonomy pages, RSS, or sitemap output.
+- Metadata for SEO, Open Graph, RSS, JSON-LD, and taxonomy pages comes from frontmatter.
+- The build should fail loudly for malformed content rather than silently publishing bad pages.
+- AdSense infrastructure must be safe before approval: disabled by default, policy pages present, and `ads.txt` valid only when a publisher id exists.
+- Deferred CMS work must stay isolated from the public route surface.
 
-블로그 중심이면 Astro를 우선 고려하고, 웹앱 기능이 커지면 Next.js를 재검토한다.
-
----
-
-## 3. 추천 폴더 구조
+## 4. Repository Shape
 
 ```text
-/
-├─ src/
-│  ├─ content/
-│  │  └─ posts/
-│  ├─ components/
-│  │  ├─ layout/
-│  │  ├─ post/
-│  │  ├─ seo/
-│  │  └─ ads/
-│  ├─ pages/
-│  │  ├─ index.astro
-│  │  ├─ posts/
-│  │  ├─ categories/
-│  │  ├─ tags/
-│  │  ├─ series/
-│  │  ├─ tools/
-│  │  ├─ about.astro
-│  │  ├─ contact.astro
-│  │  ├─ privacy.astro
-│  │  ├─ rss.xml.ts
-│  │  └─ 404.astro
-│  ├─ lib/
-│  │  ├─ posts.ts
-│  │  ├─ taxonomy.ts
-│  │  ├─ seo.ts
-│  │  └─ reading-time.ts
-│  └─ styles/
-├─ public/
-│  ├─ images/
-│  ├─ robots.txt
-│  └─ favicon.svg
-├─ docs/
-└─ CLAUDE.md
+apps/
+  web/
+    app/
+      (public)/
+        page.tsx
+        posts/
+        categories/
+        tags/
+        series/
+        tools/
+        about/
+        contact/
+        privacy/
+      rss.xml/route.ts
+      ads.txt/route.ts
+      robots.ts
+      sitemap.ts
+    content/
+      README.md
+      posts/<slug>/index.mdx
+    public/images/og/default.svg
+    src/
+      components/
+      lib/content/posts.ts
+    next.config.ts
+    package.json
+src/                      # legacy Astro app, retained as transition/reference material
+docs/
 ```
 
----
+The active deploy target is `apps/web`. The root Astro app can still build, but it is not the ADR-003 production target.
 
-## 4. 컴포넌트 규칙
+## 5. Content Model
 
-### Layout
-
-- `BaseLayout`: HTML shell, global metadata, header/footer
-- `PostLayout`: 글 상세 전용 레이아웃
-- `ListLayout`: 글 목록/카테고리/태그 목록 공통
-
-### Post
-
-- `PostCard`
-- `PostMeta`
-- `TableOfContents`
-- `RelatedPosts`
-- `SeriesNav`
-- `AuthorBox`
-
-### SEO
-
-- `SeoHead`
-- `JsonLdArticle`
-- `OpenGraphImage` 후보
-
-### Ads
-
-- `AdSlot`
-- 승인 전에는 placeholder 또는 disabled 상태
-- 광고 정책과 UX 원칙은 `SEO_ADSENSE_CHECKLIST.md`를 따른다.
-
----
-
-## 5. 렌더링 규칙
-
-- 글 상세, 목록, 카테고리, 태그, 시리즈는 정적으로 생성한다.
-- draft 글은 production build에서 제외한다.
-- slug 변경은 redirect를 고려한다.
-- JS 없이도 본문 읽기가 가능해야 한다.
-- 목차, 코드 하이라이트, 이미지, 내부 링크는 정적 HTML에 포함한다.
-
----
-
-## 6. 데이터 흐름
+Each post lives at:
 
 ```text
-MDX Posts
-  → Content Collection / Post Loader
-  → Taxonomy Builder
-  → Static Routes
-  → SEO Metadata
-  → Sitemap / RSS
+apps/web/content/posts/<slug>/index.mdx
 ```
 
----
+Required frontmatter fields:
 
-## 7. 비범위
+- `title`
+- `description`
+- `publishedAt`
+- `updatedAt`
+- `status`
+- `category`
+- `tags`
+- `readingTime`
+- `author`
 
-MVP에서 하지 않는다.
+Recommended frontmatter fields:
 
-- DB 기반 글 관리
-- 관리자 CMS
-- 로그인
-- 댓글
-- 개인화 추천
-- 복잡한 검색 서버
-- 실시간 기능
+- `slug`
+- `series`
+- `seriesOrder`
+- `tools`
+- `heroImage`
+- `heroAlt`
+- `seoTitle`
+- `seoDescription`
+- `canonicalUrl`
+
+Valid public status is `published`. Non-public statuses include `draft`, `scheduled`, and `archived`.
+
+The content loader validates frontmatter, renders a safe Markdown/HTML subset, creates excerpts and table-of-contents entries, sorts posts by date, and builds category, tag, series, and tool buckets.
+
+## 6. Runtime Boundaries
+
+| Route                    | Purpose                       | Rendering                      |
+| ------------------------ | ----------------------------- | ------------------------------ |
+| `/`                      | Home and latest posts         | Static/server HTML             |
+| `/posts`                 | Published post index          | Static/server HTML             |
+| `/posts/[slug]`          | Published post detail         | SSG via `generateStaticParams` |
+| `/categories/[category]` | Category archive              | SSG                            |
+| `/tags/[tag]`            | Tag archive                   | SSG                            |
+| `/series/[series]`       | Series archive                | SSG                            |
+| `/tools/[tool]`          | Tool archive                  | SSG                            |
+| `/about`                 | Site identity                 | Static                         |
+| `/contact`               | Contact guidance              | Static                         |
+| `/privacy`               | Privacy and ads policy        | Static                         |
+| `/rss.xml`               | Published-post RSS            | Dynamic route output           |
+| `/sitemap.xml`           | Published-post sitemap        | Next sitemap output            |
+| `/robots.txt`            | Crawl policy                  | Next robots output             |
+| `/ads.txt`               | AdSense publisher declaration | Dynamic route output           |
+
+No active public route should depend on Supabase, an admin session, a database, or a browser editor.
+
+## 7. SEO and Structured Data
+
+Public pages provide:
+
+- canonical URLs based on `NEXT_PUBLIC_SITE_URL`
+- metadata titles and descriptions
+- Open Graph and Twitter card fields
+- Article JSON-LD for post pages
+- sitemap entries for public pages and published posts only
+- RSS entries for published posts only
+- taxonomy routes for categories, tags, series, and tools
+
+The default Open Graph image is `apps/web/public/images/og/default.svg`.
+
+## 8. Ads and Policy Boundaries
+
+AdSense is optional and disabled by default.
+
+- `ADS_ENABLED=false` keeps ad slots inert.
+- `ADSENSE_CLIENT` is required before `ads.txt` emits a Google publisher line.
+- Policy pages `/about`, `/contact`, and `/privacy` must remain reachable.
+- New ad slots should be added only where they do not interrupt article readability.
+
+## 9. Security and Privacy
+
+The active MVP has no user accounts, no private database, no private media bucket, and no server-side secrets beyond deployment configuration. The main security boundary is build-time content validation and avoiding accidental publication of non-public posts.
+
+The content renderer allows only a small, explicit HTML subset and rejects unsafe tags, scripts, event handlers, JavaScript URLs, and iframes.
+
+## 10. Deferred Surfaces
+
+The following surfaces are deferred and non-active:
+
+- Supabase Auth
+- Supabase Postgres
+- Supabase Storage
+- Tiptap editor
+- `/admin` browser CMS
+- admin CRUD, preview, and media library workflows
+
+Existing ADR-002 documents may remain as historical references. They are not active implementation instructions unless a new ADR reactivates that path.
+
+## 11. Quality Gates
+
+Before claiming an implementation complete for `apps/web`, run the relevant subset of:
+
+```bash
+npm run test
+npm run format
+npm run lint
+npm run typecheck
+npm run build
+```
+
+For release readiness, also smoke-test representative public URLs:
+
+- `/`
+- `/posts`
+- one published post
+- `/rss.xml`
+- `/sitemap.xml`
+- `/ads.txt`
+- `/about`
+- `/privacy`
+- `/contact`
+
+The stop condition is: active public routes work, non-public content stays hidden, SEO files include only published content, no stale required Supabase setup remains, and the build/test gates pass.

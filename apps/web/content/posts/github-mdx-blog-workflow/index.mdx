@@ -1,0 +1,49 @@
+﻿---
+title: Supabase 없이 GitHub와 MDX로 블로그 글 관리하기
+description: Supabase 무료 프로젝트 한도 때문에 DB 기반 CMS를 쓰지 않고, GitHub 커밋과 MDX 파일로 블로그 문서를 관리하기로 한 결정과 구현 방식.
+slug: github-mdx-blog-workflow
+publishedAt: 2026-05-06
+updatedAt: 2026-05-06
+status: published
+category: ai-workflow-automation
+tags:
+  - github
+  - mdx
+  - content-workflow
+  - nextjs
+series: building-ai-blog
+seriesOrder: 3
+author: owner
+difficulty: beginner
+tools:
+  - GitHub
+  - VS Code
+  - Next.js
+---
+
+<h2>결론 먼저</h2>
+<p>
+  개인 블로그 MVP라면 별도 CMS보다 GitHub에 글을 커밋하는 방식이 더 단순하다. Supabase 프로젝트를
+  새로 만들 수 없는 상황에서는 비용, 권한, 백업, 리뷰 흐름까지 모두 Git으로 해결하는 편이 낫다.
+</p>
+
+<h2>왜 DB를 보류했나</h2>
+<p>
+  DB와 관리자 화면은 글을 자주 공동 편집하거나 비개발자가 운영할 때 유용하다. 하지만 지금 단계의
+  핵심은 빠르게 공개 가능한 글과 검색 친화적인 HTML이다. 프로젝트 한도를 우회하려고 기존 Supabase를
+  공유하면 다른 프로젝트와 데이터가 섞일 위험이 더 크다.
+</p>
+
+<h2>작성 흐름</h2>
+<ul>
+  <li>`apps/web/content/posts/&lt;slug&gt;/index.mdx` 파일을 만든다.</li>
+  <li>frontmatter를 채운 뒤 `status: draft`로 커밋한다.</li>
+  <li>검토가 끝나면 `status: published`로 바꾼다.</li>
+  <li>빌드가 frontmatter 오류와 비공개 글 노출을 검사한다.</li>
+</ul>
+
+<h2>나중에 바꿀 수 있는가</h2>
+<p>
+  가능하다. 글 원본이 파일로 남아 있으면 Decap CMS, GitHub Pages CMS, 또는 DB 기반 CMS로도 이전할 수
+  있다. 지금은 운영 병목이 생길 때까지 단순한 쪽을 유지한다.
+</p>

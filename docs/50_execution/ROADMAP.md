@@ -1,19 +1,22 @@
 # Roadmap
 
-Status: Active  
-Owner: 개인 운영자  
-Last Updated: 2026-05-05
+Status: Active (high-level milestones only)
+Owner: 개인 운영자
+Last Updated: 2026-05-06
+
+> 이 문서는 상위 마일스톤만 본다. 실제 작업 단위(Phase → Slice → Task)는 [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) 를 본다.
+> 현재 MVP 경로는 **Next.js + GitHub + MDX + Vercel** 이다. 결정 배경은 `../60_decisions/ADR-003-github-mdx-content-workflow.md` 를 본다. Supabase/Tiptap 관리자 CMS는 보류한다.
 
 ## Phase 0. 문서와 방향 확정
 
 목표: 바이브코딩 전에 LLM이 읽을 최소 기준서를 확정한다.
 
-- [ ] 블로그 이름 가칭 확정
-- [ ] 도메인 후보 정리
-- [ ] 기술 스택 확정
-- [ ] 첫 10개 글 후보 확정
-- [ ] docs 최소 세트 준비
-- [ ] CLAUDE.md 준비
+- [x] 블로그 정식명 확정 (`AI Vibe Lab`)
+- [x] 도메인 후보 정리 (`aivibelab.com`)
+- [x] 기술 스택 확정
+- [x] 첫 10개 글 후보 확정
+- [x] docs 최소 세트 준비
+- [x] CLAUDE.md 준비
 
 완료 기준:
 
@@ -25,19 +28,19 @@ Last Updated: 2026-05-05
 
 목표: 광고 없이도 독립 블로그로 동작하는 최소 사이트를 만든다.
 
-- [ ] 프로젝트 생성
-- [ ] 기본 레이아웃
-- [ ] 홈
-- [ ] 글 목록
-- [ ] 글 상세
-- [ ] 카테고리/태그 페이지
-- [ ] About
-- [ ] Contact
-- [ ] Privacy
-- [ ] 404
-- [ ] sitemap
-- [ ] robots.txt
-- [ ] RSS
+- [x] 프로젝트 생성
+- [x] 기본 레이아웃
+- [x] 홈
+- [x] 글 목록
+- [x] 글 상세
+- [x] 카테고리/태그 페이지
+- [x] About
+- [x] Contact
+- [x] Privacy
+- [x] 404
+- [x] sitemap
+- [x] robots.txt
+- [x] RSS
 
 완료 기준:
 
@@ -48,18 +51,20 @@ Last Updated: 2026-05-05
 
 ## Phase 2. 콘텐츠 런칭 준비
 
-목표: 실제 검색 유입을 받을 수 있는 초기 콘텐츠를 만든다.
+목표: GitHub에 커밋된 MDX 콘텐츠를 실제 검색 유입을 받을 수 있는 HTML 페이지로 만든다.
 
-- [ ] 첫 글 5개 작성
-- [ ] 첫 시리즈 1개 구성
-- [ ] 내부 링크 구조 정리
-- [ ] 대표 이미지 또는 OG 이미지 템플릿 준비
+- [x] MDX frontmatter schema 확정
+- [x] 첫 글 5개 작성 또는 기존 글 5개 이식
+- [x] 첫 시리즈 1개 구성
+- [x] 내부 링크 구조 정리
+- [x] 대표 이미지 또는 OG 이미지 템플릿 준비
+- [x] draft/scheduled 글 sitemap/RSS 제외 검증
 - [ ] Search Console 등록
 - [ ] Naver Search Advisor 등록
 
 완료 기준:
 
-- 독립 도메인에서 블로그가 공개되어 있고, 검색엔진 제출이 가능하다.
+- 독립 도메인에서 MDX 기반 블로그가 공개되어 있고, 검색엔진 제출이 가능하다.
 
 ---
 
@@ -67,12 +72,12 @@ Last Updated: 2026-05-05
 
 목표: AdSense 신청 전 사이트 완성도와 정책 페이지를 보완한다.
 
-- [ ] About 보강
-- [ ] Privacy Policy 보강
-- [ ] Contact 정상 동작
-- [ ] 얕은 글 제거 또는 보강
-- [ ] 카테고리 빈 페이지 제거
-- [ ] 광고 슬롯 컴포넌트 준비
+- [x] About 보강
+- [x] Privacy Policy 보강
+- [x] Contact 정상 동작
+- [x] 얕은 글 제거 또는 보강
+- [x] 카테고리 빈 페이지 제거
+- [x] 광고 슬롯 컴포넌트 준비
 - [ ] AdSense 신청
 
 완료 기준:

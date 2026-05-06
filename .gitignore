@@ -26,6 +26,18 @@ pnpm-debug.log*
 *.swp
 *.swo
 
-# omc local state
+# local agent/runtime state
 .omc/
+.omx/
 .gstack/
+.playwright-mcp/
+
+# local/generated QA artifacts
+.artifacts/
+playwright-report/
+test-results/
+blob-report/
+*.trace.zip
+
+# root-level screenshots from visual QA runs
+/*.png

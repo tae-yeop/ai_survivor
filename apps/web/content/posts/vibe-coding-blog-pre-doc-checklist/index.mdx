@@ -1,0 +1,47 @@
+﻿---
+title: 바이브코딩으로 블로그 만들기 전에 먼저 문서화한 것들
+description: AI 코딩 도구에 블로그 구현을 맡기기 전, LLM이 임의 결정하지 못하도록 사람이 먼저 정리한 문서 7가지와 그 이유.
+slug: vibe-coding-blog-pre-doc-checklist
+publishedAt: 2026-05-03
+updatedAt: 2026-05-06
+status: published
+category: vibe-coding-lab
+tags:
+  - vibe-coding
+  - documentation
+  - planning
+  - claude-code
+series: building-ai-blog
+seriesOrder: 1
+author: owner
+difficulty: beginner
+tools:
+  - Claude Code
+  - Cursor
+---
+
+<h2>결론 먼저</h2>
+<p>
+  문서를 먼저 만들어 두니 AI가 IA, URL, 콘텐츠 모델을 임의로 결정하지 않았다. 블로그의 첫 구현보다
+  중요한 일은 사람이 고른 방향을 글감과 실행 계획으로 잠그는 일이었다.
+</p>
+
+<h2>왜 이걸 해봤나</h2>
+<p>
+  블로그를 바이브코딩으로 만들기 시작하면 LLM이 자기 판단으로 URL 구조와 frontmatter 필드를 바꾸기
+  쉽다. 그래서 코드보다 먼저 사람이 결정한 기준을 문서로 남겼다.
+</p>
+
+<h2>실제로 도움이 된 문서</h2>
+<ul>
+  <li>블로그의 목적과 독자 정의</li>
+  <li>카테고리, 태그, 시리즈 기준</li>
+  <li>글 상세 frontmatter 스키마</li>
+  <li>검색 유입을 고려한 URL 규칙</li>
+</ul>
+
+<h2>다음 단계</h2>
+<p>
+  이제 글은 GitHub에 커밋되는 MDX 파일로 관리한다. 운영자는 글 폴더 하나를 추가하고, 빌드는
+  frontmatter 오류를 즉시 실패시킨다.
+</p>

@@ -1,14 +1,14 @@
 # Product Brief
 
-Status: Active  
-Owner: 개인 운영자  
-Last Updated: 2026-05-05
+Status: Active
+Owner: 개인 운영자
+Last Updated: 2026-05-06
 
 ## 1. 한 줄 설명
 
 AI 시대에 개발자, 연구자, 직장인이 실제로 써먹을 수 있는 AI 도구, 바이브코딩, 업무 자동화, 리서치 워크플로우를 직접 실험하고 검증하는 블로그.
 
-Working Title: `AI Vibe Lab` (가칭)
+Official Name: `AI Vibe Lab`
 
 ---
 
@@ -71,15 +71,17 @@ Working Title: `AI Vibe Lab` (가칭)
 - RSS
 - Sitemap
 - robots.txt
+- 비공개 1인 관리자 CMS (`/admin`)
+- 이미지 업로드와 본문 삽입
 
 ### 제외
 
-- 회원가입
+- 공개 사용자 회원가입
 - 댓글
 - 커뮤니티
 - 유료 멤버십
-- 자체 CMS
-- 복잡한 관리자 페이지
+- 다중 작성자 CMS
+- 복잡한 권한 관리
 - 다국어
 - 실시간 알림
 

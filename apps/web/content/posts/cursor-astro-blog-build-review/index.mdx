@@ -1,0 +1,48 @@
+﻿---
+title: Cursor로 Astro 블로그를 만들어본 과정과 실패한 점
+description: AI 코딩 도구 Cursor로 Astro + MDX 기반 정적 블로그를 만들면서 실제로 막혔던 부분, SPA로 빠질 뻔한 순간, SEO에서 터진 문제와 그 해결 과정.
+slug: cursor-astro-blog-build-review
+publishedAt: 2026-05-04
+updatedAt: 2026-05-06
+status: published
+category: vibe-coding-lab
+tags:
+  - cursor
+  - astro
+  - vibe-coding
+  - mdx
+  - seo
+series: building-ai-blog
+seriesOrder: 2
+author: owner
+difficulty: intermediate
+tools:
+  - Cursor
+  - Astro
+  - MDX
+---
+
+<h2>결론 먼저</h2>
+<p>
+  Cursor에 문서를 넘겨주니 페이지와 라우팅은 빠르게 나왔지만, 글 본문을 클라이언트에서 fetch해
+  보여주는 SPA 패턴을 제안하는 순간이 있었다.
+</p>
+
+<h2>SEO에서 막힌 부분</h2>
+<p>
+  글 상세는 검색엔진이 읽을 수 있는 서버 HTML이 우선이다. 검색 유입을 목표로 하는 블로그라면 본문은
+  JavaScript가 꺼져도 읽혀야 한다.
+</p>
+
+<h2>배운 점</h2>
+<ul>
+  <li>샘플 데이터는 Phase 1까지만 유효하다.</li>
+  <li>본문 저장소와 렌더링 책임을 분리해야 한다.</li>
+  <li>빌드 단계에서 draft와 scheduled 노출을 검증해야 한다.</li>
+</ul>
+
+<h2>Next.js 전환 기준</h2>
+<p>
+  Next.js App Router에서는 파일 기반 content loader를 서버 컴포넌트에서 직접 호출하고, 공개 slug만
+  정적 파라미터로 생성하는 방식이 가장 단순했다.
+</p>

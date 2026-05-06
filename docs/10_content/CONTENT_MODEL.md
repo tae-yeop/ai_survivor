@@ -1,18 +1,27 @@
 # Content Model
 
-Status: Active  
-Owner: 개인 운영자  
-Last Updated: 2026-05-05
+Status: Active
+Owner: 개인 운영자
+Last Updated: 2026-05-06
 
 ## 1. 콘텐츠 저장 위치
 
-기본 가정:
+현재 MVP의 primary 저장소:
 
 ```text
-src/content/posts/*.mdx
+content/posts/<slug>/index.mdx
 ```
 
-글은 Markdown 또는 MDX로 작성한다.
+권장 폴더 구조:
+
+```text
+content/posts/<slug>/
+├─ index.mdx
+├─ cover.png
+└─ assets/
+```
+
+ADR-003 이후 콘텐츠 원본은 GitHub에 커밋된 MDX 파일이다. 아래 frontmatter는 빌드 검증, SEO metadata, taxonomy, sitemap/RSS 생성의 기준이다. Supabase Postgres/Tiptap 저장 구조는 보류한다.
 
 ---
 
@@ -26,7 +35,7 @@ description: "AI 코딩 도구 Cursor를 사용해 Astro 기반 독립 블로그
 slug: "cursor-astro-blog-build-review"
 publishedAt: "2026-05-05"
 updatedAt: "2026-05-05"
-draft: true
+status: "draft"
 category: "vibe-coding-lab"
 tags:
   - cursor
@@ -58,7 +67,7 @@ ogImage: "/images/og/cursor-astro-blog-build-review.png"
 | `slug` | O | 영문 소문자, 하이픈 사용 |
 | `publishedAt` | O | 최초 발행일 |
 | `updatedAt` | O | 주요 수정일 |
-| `draft` | O | 발행 전 true |
+| `status` | O | draft / published / scheduled / archived |
 | `category` | O | 핵심 카테고리 1개 |
 | `tags` | O | 3~7개 권장 |
 | `series` | 선택 | 시리즈가 없으면 null 또는 생략 |
