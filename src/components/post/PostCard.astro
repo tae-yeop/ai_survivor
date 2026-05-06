@@ -8,61 +8,106 @@ import { estimateReadingTime } from '../../lib/reading-time';
 interface Props {
   post: Post;
   hideCategory?: boolean;
+  variant?: 'list' | 'feature';
+  index?: number;
 }
 
-const { post, hideCategory = false } = Astro.props;
+const { post, hideCategory = false, variant = 'list', index } = Astro.props;
 const { data } = post;
-const readingMinutes = estimateReadingTime(data.description).minutes;
+const reading = estimateReadingTime(data.description).minutes;
+const isFeature = variant === 'feature';
 ---
 
 <article
-  class="group flex flex-col gap-2.5 border-b border-ink-100 py-6 last:border-b-0 transition-colors transition-shadow transition-transform hover:-translate-x-1"
+  class:list={[
+    'group relative grid gap-y-3 py-7 border-b border-paper-rule transition-colors',
+    isFeature
+      ? 'sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-x-10 py-10'
+      : 'sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-x-8',
+  ]}
 >
-  <div class="flex items-center gap-2 text-xs text-ink-500">
-    <time datetime={formatIso(data.publishedAt)}>{formatDate(data.publishedAt)}</time>
-    {!hideCategory && (
-      <>
-        <span aria-hidden="true" class="text-ink-300">·</span>
-        <a
-          href={`/categories/${data.category}/`}
-          class="rounded-full bg-accent-soft/60 px-2.5 py-0.5 text-xs font-medium text-accent hover:bg-accent-soft transition-colors"
-        >
+  <!-- Left rail — dateline / number -->
+  <div class="relative z-10 flex items-baseline gap-3 sm:flex-col sm:items-start sm:gap-1 pointer-events-none">
+    {typeof index === 'number' && (
+      <span class="font-mono text-[0.7rem] tracking-[0.08em] text-accent tabular-nums">
+        №&nbsp;{String(index).padStart(2, '0')}
+      </span>
+    )}
+    <time
+      datetime={formatIso(data.publishedAt)}
+      class="font-mono text-[0.72rem] tracking-[0.04em] text-ink-500 tabular-nums"
+    >
+      {formatDate(data.publishedAt)}
+    </time>
+    <span class="font-mono text-[0.7rem] text-ink-400 tabular-nums hidden sm:block">
+      {reading}분 읽기
+    </span>
+  </div>
+
+  <!-- Right column — kicker / title / dek / tags -->
+  <div class="min-w-0">
+    <div class="relative z-10 flex flex-wrap items-center gap-3 mb-2.5">
+      {!hideCategory && (
+        <a href={`/categories/${data.category}/`} class="kicker kicker-accent hover:underline underline-offset-4">
           {categoryLabel(data.category)}
         </a>
-      </>
-    )}
-    {data.draft && (
-      <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 animate-pulse-soft">Draft</span>
-    )}
-  </div>
+      )}
+      {data.draft && (
+        <span class="kicker text-amber-600 dark:text-amber-400 animate-pulse-soft">draft</span>
+      )}
+    </div>
 
-  <h2 class="text-xl font-bold text-ink-900 leading-snug tracking-tight">
-    <a
-      href={postUrl(post)}
-      class="group-hover:text-accent transition-colors"
+    <h2
+      class:list={[
+        'font-display text-ink-800 leading-[1.1] tracking-tightest text-balance',
+        isFeature ? 'text-3xl sm:text-5xl' : 'text-2xl sm:text-[1.75rem]',
+      ]}
     >
-      {data.title}
-    </a>
-  </h2>
+      <!-- Stretched-link: ::after overlays the entire <article> so the whole
+           card is clickable. Other interactive elements (category, tags)
+           sit above via relative z-10. -->
+      <a
+        href={postUrl(post)}
+        class="
+          relative bg-[length:0_1.5px] bg-no-repeat bg-bottom hover:bg-[length:100%_1.5px]
+          [background-image:linear-gradient(theme(colors.accent.DEFAULT),theme(colors.accent.DEFAULT))]
+          transition-[background-size] duration-300
+          after:absolute after:inset-0 after:left-[-100vw] after:right-[-100vw]
+          after:-top-7 after:bottom-[-1.75rem] after:content-['']
+        "
+      >
+        {data.title}
+      </a>
+    </h2>
 
-  <p class="text-ink-500 leading-relaxed line-clamp-2">{data.description}</p>
+    <p class="relative z-10 mt-3 text-ink-500 leading-relaxed line-clamp-2 max-w-prose pointer-events-none">
+      {data.description}
+    </p>
 
-  {data.tags.length > 0 && (
-    <ul class="mt-1 flex flex-wrap gap-2 text-xs">
-      {data.tags.slice(0, 5).map((tag) => (
-        <li>
-          <a
-            href={`/tags/${toSlug(tag)}/`}
-            class="rounded-full bg-ink-50 px-2.5 py-0.5 text-ink-500 hover:bg-ink-100 hover:text-ink-700 transition-colors"
-          >#{tag}</a>
-        </li>
-      ))}
-    </ul>
-  )}
+    {data.tags.length > 0 && (
+      <ul class="relative z-10 mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+        {data.tags.slice(0, 5).map((tag) => (
+          <li>
+            <a
+              href={`/tags/${toSlug(tag)}/`}
+              class="font-mono text-[0.7rem] text-ink-400 hover:text-accent transition-colors"
+            >#{tag}</a>
+          </li>
+        ))}
+      </ul>
+    )}
 
-  <!-- Reading time pill -->
-  <div class="flex items-center gap-1.5 text-xs text-ink-400">
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-    <span>약 {readingMinutes}분</span>
+    <div class="relative z-10 mt-4 sm:hidden pointer-events-none">
+      <span class="font-mono text-[0.7rem] text-ink-400 tabular-nums">{reading}분 읽기</span>
+    </div>
   </div>
+
+  <!-- "READ →" indicator on hover -->
+  <span
+    aria-hidden="true"
+    class="pointer-events-none absolute bottom-7 right-0 hidden sm:flex items-center gap-1 font-mono text-[0.7rem] tracking-[0.12em] uppercase text-accent opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+  >
+    READ
+    <span>→</span>
+  </span>
 </article>

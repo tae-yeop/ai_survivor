@@ -16,24 +16,25 @@ const seo = buildPageSeo({
 
 <ListLayout
   seo={seo}
+  kicker="index · tags"
   title="태그"
   description="글 본문에서 자주 다룬 도구, 워크플로우, 키워드를 모았다."
   breadcrumbs={[{ href: '/', label: 'Home' }, { label: 'Tags' }]}
+  count={buckets.length}
+  countLabel="개"
 >
   {buckets.length === 0 ? (
-    <p class="rounded border border-dashed border-ink-200 bg-ink-50 p-6 text-center text-sm text-ink-500">
-      아직 태그가 없습니다.
+    <p class="font-mono text-sm text-ink-500 py-16 text-center border-y border-paper-rule tracking-wider uppercase">
+      아직 태그가 없다.
     </p>
   ) : (
     <ul class="flex flex-wrap gap-2">
       {buckets.map((b) => (
         <li>
-          <a
-            href={`/tags/${b.slug}/`}
-            class="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-3 py-1.5 text-sm text-ink-700 hover:border-ink-300 hover:bg-ink-50"
-          >
-            <span>#{b.label}</span>
-            <span class="text-xs text-ink-400">{b.count}</span>
+          <a href={`/tags/${b.slug}/`} class="label-chip">
+            <span class="text-accent">#</span>
+            <span class="text-ink-800">{b.label}</span>
+            <span class="tabular-nums text-ink-400">{String(b.count).padStart(2, '0')}</span>
           </a>
         </li>
       ))}

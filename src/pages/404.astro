@@ -11,23 +11,40 @@ const seo = buildPageSeo({
 ---
 
 <BaseLayout seo={seo}>
-  <section class="container-prose flex flex-col items-center py-24 sm:py-32 text-center">
-    <p class="text-8xl font-bold text-accent/20 select-none" aria-hidden="true">404</p>
-    <h1 class="mt-2 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-      페이지를 찾을 수 없습니다
-    </h1>
-    <p class="mt-4 text-ink-500 max-w-md">
-      이동하려던 글이 옮겨졌거나, 주소가 잘못되었을 수 있습니다.
-    </p>
-    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-      <a
-        href="/"
-        class="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-accent-fg shadow-lg shadow-accent/20 transition-colors transition-shadow transition-transform hover:bg-accent/90 hover:-translate-y-0.5"
-      >홈으로</a>
-      <a
-        href="/posts/"
-        class="rounded-xl border border-ink-200 px-6 py-3 text-sm font-semibold text-ink-700 shadow-sm transition-colors transition-shadow transition-transform hover:border-ink-300 hover:bg-ink-50 hover:-translate-y-0.5"
-      >글 전체 보기</a>
+  <section class="container-mast py-20 sm:py-32 lg:py-40 grid gap-12 lg:gap-16 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+    <div>
+      <p class="kicker kicker-accent">404 — page not found</p>
+      <h1 class="mt-4 font-display font-bold text-[clamp(2rem,5.5vw,3.25rem)] text-ink-800 leading-[1.1] tracking-[-0.025em] text-balance">
+        잘못된 <span class="text-accent">발행</span>호.
+      </h1>
+      <p class="mt-8 max-w-xl text-ink-500 leading-relaxed text-pretty">
+        이동하려던 글이 옮겨졌거나, 주소가 잘못되었을 수 있다.
+        편집부에 정정을 알려주거나, 아래 두 경로 중 하나로 돌아가자.
+      </p>
+
+      <div class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2.5 bg-ink-800 text-paper px-5 py-3 font-mono text-[0.72rem] tracking-[0.12em] uppercase hover:bg-accent transition-colors"
+        >
+          홈으로
+          <span aria-hidden="true">→</span>
+        </a>
+        <a
+          href="/posts/"
+          class="inline-flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.12em] uppercase text-ink-700 hover:text-accent transition-colors border-b border-ink-300 hover:border-accent pb-0.5"
+        >
+          전체 기록 보기
+        </a>
+      </div>
     </div>
+
+    <aside class="border-t-2 lg:border-t-0 lg:border-l-2 border-ink-800 pt-6 lg:pt-0 lg:pl-8">
+      <p class="kicker mb-3">colophon</p>
+      <p class="text-base text-ink-600 leading-relaxed">
+        기록되지 않은 페이지는 사라진다.
+      </p>
+      <p class="mt-4 font-mono text-xs text-ink-400 tabular-nums">ERR · 404 · MOVED OR REMOVED</p>
+    </aside>
   </section>
 </BaseLayout>

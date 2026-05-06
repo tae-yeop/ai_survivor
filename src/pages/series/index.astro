@@ -2,6 +2,7 @@
 import ListLayout from '../../layouts/ListLayout.astro';
 import { getAllPosts, postUrl } from '../../lib/posts';
 import { seriesBuckets } from '../../lib/taxonomy';
+import { seriesLabel } from '../../lib/labels';
 import { buildPageSeo } from '../../lib/seo';
 
 const posts = await getAllPosts();
@@ -16,27 +17,37 @@ const seo = buildPageSeo({
 
 <ListLayout
   seo={seo}
+  kicker="index · series"
   title="시리즈"
   description="여러 글을 묶어 처음부터 끝까지 따라갈 수 있는 연재 콘텐츠."
   breadcrumbs={[{ href: '/', label: 'Home' }, { label: 'Series' }]}
+  count={buckets.length}
+  countLabel="개"
 >
   {buckets.length === 0 ? (
-    <p class="rounded border border-dashed border-ink-200 bg-ink-50 p-6 text-center text-sm text-ink-500">
-      아직 시리즈가 없습니다.
+    <p class="font-mono text-sm text-ink-500 py-16 text-center border-y border-paper-rule tracking-wider uppercase">
+      아직 시리즈가 없다.
     </p>
   ) : (
-    <ul class="grid gap-5 sm:grid-cols-2">
-      {buckets.map((s) => (
-        <li class="rounded-lg border border-ink-100 p-5">
-          <a href={`/series/${s.slug}/`} class="block">
-            <p class="text-xs uppercase tracking-wide text-ink-500">시리즈 · 글 {s.count}편</p>
-            <p class="mt-1 text-lg font-semibold text-ink-900 hover:underline">{s.label}</p>
-          </a>
-          <ol class="mt-3 space-y-1 text-sm text-ink-600">
-            {s.posts.slice(0, 4).map((p, i) => (
-              <li class="flex gap-2">
-                <span class="text-ink-300">{i + 1}.</span>
-                <a href={postUrl(p)} class="hover:text-ink-900 hover:underline">{p.data.title}</a>
+    <ul class="divide-hair">
+      {buckets.map((s, i) => (
+        <li class="grid gap-y-4 py-10 sm:grid-cols-[5rem_minmax(0,2fr)_minmax(0,3fr)] sm:gap-x-10">
+          <p class="font-mono text-xs text-accent tabular-nums">SER · {String(i + 1).padStart(2, '0')}</p>
+          <div>
+            <a href={`/series/${s.slug}/`} class="block group">
+              <h2 class="font-display text-3xl text-ink-800 leading-tight tracking-tightest group-hover:text-accent transition-colors">
+                {seriesLabel(s.slug)}
+              </h2>
+              <p class="kicker mt-2 tabular-nums">전 {s.count}편</p>
+            </a>
+          </div>
+          <ol class="list-none">
+            {s.posts.slice(0, 4).map((p, idx) => (
+              <li class="grid grid-cols-[2.5rem_1fr] gap-2 py-2 border-b border-paper-rule last:border-b-0">
+                <span class="font-mono text-xs text-ink-400 tabular-nums">{String(idx + 1).padStart(2, '0')}</span>
+                <a href={postUrl(p)} class="text-ink-700 hover:text-accent transition-colors line-clamp-1">
+                  {p.data.title}
+                </a>
               </li>
             ))}
           </ol>

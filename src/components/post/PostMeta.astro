@@ -1,58 +1,43 @@
 ---
 import type { Post } from '../../lib/posts';
-import { categoryLabel, difficultyLabel } from '../../lib/labels';
+import { difficultyLabel } from '../../lib/labels';
 import { formatDate, formatIso } from '../../lib/dates';
 
 interface Props {
   post: Post;
   readingMinutes?: number;
-  showCategory?: boolean;
 }
 
-const { post, readingMinutes, showCategory = true } = Astro.props;
+const { post, readingMinutes } = Astro.props;
 const { data } = post;
-const updatedDiffers =
-  data.updatedAt.toDateString() !== data.publishedAt.toDateString();
+const updatedDiffers = data.updatedAt.toDateString() !== data.publishedAt.toDateString();
 ---
 
-<dl class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-500">
+<dl class="flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[0.72rem] tracking-[0.04em] text-ink-500 tabular-nums">
   <div class="flex items-center gap-2">
-    <dt class="sr-only">발행일</dt>
+    <dt class="kicker text-ink-400">PUB</dt>
     <dd>
       <time datetime={formatIso(data.publishedAt)}>{formatDate(data.publishedAt)}</time>
     </dd>
   </div>
+
   {updatedDiffers && (
     <div class="flex items-center gap-2">
-      <dt class="sr-only">수정일</dt>
+      <dt class="kicker text-ink-400">REV</dt>
       <dd>
-        업데이트
         <time datetime={formatIso(data.updatedAt)}>{formatDate(data.updatedAt)}</time>
       </dd>
     </div>
   )}
-  {showCategory && (
-    <div class="flex items-center gap-2">
-      <dt class="sr-only">카테고리</dt>
-      <dd>
-        <a
-          href={`/categories/${data.category}/`}
-          class="text-accent hover:underline"
-        >
-          {categoryLabel(data.category)}
-        </a>
-      </dd>
-    </div>
-  )}
+
   <div class="flex items-center gap-2">
-    <dt class="sr-only">난이도</dt>
-    <dd class="rounded bg-ink-100 px-2 py-0.5 text-xs text-ink-700">
-      {difficultyLabel(data.difficulty)}
-    </dd>
+    <dt class="kicker text-ink-400">LV</dt>
+    <dd class="text-ink-700">{difficultyLabel(data.difficulty)}</dd>
   </div>
+
   {readingMinutes && (
     <div class="flex items-center gap-2">
-      <dt class="sr-only">읽는 시간</dt>
+      <dt class="kicker text-ink-400">RT</dt>
       <dd>{readingMinutes}분 읽기</dd>
     </div>
   )}

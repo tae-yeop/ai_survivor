@@ -22,7 +22,7 @@ const showPlaceholder = !enabled && import.meta.env.DEV;
 ---
 
 {enabled && (
-  <div class:list={['ad-slot', className]}>
+  <div class:list={['ad-slot', className]} data-ads>
     <ins
       class="adsbygoogle"
       style="display:block"
@@ -36,14 +36,17 @@ const showPlaceholder = !enabled && import.meta.env.DEV;
 )}
 
 {showPlaceholder && (
-  <div
+  <aside
     class:list={[
-      'ad-slot rounded-xl border-2 border-dashed border-ink-200 bg-ink-50/50 px-6 py-10 text-center',
+      'ad-slot border-y border-ink-800 py-10 grid place-items-center text-center',
       className,
     ]}
     aria-hidden="true"
+    data-ads
   >
-    <p class="text-xs font-medium uppercase tracking-wider text-ink-400">광고 영역</p>
-    <p class="mt-1 text-xs text-ink-300">{label} · 승인 후 활성화</p>
-  </div>
+    <p class="font-mono text-[0.7rem] tracking-[0.2em] uppercase text-ink-400">— Advertisement —</p>
+    <p class="mt-2 font-mono text-sm text-ink-500">
+      {label} · 승인 후 활성화
+    </p>
+  </aside>
 )}

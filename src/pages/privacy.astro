@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/post/Breadcrumbs.astro';
 import { buildPageSeo } from '../lib/seo';
 import { SITE_NAME } from '../lib/site';
-import { formatDate } from '../lib/dates';
+import { formatDate, formatIso } from '../lib/dates';
 
 // Starter Privacy Policy. Review and adapt before launch — see
 // docs/30_seo_monetization/SEO_ADSENSE_CHECKLIST.md and the SCREEN_INVENTORY
@@ -20,14 +20,22 @@ const seo = buildPageSeo({
 ---
 
 <BaseLayout seo={seo}>
-  <article class="container-prose py-12">
-    <div class="mb-6">
+  <article class="container-mast pt-8 pb-24">
+    <div class="mb-10">
       <Breadcrumbs items={[{ href: '/', label: 'Home' }, { label: 'Privacy' }]} />
     </div>
-    <h1 class="text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">개인정보처리방침</h1>
-    <p class="mt-3 text-sm text-ink-500">시행일 · {formatDate(EFFECTIVE_DATE)}</p>
 
-    <div class="prose prose-lg mt-8 max-w-none">
+    <header class="pb-8 border-b border-ink-800">
+      <p class="kicker kicker-accent">policy · privacy</p>
+      <h1 class="mt-4 font-display text-display text-ink-800 leading-[1.2] tracking-[-0.02em]">
+        개인정보 <span class="text-accent">처리방침</span>
+      </h1>
+      <p class="mt-4 font-mono text-xs text-ink-500 tabular-nums">
+        EFFECTIVE · <time datetime={formatIso(EFFECTIVE_DATE)}>{formatDate(EFFECTIVE_DATE)}</time>
+      </p>
+    </header>
+
+    <div class="prose prose-lg mt-12 max-w-3xl">
       <p>
         {SITE_NAME}(이하 "본 사이트")은 방문자의 개인정보를 소중히 여기며,
         관련 법령에 따라 다음과 같이 정보를 수집·이용한다.

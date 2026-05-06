@@ -4,6 +4,17 @@
 클로드코드 성능이 좋으나 비용이 매우 비싸고(환율도 너무 높다)
 토큰 소모도 앤트로픽측에서 업데이트를 하면 엄청 빨리 소모되버린다.
 
+윈도우 기준으로 
+
+다음과 같이
+
+
+notepad $PROFILE
+PS C:\Users\tyk> New-Item -ItemType File -Path $PROFILE -Force
+
+
+
+
 맥이나 리눅스
 
 ```

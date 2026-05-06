@@ -1,18 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/post/PostCard.astro';
-import ParallaxSection from '../components/layout/ParallaxSection.astro';
 import { getAllPosts, postUrl } from '../lib/posts';
 import { categoryBuckets, seriesBuckets, toolBuckets } from '../lib/taxonomy';
-import { CATEGORY_DESCRIPTIONS, categoryLabel, toSlug } from '../lib/labels';
+import { CATEGORY_DESCRIPTIONS, categoryLabel, seriesLabel } from '../lib/labels';
 import { buildPageSeo } from '../lib/seo';
-import { SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION } from '../lib/site';
+import { SITE_NAME, SITE_DESCRIPTION } from '../lib/site';
+import { formatIso } from '../lib/dates';
 
 const posts = await getAllPosts();
-const latest = posts.slice(0, 6);
+const lead = posts[0];
+const restLatest = posts.slice(1, 6);
 const seriesList = seriesBuckets(posts).slice(0, 3);
 const categories = categoryBuckets(posts);
-const tools = toolBuckets(posts).slice(0, 8);
+const tools = toolBuckets(posts).slice(0, 12);
 
 const seo = buildPageSeo({
   title: SITE_NAME,
@@ -28,151 +29,203 @@ const websiteJsonLd = {
   description: SITE_DESCRIPTION,
   inLanguage: 'ko-KR',
 };
+
+const today = new Date();
+const todayIso = formatIso(today);
+const todayLabel = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
 ---
 
 <BaseLayout seo={seo} jsonLd={websiteJsonLd}>
   <!-- ============================================================
-       Hero — full-viewport with gradient mesh + cursor glow
+       § Lede — magazine cover headline + dateline + manifesto
        ============================================================ -->
-  <section
-    id="hero-glow"
-    class="relative flex min-h-[85vh] items-center border-b border-ink-100 bg-gradient-to-b from-accent-soft/30 via-white to-white overflow-hidden"
-  >
-    <!-- Decorative gradient mesh (static, no JS) -->
-    <div class="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
-      <div class="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-accent/5 blur-3xl"></div>
-      <div class="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-accent/3 blur-3xl"></div>
-    </div>
-
-    <div class="container-hero relative z-10 py-20 sm:py-28">
-      <div class="max-w-3xl">
-        <!-- Tagline -->
-        <p
-          class="text-sm font-semibold uppercase tracking-widest text-accent"
-          data-reveal="fade-up"
-        >{SITE_TAGLINE}</p>
-
-        <!-- Heading with staggered line breaks -->
-        <h1
-          class="mt-5 text-4xl font-bold tracking-tight text-ink-900 sm:text-5xl lg:text-display-lg"
-          data-reveal="fade-up"
-        >
-          AI를 써본 결과를<br />그대로 기록한다.
-        </h1>
-
-        <!-- Description -->
-        <p
-          class="mt-6 max-w-xl text-lg leading-relaxed text-ink-500 sm:text-xl"
-          data-reveal="fade-up"
-          data-reveal-delay="2"
-        >
-          {SITE_DESCRIPTION}
+  <section class="container-mast pt-10 sm:pt-16 pb-20 sm:pb-28">
+    <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+      <div>
+        <p class="kicker" data-reveal="fade-up">
+          DISPATCH · <time datetime={todayIso} class="tabular-nums">{todayLabel}</time>
+          · 한국어 / Korean Edition
         </p>
 
-        <!-- CTAs -->
-        <div
-          class="mt-8 flex flex-wrap gap-3"
+        <h1
+          class="mt-6 font-display text-mast text-ink-800 leading-[0.95] tracking-tightest text-balance"
           data-reveal="fade-up"
-          data-reveal-delay="3"
+          data-reveal-delay="1"
         >
+          AI를 써본 결과를<br />
+          그대로
+          <span class="relative inline-block">
+            <span class="relative z-10">기록</span>
+            <span aria-hidden="true" class="absolute inset-x-[-0.05em] bottom-[0.08em] h-[0.4em] bg-accent/45 -z-0"></span>
+          </span>한다.
+        </h1>
+      </div>
+
+      <!-- Right rail — issue stamp -->
+      <aside
+        class="hidden lg:flex flex-col items-end gap-3 pb-2 text-right"
+        data-reveal="fade-up"
+        data-reveal-delay="2"
+      >
+        <div class="border border-ink-800 px-3 py-2">
+          <p class="kicker tabular-nums">총 기록</p>
+          <p class="font-display text-4xl text-ink-800 tabular-nums leading-none mt-1">
+            {String(posts.length).padStart(2, '0')}
+          </p>
+        </div>
+        <p class="kicker">실험 / 실패 / 검증</p>
+      </aside>
+    </div>
+
+    <!-- Manifesto + CTA row -->
+    <div class="mt-14 grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-20 items-start">
+      <div class="rule-thick pb-6"></div>
+      <div></div>
+
+      <blockquote
+        class="border-l-2 border-accent pl-5 text-base sm:text-lg text-ink-600 leading-relaxed max-w-prose text-pretty"
+        data-reveal="fade-up"
+      >
+        일반론이 아닌 환경, 시간, 비용, 실패, 사람이 수정한 부분까지 같이 적는다.
+        AI 도구는 빠르게 바뀐다 — 결과만 남기면 6개월 뒤엔 거짓말이 된다.
+      </blockquote>
+
+      <div data-reveal="fade-up" data-reveal-delay="1">
+        <p class="kicker">about</p>
+        <p class="mt-3 text-ink-600 leading-relaxed">
+          {SITE_DESCRIPTION}
+        </p>
+        <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
           <a
             href="/posts/"
-            class="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-accent-fg shadow-lg shadow-accent/20 transition-colors transition-shadow transition-transform hover:bg-accent/90 hover:shadow-xl hover:shadow-accent/25 hover:-translate-y-0.5 active:translate-y-0"
+            class="inline-flex items-center gap-2.5 bg-ink-800 text-paper px-5 py-3 font-mono text-[0.72rem] tracking-[0.12em] uppercase hover:bg-accent transition-colors"
           >
-            글 전체 보기
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            전체 기록 읽기
+            <span aria-hidden="true">→</span>
           </a>
           <a
             href="/about/"
-            class="inline-flex items-center gap-2 rounded-xl border border-ink-200 bg-white px-6 py-3 text-sm font-semibold text-ink-700 shadow-sm transition-colors transition-shadow transition-transform hover:border-ink-300 hover:bg-ink-50 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
+            class="inline-flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.12em] uppercase text-ink-700 hover:text-accent transition-colors border-b border-ink-300 hover:border-accent pb-0.5"
           >
-            블로그 소개
+            편집 원칙 보기
           </a>
         </div>
-      </div>
-    </div>
-
-    <!-- Scroll hint -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10" data-reveal="fade-in" data-reveal-delay="5">
-      <div class="flex flex-col items-center gap-2 text-xs text-ink-400">
-        <span>스크롤</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="animate-bounce"><path d="m6 9 6 6 6-6"/></svg>
       </div>
     </div>
   </section>
 
   <!-- ============================================================
-       Latest Posts
+       § 01 — LATEST DISPATCH — feature + numbered list
        ============================================================ -->
-  <section class="container-wide py-20">
-    <div class="flex items-baseline justify-between" data-reveal="fade-up">
-      <h2 class="text-2xl font-bold text-ink-900 sm:text-3xl">최신 글</h2>
-      <a href="/posts/" class="text-sm font-medium text-accent hover:underline">모두 보기 →</a>
-    </div>
-    {latest.length === 0 ? (
-      <p class="mt-8 rounded-xl border border-dashed border-ink-200 bg-surface p-8 text-center text-sm text-ink-500">
-        아직 발행된 글이 없습니다.
+  <section class="container-mast pb-24">
+    <header class="section-marker mb-8" data-reveal="fade-up">
+      <p class="kicker tabular-nums">01 / 04</p>
+      <h2 class="font-display text-3xl sm:text-4xl text-ink-800 tracking-tightest">최신 기록</h2>
+      <span class="ml-auto hidden sm:block">
+        <a href="/posts/" class="font-mono text-xs tracking-[0.12em] uppercase text-ink-500 hover:text-accent transition-colors">
+          모두 보기 →
+        </a>
+      </span>
+    </header>
+
+    {posts.length === 0 ? (
+      <p class="font-mono text-sm text-ink-500 py-16 text-center border-y border-paper-rule tracking-wider uppercase">
+        아직 발행된 기록이 없다.
       </p>
     ) : (
-      <div class="mt-8 grid gap-x-8 gap-y-2 sm:grid-cols-2">
-        {latest.map((p) => <PostCard post={p} />)}
+      <div class="grid gap-x-12 lg:grid-cols-[1.4fr_1fr]">
+        <!-- Featured post — full-width left column -->
+        <div class="lg:border-r lg:border-paper-rule lg:pr-12">
+          <p class="kicker mb-4">FEATURE / 이번 호 대표</p>
+          {lead && <PostCard post={lead} variant="feature" />}
+        </div>
+
+        <!-- Right column — numbered runner-ups -->
+        <ol class="list-none mt-10 lg:mt-0">
+          <li class="kicker mb-3 block">RUNNERS UP</li>
+          {restLatest.map((p, i) => (
+            <li>
+              <PostCard post={p} index={i + 2} />
+            </li>
+          ))}
+        </ol>
       </div>
     )}
   </section>
 
   <!-- ============================================================
-       Recommended Series
+       § 02 — SERIES — table-like editorial listing
        ============================================================ -->
   {seriesList.length > 0 && (
-    <ParallaxSection speed={0.15} class="bg-surface py-20">
-      <div class="container-wide">
-        <div class="flex items-baseline justify-between" data-reveal="fade-up">
-          <h2 class="text-2xl font-bold text-ink-900 sm:text-3xl">추천 시리즈</h2>
-          <a href="/series/" class="text-sm font-medium text-accent hover:underline">전체 시리즈 →</a>
-        </div>
-        <ul class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {seriesList.map((s) => (
-            <li class="card-elevated p-6 transition-colors transition-shadow transition-transform hover:-translate-y-1 hover:shadow-md">
-              <a href={`/series/${s.slug}/`} class="block">
-                <p class="text-xs font-semibold uppercase tracking-wide text-ink-400">시리즈 · 글 {s.count}편</p>
-                <p class="mt-2 text-xl font-bold text-ink-900 hover:text-accent transition-colors">{s.label}</p>
-                <ol class="mt-4 space-y-2 text-sm text-ink-600">
-                  {s.posts.slice(0, 3).map((p, i) => (
-                    <li class="flex gap-2.5">
-                      <span class="text-ink-300 font-medium tabular-nums">{i + 1}.</span>
-                      <a href={postUrl(p)} class="hover:text-ink-900 hover:underline transition-colors line-clamp-1">{p.data.title}</a>
-                    </li>
-                  ))}
-                </ol>
-              </a>
+    <section class="bg-paper-deep border-y border-paper-rule">
+      <div class="container-mast py-20">
+        <header class="section-marker mb-10" data-reveal="fade-up">
+          <p class="kicker tabular-nums">02 / 04</p>
+          <h2 class="font-display text-3xl sm:text-4xl text-ink-800 tracking-tightest">진행 중인 시리즈</h2>
+          <span class="ml-auto hidden sm:block">
+            <a href="/series/" class="font-mono text-xs tracking-[0.12em] uppercase text-ink-500 hover:text-accent transition-colors">
+              전체 시리즈 →
+            </a>
+          </span>
+        </header>
+
+        <ul class="divide-hair">
+          {seriesList.map((s, i) => (
+            <li class="grid gap-y-4 py-8 sm:grid-cols-[5rem_minmax(0,2fr)_minmax(0,3fr)] sm:gap-x-8 group">
+              <p class="font-mono text-xs text-accent tabular-nums">SER · {String(i + 1).padStart(2, '0')}</p>
+              <div>
+                <a href={`/series/${s.slug}/`} class="block group">
+                  <p class="font-display text-2xl sm:text-3xl text-ink-800 leading-tight tracking-tight group-hover:text-accent transition-colors">
+                    {seriesLabel(s.slug)}
+                  </p>
+                  <p class="kicker mt-2 tabular-nums">전 {s.count}편</p>
+                </a>
+              </div>
+              <ol class="list-none">
+                {s.posts.slice(0, 3).map((p, idx) => (
+                  <li class="grid grid-cols-[2.5rem_1fr] py-1.5 border-b border-paper-rule last:border-b-0">
+                    <span class="font-mono text-xs text-ink-400 tabular-nums">{String(idx + 1).padStart(2, '0')}</span>
+                    <a href={postUrl(p)} class="text-ink-700 hover:text-accent transition-colors line-clamp-1">
+                      {p.data.title}
+                    </a>
+                  </li>
+                ))}
+              </ol>
             </li>
           ))}
         </ul>
       </div>
-    </ParallaxSection>
+    </section>
   )}
 
   <!-- ============================================================
-       Category Overview
+       § 03 — CATEGORY DOSSIERS
        ============================================================ -->
-  <section class="container-wide py-20">
-    <h2 class="text-2xl font-bold text-ink-900 sm:text-3xl" data-reveal="fade-up">카테고리별 대표 글</h2>
-    <div class="mt-8 grid gap-6 sm:grid-cols-2">
-      {categories.map((c) => (
-        <article class="card-elevated p-6 transition-colors transition-shadow transition-transform hover:-translate-y-1 hover:shadow-md">
-          <p class="text-xs font-semibold uppercase tracking-wide text-ink-400">카테고리</p>
-          <h3 class="mt-2 text-xl font-bold text-ink-900">
+  <section class="container-mast py-24">
+    <header class="section-marker mb-10" data-reveal="fade-up">
+      <p class="kicker tabular-nums">03 / 04</p>
+      <h2 class="font-display text-3xl sm:text-4xl text-ink-800 tracking-tightest">카테고리 별 기록</h2>
+    </header>
+
+    <div class="grid gap-12 lg:grid-cols-2 lg:gap-x-16">
+      {categories.map((c, i) => (
+        <article class="grid gap-3 pb-10 border-b border-paper-rule">
+          <div class="flex items-baseline justify-between gap-4">
+            <p class="kicker kicker-accent tabular-nums">CAT · {String(i + 1).padStart(2, '0')}</p>
+            <p class="kicker tabular-nums">{c.count}편</p>
+          </div>
+          <h3 class="font-display text-3xl text-ink-800 leading-tight tracking-tightest">
             <a href={`/categories/${c.slug}/`} class="hover:text-accent transition-colors">
               {categoryLabel(c.slug)}
             </a>
           </h3>
-          <p class="mt-2 text-sm text-ink-500 leading-relaxed">
+          <p class="text-ink-500 leading-relaxed max-w-prose">
             {CATEGORY_DESCRIPTIONS[c.slug as keyof typeof CATEGORY_DESCRIPTIONS] ?? ''}
           </p>
-          <ul class="mt-4 space-y-1.5 text-sm">
+          <ul class="mt-2 divide-hair">
             {c.posts.slice(0, 3).map((p) => (
-              <li>
-                <a href={postUrl(p)} class="text-ink-600 hover:text-ink-900 hover:underline transition-colors">
+              <li class="py-2.5">
+                <a href={postUrl(p)} class="text-base text-ink-700 hover:text-accent transition-colors leading-snug block">
                   {p.data.title}
                 </a>
               </li>
@@ -184,23 +237,30 @@ const websiteJsonLd = {
   </section>
 
   <!-- ============================================================
-       Tools Overview
+       § 04 — TOOL INDEX — chip cloud
        ============================================================ -->
   {tools.length > 0 && (
-    <section class="container-wide pb-24">
-      <div class="flex items-baseline justify-between" data-reveal="fade-up">
-        <h2 class="text-2xl font-bold text-ink-900 sm:text-3xl">도구별 글 모음</h2>
-        <a href="/tools/" class="text-sm font-medium text-accent hover:underline">모든 도구 →</a>
-      </div>
-      <ul class="mt-8 flex flex-wrap gap-3">
+    <section class="container-mast pb-32">
+      <header class="section-marker mb-10" data-reveal="fade-up">
+        <p class="kicker tabular-nums">04 / 04</p>
+        <h2 class="font-display text-3xl sm:text-4xl text-ink-800 tracking-tightest">도구 색인</h2>
+        <span class="ml-auto hidden sm:block">
+          <a href="/tools/" class="font-mono text-xs tracking-[0.12em] uppercase text-ink-500 hover:text-accent transition-colors">
+            모든 도구 →
+          </a>
+        </span>
+      </header>
+
+      <p class="mb-6 max-w-md text-sm text-ink-500 leading-relaxed">
+        실험에 등장한 도구들. 클릭하면 해당 도구를 다룬 모든 기록을 볼 수 있다.
+      </p>
+
+      <ul class="flex flex-wrap gap-2.5">
         {tools.map((t) => (
           <li>
-            <a
-              href={`/tools/${t.slug}/`}
-              class="inline-flex items-center gap-2.5 rounded-full border border-ink-200 bg-white px-4 py-2.5 text-sm font-medium text-ink-700 shadow-sm transition-colors transition-shadow transition-transform hover:border-accent hover:text-accent hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
-            >
-              <span>{t.label}</span>
-              <span class="rounded-full bg-ink-100 px-2 py-0.5 text-xs font-medium text-ink-500">{t.count}</span>
+            <a href={`/tools/${t.slug}/`} class="label-chip">
+              <span class="text-ink-800">{t.label}</span>
+              <span class="text-accent tabular-nums">{String(t.count).padStart(2, '0')}</span>
             </a>
           </li>
         ))}

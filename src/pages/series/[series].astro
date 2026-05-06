@@ -3,6 +3,7 @@ import ListLayout from '../../layouts/ListLayout.astro';
 import PostList from '../../components/post/PostList.astro';
 import { getAllPosts } from '../../lib/posts';
 import { seriesBuckets } from '../../lib/taxonomy';
+import { seriesLabel } from '../../lib/labels';
 import { buildPageSeo } from '../../lib/seo';
 
 export async function getStaticPaths() {
@@ -15,14 +16,15 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
+const label = seriesLabel(entry.slug);
 // Series posts read in seriesOrder ascending so readers can follow them in order.
 const ordered = [...entry.posts].sort(
   (a, b) => (a.data.seriesOrder ?? 0) - (b.data.seriesOrder ?? 0),
 );
-const description = `시리즈 "${entry.label}"에 속한 글 ${entry.count}편을 순서대로 정리했다.`;
+const description = `시리즈 "${label}"에 속한 글 ${entry.count}편을 순서대로 정리했다.`;
 
 const seo = buildPageSeo({
-  title: `시리즈: ${entry.label}`,
+  title: `시리즈: ${label}`,
   description,
   path: `/series/${entry.slug}/`,
 });
@@ -30,13 +32,15 @@ const seo = buildPageSeo({
 
 <ListLayout
   seo={seo}
-  title={entry.label}
+  kicker={`series · ${entry.slug}`}
+  title={label}
   description={description}
   breadcrumbs={[
     { href: '/', label: 'Home' },
     { href: '/series/', label: 'Series' },
-    { label: entry.label },
+    { label },
   ]}
+  count={entry.count}
 >
   <PostList posts={ordered} />
 </ListLayout>

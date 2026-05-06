@@ -17,27 +17,33 @@ const seo = buildPageSeo({
 
 <ListLayout
   seo={seo}
+  kicker="index · categories"
   title="카테고리"
   description="블로그의 글 카테고리와 각 카테고리에서 다루는 주제."
   breadcrumbs={[{ href: '/', label: 'Home' }, { label: 'Categories' }]}
+  count={buckets.length}
+  countLabel="개"
 >
   {buckets.length === 0 ? (
-    <p class="rounded border border-dashed border-ink-200 bg-ink-50 p-6 text-center text-sm text-ink-500">
-      아직 발행된 글이 없습니다.
+    <p class="font-mono text-sm text-ink-500 py-16 text-center border-y border-paper-rule tracking-wider uppercase">
+      아직 발행된 기록이 없다.
     </p>
   ) : (
-    <ul class="grid gap-5 sm:grid-cols-2">
-      {buckets.map((b) => (
-        <li class="rounded-lg border border-ink-100 p-5">
-          <a href={`/categories/${b.slug}/`} class="block">
-            <p class="text-xs uppercase tracking-wide text-ink-500">글 {b.count}편</p>
-            <p class="mt-1 text-lg font-semibold text-ink-900 hover:underline">
-              {categoryLabel(b.slug)}
-            </p>
-            <p class="mt-2 text-sm text-ink-500">
+    <ul class="divide-hair">
+      {buckets.map((b, i) => (
+        <li class="grid gap-y-2 py-8 sm:grid-cols-[5rem_1fr_auto] sm:gap-x-8 sm:items-baseline">
+          <p class="kicker kicker-accent tabular-nums">CAT · {String(i + 1).padStart(2, '0')}</p>
+          <div>
+            <h2 class="font-display text-3xl text-ink-800 leading-tight tracking-tightest">
+              <a href={`/categories/${b.slug}/`} class="hover:text-accent transition-colors">
+                {categoryLabel(b.slug)}
+              </a>
+            </h2>
+            <p class="mt-2 text-ink-500 leading-relaxed max-w-2xl">
               {CATEGORY_DESCRIPTIONS[b.slug as keyof typeof CATEGORY_DESCRIPTIONS] ?? ''}
             </p>
-          </a>
+          </div>
+          <p class="kicker tabular-nums sm:text-right">{b.count}편</p>
         </li>
       ))}
     </ul>

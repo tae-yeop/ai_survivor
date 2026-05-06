@@ -13,48 +13,76 @@ const seo = buildPageSeo({
 ---
 
 <BaseLayout seo={seo}>
-  <article class="container-prose py-12">
-    <div class="mb-6"><Breadcrumbs items={[{ href: '/', label: 'Home' }, { label: 'About' }]} /></div>
-    <h1 class="text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">About</h1>
-    <p class="mt-4 text-lg text-ink-500">
-      {SITE_NAME}은 AI 도구, 바이브코딩, 업무 자동화, 리서치 워크플로우를
-      직접 실험하고 검증한 결과를 기록하는 블로그다.
-    </p>
+  <article class="container-mast pt-8 pb-24">
+    <div class="mb-10"><Breadcrumbs items={[{ href: '/', label: 'Home' }, { label: 'About' }]} /></div>
 
-    <div class="prose prose-lg mt-10 max-w-none">
-      <h2>이 블로그가 다루는 것</h2>
-      <ul>
-        <li>AI 코딩 도구(Cursor, Claude Code 등)로 실제 기능을 만들고 검증한 기록</li>
-        <li>LLM과 리서치 도구로 문서·논문·데이터를 다루는 워크플로우</li>
-        <li>업무·개발에서 반복 작업을 자동화한 사례</li>
-        <li>도구 사용기와 비교, 한계, 비추천 대상</li>
-      </ul>
+    <header class="grid gap-y-8 lg:grid-cols-[1.4fr_1fr] lg:gap-x-16 lg:items-end pb-10 border-b border-ink-800">
+      <div>
+        <p class="kicker kicker-accent">colophon</p>
+        <h1 class="mt-4 font-display text-display-lg text-ink-800 leading-[1.15] tracking-[-0.022em] text-balance">
+          한 사람이 직접 쓴<br />
+          <span class="text-accent">실험</span> 일지.
+        </h1>
+        <p class="mt-6 max-w-xl text-ink-500 leading-relaxed text-pretty">
+          {SITE_NAME}은 AI 도구, 바이브코딩, 업무 자동화, 리서치 워크플로우를
+          직접 실험하고 검증한 결과를 기록하는 블로그다.
+        </p>
+      </div>
+      <aside class="border-l-2 border-ink-800 pl-6 lg:pb-2">
+        <p class="kicker">est.</p>
+        <p class="font-display text-3xl text-ink-800 leading-none mt-1 tabular-nums">2026</p>
+        <p class="kicker mt-3">edition · korean / kr</p>
+      </aside>
+    </header>
 
-      <h2>이 블로그가 다루지 않는 것</h2>
-      <ul>
-        <li>AI로 대량 생산한 일반론 글</li>
-        <li>출처 없는 도구 추천</li>
-        <li>제목만 SEO에 맞춘 얕은 글</li>
-      </ul>
+    <div class="grid gap-12 lg:grid-cols-2 lg:gap-x-16 mt-16">
+      <section>
+        <p class="kicker mb-4">§ 01 — 다루는 것</p>
+        <ul class="tick-list space-y-3 text-ink-700 leading-relaxed">
+          <li>AI 코딩 도구(Cursor, Claude Code 등)로 실제 기능을 만들고 검증한 기록</li>
+          <li>LLM과 리서치 도구로 문서·논문·데이터를 다루는 워크플로우</li>
+          <li>업무·개발에서 반복 작업을 자동화한 사례</li>
+          <li>도구 사용기와 비교, 한계, 비추천 대상</li>
+        </ul>
+      </section>
 
-      <h2>글의 원칙</h2>
-      <ol>
-        <li>문제 상황과 사용 환경을 구체적으로 적는다.</li>
-        <li>실패한 부분과 한계를 숨기지 않는다.</li>
-        <li>독자가 따라 할 수 있는 단계를 제공한다.</li>
-        <li>AI 결과를 그대로 옮기지 않고, 사람이 검증한 부분을 표시한다.</li>
+      <section>
+        <p class="kicker mb-4">§ 02 — 다루지 않는 것</p>
+        <ul class="tick-list space-y-3 text-ink-700 leading-relaxed">
+          <li>AI로 대량 생산한 일반론 글</li>
+          <li>출처 없는 도구 추천</li>
+          <li>제목만 SEO에 맞춘 얕은 글</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="mt-20 pt-10 border-t border-ink-800">
+      <p class="kicker mb-6">§ 03 — 글의 원칙</p>
+      <ol class="num-list">
+        <li class="text-lg text-ink-700 leading-snug">문제 상황과 사용 환경을 구체적으로 적는다.</li>
+        <li class="text-lg text-ink-700 leading-snug">실패한 부분과 한계를 숨기지 않는다.</li>
+        <li class="text-lg text-ink-700 leading-snug">독자가 따라 할 수 있는 단계를 제공한다.</li>
+        <li class="text-lg text-ink-700 leading-snug">AI 결과를 그대로 옮기지 않고, 사람이 검증한 부분을 표시한다.</li>
       </ol>
+    </section>
 
-      <h2>AI 사용 방식</h2>
-      <p>
+    <section class="mt-20 grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-x-16 pt-10 border-t border-paper-rule">
+      <div>
+        <p class="kicker">§ 04 — AI 사용 방식</p>
+      </div>
+      <p class="text-lg text-ink-700 leading-relaxed text-pretty">
         글 작성 과정에서 LLM을 보조로 사용한다. 그러나 본문의 주장, 코드, 결론은
         운영자가 직접 검증한다. 단순 요약이나 일반론은 글의 본문이 되지 않는다.
       </p>
+    </section>
 
-      <h2>연락</h2>
-      <p>
-        의견·제안·정정 요청은 <a href="/contact/">Contact</a> 페이지를 참고해주세요.
+    <section class="mt-12 grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-x-16 pt-10 border-t border-paper-rule">
+      <div>
+        <p class="kicker">§ 05 — 연락</p>
+      </div>
+      <p class="text-lg text-ink-700 leading-relaxed">
+        의견·제안·정정 요청은 <a href="/contact/" class="text-accent border-b border-accent/40 hover:border-accent pb-0.5">Contact</a> 페이지를 참고해주세요.
       </p>
-    </div>
+    </section>
   </article>
 </BaseLayout>

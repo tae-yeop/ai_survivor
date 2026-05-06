@@ -28,6 +28,17 @@ export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
   advanced: '심화',
 };
 
+// Series display labels — `series` frontmatter field is a slug; readers see Korean.
+// Add a new entry whenever a new series is introduced.
+export const SERIES_LABELS: Record<string, string> = {
+  'building-ai-blog': 'AI 블로그 만들기',
+};
+
+export function seriesLabel(slug: string | null | undefined): string {
+  if (!slug) return '';
+  return SERIES_LABELS[slug] ?? slug;
+}
+
 // Convert a free-form tag/tool name to a URL-safe slug. Idempotent for
 // already-slugified input. Korean characters are kept as-is and percent-encoded
 // by the URL constructor at link time.

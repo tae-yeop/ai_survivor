@@ -1,5 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#4f46e5"/>
-  <path d="M16 46 L26 18 L32 18 L42 46 L36 46 L33.6 39 L24.4 39 L22 46 Z M25.7 34 L32.3 34 L29 24.5 Z" fill="#ffffff"/>
-  <circle cx="48" cy="22" r="4" fill="#a5b4fc"/>
+  <rect width="64" height="64" fill="#f4efe6"/>
+  <rect x="3" y="3" width="58" height="58" fill="none" stroke="#0a0807" stroke-width="2"/>
+  <text
+    x="32" y="44"
+    text-anchor="middle"
+    font-family="'Fraunces', 'Source Serif 4', Georgia, serif"
+    font-style="italic"
+    font-weight="500"
+    font-size="36"
+    fill="#0a0807"
+  >A</text>
+  <circle cx="48" cy="14" r="3" fill="#c8302a"/>
 </svg>

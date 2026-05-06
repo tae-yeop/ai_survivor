@@ -4,56 +4,79 @@ import { NAV_FOOTER, SITE_NAME, SITE_TAGLINE } from '../../lib/site';
 const year = new Date().getFullYear();
 ---
 
-<footer class="mt-24 border-t border-ink-100 bg-surface">
-  <div class="container-wide py-14">
-    <div class="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
-      <!-- Brand column -->
-      <div class="max-w-xs">
-        <a href="/" class="text-lg font-bold tracking-tight text-ink-900 hover:text-accent transition-colors">
-          {SITE_NAME}
-        </a>
-        <p class="mt-2 text-sm text-ink-500 leading-relaxed">{SITE_TAGLINE}</p>
-        <!-- Social / connect links -->
-        <div class="mt-4 flex items-center gap-3">
-          <a href="/rss.xml" class="rounded-full bg-ink-100 p-2 text-ink-500 hover:bg-ink-200 hover:text-ink-700 transition-colors" aria-label="RSS 피드">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+<footer class="relative mt-32 bg-bg-primary">
+  <div class="container-mast"><div class="rule-thick"></div></div>
+
+  <div class="container-mast pt-12 pb-8">
+    <!-- ============================================================
+         Big serif sign-off
+         ============================================================ -->
+    <div class="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
+      <div>
+        <p class="kicker kicker-accent">end of dispatch</p>
+        <p class="mt-3 font-display font-bold text-3xl sm:text-[2rem] text-ink-800 leading-[1.2] tracking-[-0.022em] text-balance">
+          기록되지 않은 실험은 <span class="text-accent">사라진다.</span>
+        </p>
+        <p class="mt-5 max-w-md text-ink-500 leading-relaxed">{SITE_TAGLINE}</p>
+
+        <div class="mt-8 flex items-center gap-3">
+          <a
+            href="/rss.xml"
+            class="inline-flex items-center gap-2 px-3.5 py-2 border border-ink-800 text-ink-800 font-mono text-[0.7rem] tracking-[0.12em] uppercase hover:bg-ink-800 hover:text-paper transition-colors"
+            aria-label="RSS 피드 구독"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+            RSS 구독
           </a>
-          <a href="mailto:hello@example.com" class="rounded-full bg-ink-100 p-2 text-ink-500 hover:bg-ink-200 hover:text-ink-700 transition-colors" aria-label="이메일">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <a
+            href="mailto:hello@example.com"
+            class="inline-flex items-center gap-2 px-3.5 py-2 text-ink-500 font-mono text-[0.7rem] tracking-[0.12em] uppercase hover:text-accent transition-colors"
+          >
+            정정 / 제안
+            <span aria-hidden="true">↗</span>
           </a>
         </div>
       </div>
 
-      <!-- Nav columns -->
-      <div class="flex flex-wrap gap-x-16 gap-y-8">
+      <!-- ============================================================
+           Nav columns
+           ============================================================ -->
+      <div class="grid grid-cols-2 gap-8 sm:gap-12">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">탐색</p>
-          <ul class="mt-3 space-y-2 text-sm text-ink-600">
-            <li><a href="/posts/" class="hover:text-ink-900 hover:underline transition-colors">글 전체</a></li>
-            <li><a href="/categories/" class="hover:text-ink-900 hover:underline transition-colors">카테고리</a></li>
-            <li><a href="/series/" class="hover:text-ink-900 hover:underline transition-colors">시리즈</a></li>
-            <li><a href="/tags/" class="hover:text-ink-900 hover:underline transition-colors">태그</a></li>
-            <li><a href="/tools/" class="hover:text-ink-900 hover:underline transition-colors">도구</a></li>
+          <p class="kicker">§ 01 — 글</p>
+          <ul class="mt-4 space-y-2.5 text-[0.95rem] text-ink-600">
+            <li><a href="/posts/" class="hover:text-accent transition-colors">전체 글</a></li>
+            <li><a href="/categories/" class="hover:text-accent transition-colors">카테고리</a></li>
+            <li><a href="/series/" class="hover:text-accent transition-colors">시리즈</a></li>
+            <li><a href="/tags/" class="hover:text-accent transition-colors">태그</a></li>
+            <li><a href="/tools/" class="hover:text-accent transition-colors">도구별</a></li>
           </ul>
         </div>
         <div>
-          <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">정보</p>
-          <ul class="mt-3 space-y-2 text-sm text-ink-600">
+          <p class="kicker">§ 02 — 정보</p>
+          <ul class="mt-4 space-y-2.5 text-[0.95rem] text-ink-600">
             {NAV_FOOTER.map((item) => (
-              <li><a href={item.href} class="hover:text-ink-900 hover:underline transition-colors">{item.label}</a></li>
+              <li><a href={item.href} class="hover:text-accent transition-colors">{item.label}</a></li>
             ))}
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Bottom bar -->
-    <div class="mt-12 flex flex-col gap-2 border-t border-ink-100 pt-6 text-xs text-ink-400 sm:flex-row sm:items-center sm:justify-between">
-      <p>&copy; {year} {SITE_NAME}. All rights reserved.</p>
-      <a href="#main" class="inline-flex items-center gap-1 hover:text-ink-600 transition-colors">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
-        맨 위로
-      </a>
+    <!-- Hairline + colophon -->
+    <div class="mt-14 pt-6 border-t border-paper-rule">
+      <div class="grid gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-baseline">
+        <p class="font-mono text-xs text-ink-400 leading-relaxed">
+          <span class="text-ink-700">© {year} {SITE_NAME}.</span>
+          Set in <span class="text-ink-700 font-medium">Pretendard</span>,
+          <span class="font-serif italic text-ink-700">Fraunces</span> &amp; JetBrains Mono.
+          All rights reserved.
+        </p>
+        <a href="#main" class="inline-flex items-center gap-1.5 font-mono text-[0.7rem] tracking-[0.12em] uppercase text-ink-500 hover:text-accent transition-colors">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+          맨 위로
+        </a>
+      </div>
     </div>
   </div>
 </footer>

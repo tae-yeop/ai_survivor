@@ -1,39 +1,38 @@
-<!-- Preloader — full-screen overlay, removed by motion.js -->
+<!-- Editorial preloader — masthead splash, removed by motion.js.
+     Hidden immediately if JS is disabled or the user prefers reduced motion. -->
 <div
   id="preloader"
   class="fixed inset-0 z-50 flex items-center justify-center bg-bg-primary"
-  style="transition: opacity 0.4s ease, visibility 0.4s ease;"
+  style="transition: opacity 0.45s ease, visibility 0.45s ease;"
 >
-  <div class="flex flex-col items-center gap-4">
-    <!-- Logo mark — indigo rounded square with "A" letterform -->
-    <svg
-      class="animate-pulse-soft"
-      width="48"
-      height="48"
-      viewBox="0 0 48 48"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <rect width="48" height="48" rx="12" fill="var(--accent)" />
-      <text
-        x="50%"
-        y="55%"
-        dominant-baseline="middle"
-        text-anchor="middle"
-        fill="var(--accent-fg)"
-        font-family="Pretendard, system-ui, sans-serif"
-        font-weight="700"
-        font-size="24"
-      >A</text>
-    </svg>
-    <span class="text-sm font-medium text-ink-400">AI Vibe Lab</span>
+  <div class="flex flex-col items-center gap-5 text-center">
+    <span class="kicker kicker-accent">An editorial lab journal · est. 2026</span>
+    <p class="font-display font-bold text-4xl sm:text-5xl text-ink-800 leading-none tracking-[-0.025em]">
+      AI <span class="text-accent">Vibe</span> Lab
+    </p>
+    <div class="mt-1 flex items-center gap-3">
+      <span class="block h-px w-10 bg-paper-rule"></span>
+      <span class="kicker animate-pulse-soft">loading the press</span>
+      <span class="block h-px w-10 bg-paper-rule"></span>
+    </div>
   </div>
 </div>
+
+<noscript>
+  <style>
+    /* No JS = no animations = no need for the splash. Hide immediately. */
+    #preloader { display: none !important; }
+  </style>
+</noscript>
 
 <style is:global>
   .preloader-hidden {
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
+  }
+  /* Users who disable motion still get the page, not a permanent splash. */
+  @media (prefers-reduced-motion: reduce) {
+    #preloader { display: none !important; }
   }
 </style>

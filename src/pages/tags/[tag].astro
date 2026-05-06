@@ -26,6 +26,7 @@ const seo = buildPageSeo({
 
 <ListLayout
   seo={seo}
+  kicker={`tag · ${entry.slug}`}
   title={`#${entry.label}`}
   description={description}
   breadcrumbs={[
@@ -33,6 +34,7 @@ const seo = buildPageSeo({
     { href: '/tags/', label: 'Tags' },
     { label: entry.label },
   ]}
+  count={entry.count}
 >
   <PostList posts={entry.posts} />
 </ListLayout>

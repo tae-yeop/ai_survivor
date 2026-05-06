@@ -90,4 +90,8 @@ A smooth low-baritone voice with a dark, velvety timbre, subtle breathiness, and
 
 ## 3. 일레븐랩스 대체제
 
+일레븐랩스가 쓰기 편하지만 구독료 등 비용이 들게 되는데
+로컬에서 컴퓨팅 자원이 충분히 갖추어져 있다면 해볼 수 있을만한 대체제는?
+
+
 - https://github.com/OpenBMB/VoxCPM

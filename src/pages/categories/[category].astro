@@ -30,6 +30,7 @@ const seo = buildPageSeo({
 
 <ListLayout
   seo={seo}
+  kicker={`category · ${entry.slug}`}
   title={label}
   description={description}
   breadcrumbs={[
@@ -37,6 +38,7 @@ const seo = buildPageSeo({
     { href: '/categories/', label: 'Categories' },
     { label },
   ]}
+  count={entry.count}
 >
   <PostList posts={entry.posts} hideCategory />
 </ListLayout>

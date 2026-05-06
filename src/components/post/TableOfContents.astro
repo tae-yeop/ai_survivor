@@ -14,20 +14,102 @@ const items = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 ---
 
 {items.length > 0 && (
-  <nav
-    aria-label="목차"
-    class="rounded-xl border border-ink-100 bg-surface p-5 text-sm"
-  >
-    <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-ink-400">목차</p>
-    <ol class="space-y-1.5">
-      {items.map((h) => (
-        <li class:list={[h.depth === 3 && 'pl-4 border-l-2 border-ink-100']}>
+  <nav aria-label="목차" class="toc border-l-2 border-ink-800 pl-5">
+    <p class="kicker mb-4 -ml-5 pl-5 border-l-2 border-accent">contents</p>
+    <ol class="space-y-2 text-sm list-none">
+      {items.map((h, i) => (
+        <li class:list={[h.depth === 3 && 'pl-4']}>
           <a
             href={`#${h.slug}`}
-            class="block rounded-md px-2 py-1 text-ink-500 hover:bg-ink-50 hover:text-ink-900 transition-colors"
-          >{h.text}</a>
+            data-toc-link={h.slug}
+            class="toc-link group flex items-baseline gap-2.5 text-ink-500 hover:text-accent transition-colors leading-snug"
+          >
+            <span class="font-mono text-[0.65rem] text-ink-300 tabular-nums shrink-0 group-hover:text-accent transition-colors">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <span class="line-clamp-2">{h.text}</span>
+          </a>
         </li>
       ))}
     </ol>
   </nav>
 )}
+
+<style is:global>
+  .toc-link.is-active {
+    color: var(--accent);
+  }
+  .toc-link.is-active > span:first-child { color: var(--accent); }
+  .toc-link.is-active > span:last-child {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1.5px;
+    text-decoration-color: var(--accent);
+  }
+</style>
+
+<script>
+  // Scrollspy: highlight the ToC entry for the heading currently in view.
+  // Runs on every page; bails early if there's no ToC.
+  (function () {
+    const tocs = document.querySelectorAll('nav.toc');
+    if (!tocs.length) return;
+
+    const headings = document.querySelectorAll<HTMLElement>(
+      '.prose h2[id], .prose h3[id]',
+    );
+    if (!headings.length) return;
+
+    // Map slug -> all matching ToC links (mobile + desktop ToCs both render)
+    const linkMap = new Map<string, HTMLElement[]>();
+    document.querySelectorAll<HTMLElement>('[data-toc-link]').forEach((a) => {
+      const slug = a.dataset.tocLink || '';
+      if (!slug) return;
+      const arr = linkMap.get(slug) || [];
+      arr.push(a);
+      linkMap.set(slug, arr);
+    });
+
+    let activeSlug = '';
+    function setActive(slug: string) {
+      if (slug === activeSlug) return;
+      if (activeSlug) {
+        linkMap.get(activeSlug)?.forEach((el) => el.classList.remove('is-active'));
+      }
+      activeSlug = slug;
+      if (slug) {
+        linkMap.get(slug)?.forEach((el) => el.classList.add('is-active'));
+      }
+    }
+
+    // Two-pass approach: track which headings are currently "above the fold"
+    // (top edge above the trigger line). The most recent one above the line
+    // is the active section.
+    const seenAbove = new Set<string>();
+    const triggerOffset = 0.25; // 25% from the top of the viewport
+
+    function recompute() {
+      const trigger = window.innerHeight * triggerOffset;
+      let active = '';
+      headings.forEach((h) => {
+        const rect = h.getBoundingClientRect();
+        if (rect.top <= trigger) active = h.id;
+      });
+      setActive(active);
+    }
+
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        recompute();
+        ticking = false;
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    recompute();
+  })();
+</script>

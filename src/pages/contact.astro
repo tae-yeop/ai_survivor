@@ -14,33 +14,50 @@ const seo = buildPageSeo({
 ---
 
 <BaseLayout seo={seo}>
-  <article class="container-prose py-12">
-    <div class="mb-6"><Breadcrumbs items={[{ href: '/', label: 'Home' }, { label: 'Contact' }]} /></div>
-    <h1 class="text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">Contact</h1>
-    <p class="mt-4 text-lg text-ink-500">
-      글에 대한 정정, 글감 제안, 협업·강연·자문 문의를 환영한다.
-    </p>
+  <article class="container-mast pt-8 pb-24">
+    <div class="mb-10"><Breadcrumbs items={[{ href: '/', label: 'Home' }, { label: 'Contact' }]} /></div>
 
-    <div class="prose prose-lg mt-8 max-w-none">
-      <h2>이메일</h2>
-      <p>
-        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
-      </p>
+    <header class="grid gap-y-8 lg:grid-cols-[1.3fr_1fr] lg:gap-x-16 lg:items-end pb-10 border-b border-ink-800">
+      <div>
+        <p class="kicker kicker-accent">letters · to the editor</p>
+        <h1 class="mt-4 font-display text-display-lg text-ink-800 leading-[1.15] tracking-[-0.022em] text-balance">
+          편집부에<br />
+          <span class="text-accent">서신</span>을 보내자.
+        </h1>
+        <p class="mt-6 max-w-xl text-ink-500 leading-relaxed text-pretty">
+          글에 대한 정정, 글감 제안, 협업·강연·자문 문의를 환영한다.
+        </p>
+      </div>
+      <aside class="lg:pb-2">
+        <p class="kicker">primary channel</p>
+        <a
+          href={`mailto:${CONTACT_EMAIL}`}
+          class="mt-2 inline-block font-display text-2xl text-ink-800 hover:text-accent transition-colors break-all border-b border-paper-rule hover:border-accent pb-1"
+        >
+          {CONTACT_EMAIL}
+        </a>
+      </aside>
+    </header>
 
-      <h2>응답 기준</h2>
-      <ul>
-        <li>본문 오류 정정 요청은 가능한 빨리 답한다.</li>
-        <li>일반 협업 문의는 영업일 기준 3~5일 내 회신한다.</li>
-        <li>광고·후원 제안은 글의 신뢰성을 해치지 않는 범위에서 검토한다.</li>
-      </ul>
+    <section class="mt-16 grid gap-12 lg:grid-cols-2 lg:gap-x-16">
+      <div>
+        <p class="kicker mb-5">§ 01 — 응답 기준</p>
+        <ul class="tick-list space-y-3 text-ink-700 leading-relaxed">
+          <li>본문 오류 정정 요청은 가능한 빨리 답한다.</li>
+          <li>일반 협업 문의는 영업일 기준 3~5일 내 회신한다.</li>
+          <li>광고·후원 제안은 글의 신뢰성을 해치지 않는 범위에서 검토한다.</li>
+        </ul>
+      </div>
 
-      <h2>요청 시 함께 보내주면 좋은 정보</h2>
-      <ul>
-        <li>본인/소속 간단 소개</li>
-        <li>문의 배경과 목적</li>
-        <li>참고 자료 또는 링크</li>
-        <li>원하는 회신 기한이 있다면 함께</li>
-      </ul>
-    </div>
+      <div>
+        <p class="kicker mb-5">§ 02 — 함께 보내주면 좋은 정보</p>
+        <ol class="num-list">
+          <li class="text-base text-ink-700 leading-snug">본인/소속 간단 소개</li>
+          <li class="text-base text-ink-700 leading-snug">문의 배경과 목적</li>
+          <li class="text-base text-ink-700 leading-snug">참고 자료 또는 링크</li>
+          <li class="text-base text-ink-700 leading-snug">원하는 회신 기한이 있다면 함께</li>
+        </ol>
+      </div>
+    </section>
   </article>
 </BaseLayout>

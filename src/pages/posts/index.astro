@@ -19,19 +19,19 @@ const seo = buildPageSeo({
 
 <ListLayout
   seo={seo}
-  title="전체 글"
+  kicker="archive · all dispatches"
+  title="전체 기록"
   description="AI 도구, 바이브코딩, 업무 자동화 실험을 정리한 글을 최신순으로 보여준다."
   breadcrumbs={[{ href: '/', label: 'Home' }, { label: 'Posts' }]}
+  count={posts.length}
 >
   {categories.length > 0 && (
-    <nav aria-label="카테고리" class="mb-8 flex flex-wrap gap-2">
+    <nav aria-label="카테고리" class="mb-10 flex flex-wrap items-center gap-2">
+      <span class="kicker mr-2">filter</span>
       {categories.map((c) => (
-        <a
-          href={`/categories/${c.slug}/`}
-          class="rounded-full border border-ink-200 bg-white px-3 py-1 text-sm text-ink-600 hover:border-ink-300 hover:bg-ink-50"
-        >
-          {categoryLabel(c.slug)}
-          <span class="ml-1 text-xs text-ink-400">{c.count}</span>
+        <a href={`/categories/${c.slug}/`} class="label-chip">
+          <span>{categoryLabel(c.slug)}</span>
+          <span class="text-accent tabular-nums">{String(c.count).padStart(2, '0')}</span>
         </a>
       ))}
     </nav>

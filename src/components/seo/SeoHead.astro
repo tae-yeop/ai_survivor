@@ -29,6 +29,19 @@ const robots = seo.noindex ? 'noindex,nofollow' : 'index,follow';
 <link rel="alternate" type="application/rss+xml" title={`${SITE_NAME} RSS`} href="/rss.xml" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
+<!-- Editorial typography stack — Fraunces (display serif) · Pretendard Variable (KR sans) · JetBrains Mono -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=JetBrains+Mono:wght@400;500;600&display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+/>
+
 {seo.author && <meta name="author" content={seo.author} />}
 {seo.keywords && seo.keywords.length > 0 && (
   <meta name="keywords" content={seo.keywords.join(', ')} />

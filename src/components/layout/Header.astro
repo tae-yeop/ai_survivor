@@ -1,135 +1,292 @@
 ---
 import { NAV_PRIMARY, SITE_NAME } from '../../lib/site';
 import ThemeToggle from './ThemeToggle.astro';
+import { getAllPosts } from '../../lib/posts';
+import { categoryBuckets } from '../../lib/taxonomy';
+import { categoryLabel, CATEGORY_DESCRIPTIONS } from '../../lib/labels';
 
 const path = Astro.url.pathname;
 function isActive(href: string) {
   if (href === '/') return path === '/';
   return path === href || path.startsWith(href);
 }
+
+// Categories for the Posts hover dropdown — built at static build time.
+const allPosts = await getAllPosts();
+const categories = categoryBuckets(allPosts);
+
+// Issue derived from year + ISO week — masthead detail
+const now = new Date();
+const yr = now.getFullYear();
+const start = new Date(yr, 0, 1);
+const week = Math.ceil(((now.getTime() - start.getTime()) / 86_400_000 + start.getDay() + 1) / 7);
+const issue = `VOL. ${String(yr).slice(-2)} · ISSUE ${String(week).padStart(2, '0')}`;
 ---
 
-<header class="glass sticky top-0 z-30 transition-shadow header-main" id="site-header">
-  <div class="container-wide flex items-center justify-between gap-6 py-3">
-    <a href="/" class="font-bold text-lg tracking-tight text-ink-900 hover:text-accent transition-colors">
-      {SITE_NAME}
-    </a>
+<header id="site-header" class="relative z-30 bg-bg-primary">
+  <!-- ============================================================
+       Masthead — wordmark + issue meta + theme toggle
+       ============================================================ -->
+  <div class="container-mast pt-6 pb-4 sm:pt-8">
+    <div class="flex items-end justify-between gap-6">
+      <!-- Wordmark -->
+      <a href="/" class="group flex items-baseline gap-3 leading-none">
+        <span class="font-display font-bold text-2xl sm:text-[1.75rem] text-ink-800 tracking-[-0.025em] leading-none">
+          AI <span class="text-accent">Vibe</span> Lab
+        </span>
+        <span class="hidden sm:inline-block translate-y-[-2px] h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true"></span>
+        <span class="hidden sm:inline kicker">{SITE_NAME === 'AI Vibe Lab' ? '실험 기록 저널' : SITE_NAME}</span>
+      </a>
 
-    <!-- Desktop nav + theme toggle -->
-    <div class="hidden sm:flex items-center gap-2">
-      <nav aria-label="Primary">
-        <ul class="flex items-center gap-0.5 text-sm">
-          {NAV_PRIMARY.map((item) => (
-            <li>
+      <div class="flex items-center gap-4">
+        <span class="hidden md:inline kicker tabular-nums">{issue}</span>
+        <ThemeToggle />
+        <button
+          id="mobile-menu-btn"
+          class="sm:hidden flex flex-col gap-[5px] p-1.5"
+          aria-label="메뉴 열기"
+          aria-expanded="false"
+        >
+          <span class="block h-px w-6 bg-ink-800 transition-transform duration-300 menu-bar-top"></span>
+          <span class="block h-px w-6 bg-ink-800 transition-opacity duration-300 menu-bar-mid"></span>
+          <span class="block h-px w-6 bg-ink-800 transition-transform duration-300 menu-bar-bot"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thick rule under masthead -->
+  <div class="container-mast"><div class="rule-thick"></div></div>
+
+  <!-- Mobile-only meta row -->
+  <div class="container-mast sm:hidden flex items-center justify-between gap-3 py-2 border-b border-paper-rule">
+    <span class="kicker">실험 기록 저널</span>
+    <span class="kicker tabular-nums">{issue}</span>
+  </div>
+
+  <!-- ============================================================
+       Nav rail — sticky on scroll, mono labels
+       Posts gets a hover/focus dropdown listing categories.
+       ============================================================ -->
+  <nav
+    id="site-nav"
+    aria-label="Primary"
+    class="sticky top-0 z-30 bg-bg-primary/92 backdrop-blur-md transition-shadow"
+  >
+    <div class="container-mast hidden sm:flex items-center justify-between gap-6 py-2.5 rule-hair">
+      <ul class="flex items-center gap-1">
+        {NAV_PRIMARY.map((item) => {
+          const hasDropdown = item.label === 'Posts' && categories.length > 0;
+          return (
+            <li class:list={[hasDropdown && 'group/dd relative']}>
               <a
                 href={item.href}
                 class:list={[
-                  'relative rounded-full px-3.5 py-2 transition-colors duration-200 hover:bg-ink-100',
-                  isActive(item.href)
-                    ? 'text-ink-900 font-semibold'
-                    : 'text-ink-500 hover:text-ink-700',
+                  'group relative flex items-center gap-1 px-3 py-1.5 font-mono text-[0.72rem] tracking-[0.12em] uppercase transition-colors',
+                  isActive(item.href) ? 'text-ink-800' : 'text-ink-500 hover:text-ink-800',
                 ]}
                 aria-current={isActive(item.href) ? 'page' : undefined}
+                aria-haspopup={hasDropdown ? 'menu' : undefined}
               >
                 {item.label}
+                {hasDropdown && (
+                  <svg
+                    width="9" height="9" viewBox="0 0 12 12" fill="none"
+                    stroke="currentColor" stroke-width="1.5"
+                    class="opacity-60 transition-transform duration-200 group-hover/dd:rotate-180"
+                    aria-hidden="true"
+                  >
+                    <path d="m3 5 3 3 3-3" />
+                  </svg>
+                )}
                 {isActive(item.href) && (
-                  <span class="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-0.5 w-5 rounded-full bg-accent"></span>
+                  <span class="absolute -bottom-[3px] left-3 right-3 h-[2px] bg-accent" aria-hidden="true"></span>
                 )}
               </a>
+
+              {hasDropdown && (
+                <!-- Hover dropdown — categories list. Visible on hover or focus-within. -->
+                <div
+                  role="menu"
+                  class="
+                    invisible opacity-0 translate-y-1 pointer-events-none
+                    group-hover/dd:visible group-hover/dd:opacity-100 group-hover/dd:translate-y-0 group-hover/dd:pointer-events-auto
+                    group-focus-within/dd:visible group-focus-within/dd:opacity-100 group-focus-within/dd:translate-y-0 group-focus-within/dd:pointer-events-auto
+                    absolute left-0 top-full pt-2 z-40
+                    transition-[opacity,transform] duration-150
+                  "
+                >
+                  <div class="w-[22rem] bg-bg-secondary border border-paper-rule shadow-md">
+                    <div class="px-4 pt-4 pb-3 border-b border-paper-rule flex items-baseline justify-between gap-4">
+                      <span class="kicker">categories · 카테고리</span>
+                      <a href="/categories/" class="font-mono text-[0.65rem] tracking-[0.1em] uppercase text-ink-500 hover:text-accent transition-colors">
+                        전체 →
+                      </a>
+                    </div>
+                    <ul class="divide-hair">
+                      {categories.map((c, i) => (
+                        <li>
+                          <a
+                            href={`/categories/${c.slug}/`}
+                            class="group/cat flex items-baseline gap-3 px-4 py-3 hover:bg-paper-deep transition-colors"
+                            role="menuitem"
+                          >
+                            <span class="font-mono text-[0.65rem] tabular-nums text-accent shrink-0 mt-0.5">
+                              {String(i + 1).padStart(2, '0')}
+                            </span>
+                            <span class="flex-1 min-w-0">
+                              <span class="block text-sm font-medium text-ink-800 group-hover/cat:text-accent transition-colors normal-case tracking-normal">
+                                {categoryLabel(c.slug)}
+                              </span>
+                              {CATEGORY_DESCRIPTIONS[c.slug as keyof typeof CATEGORY_DESCRIPTIONS] && (
+                                <span class="block mt-0.5 text-xs text-ink-500 leading-snug normal-case tracking-normal line-clamp-1">
+                                  {CATEGORY_DESCRIPTIONS[c.slug as keyof typeof CATEGORY_DESCRIPTIONS]}
+                                </span>
+                              )}
+                            </span>
+                            <span class="font-mono text-[0.65rem] tabular-nums text-ink-400 shrink-0 mt-0.5">
+                              {String(c.count).padStart(2, '0')}편
+                            </span>
+                          </a>
+                        </li>
+                      ))}
+                      <li>
+                        <a
+                          href="/posts/"
+                          class="block px-4 py-3 font-mono text-[0.65rem] tracking-[0.1em] uppercase text-ink-700 hover:text-accent hover:bg-paper-deep transition-colors text-center border-t border-paper-rule"
+                          role="menuitem"
+                        >
+                          전체 기록 →
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              )}
             </li>
-          ))}
-        </ul>
-      </nav>
-      <div class="ml-2 border-l border-ink-200 pl-2">
-        <ThemeToggle />
+          );
+        })}
+      </ul>
+      <div class="flex items-center gap-4">
+        <a
+          href="/posts/"
+          class="hidden md:inline-flex items-center gap-2 font-mono text-[0.72rem] tracking-[0.12em] uppercase text-ink-500 hover:text-accent transition-colors"
+        >
+          최신 기록
+          <span aria-hidden="true">→</span>
+        </a>
       </div>
     </div>
+  </nav>
 
-    <!-- Mobile menu button -->
-    <button
-      id="mobile-menu-btn"
-      class="flex flex-col gap-1.5 p-2 sm:hidden"
-      aria-label="메뉴 열기"
-      aria-expanded="false"
-    >
-      <span class="block h-0.5 w-5 rounded bg-ink-700 transition-transform duration-300 menu-bar-top"></span>
-      <span class="block h-0.5 w-5 rounded bg-ink-700 transition-transform duration-300 menu-bar-mid"></span>
-      <span class="block h-0.5 w-5 rounded bg-ink-700 transition-transform duration-300 menu-bar-bot"></span>
-    </button>
-  </div>
-
-  <!-- Mobile overlay menu -->
+  <!-- ============================================================
+       Mobile menu overlay
+       ============================================================ -->
   <div
     id="mobile-menu"
-    class="fixed inset-0 top-0 z-40 hidden flex-col bg-bg-primary/95 backdrop-blur-xl"
+    class="fixed inset-0 top-0 z-40 hidden flex-col bg-bg-primary"
     aria-hidden="true"
   >
-    <nav class="flex flex-1 flex-col items-center justify-center gap-2">
+    <div class="container-mast flex items-end justify-between pt-6 pb-4">
+      <span class="font-display font-bold text-3xl text-ink-800 tracking-[-0.025em]">AI <span class="text-accent">Vibe</span> Lab</span>
+      <button
+        id="mobile-menu-close"
+        class="p-2 text-ink-700 hover:text-accent transition-colors"
+        aria-label="메뉴 닫기"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="container-mast"><div class="rule-thick"></div></div>
+
+    <nav class="container-mast flex flex-col flex-1 justify-center gap-1 py-10" aria-label="Mobile">
       {NAV_PRIMARY.map((item, i) => (
         <a
           href={item.href}
           class:list={[
-            'text-2xl font-semibold py-3 px-6 rounded-xl transition-transform duration-300',
-            'opacity-0 translate-x-8 mobile-menu-item',
-            isActive(item.href) ? 'text-accent' : 'text-ink-700 hover:text-ink-900',
+            'group flex items-baseline justify-between gap-4 py-3 border-b border-paper-rule mobile-menu-item opacity-0 translate-x-4 transition-[opacity,transform] duration-300',
+            isActive(item.href) ? 'text-ink-800' : 'text-ink-700 hover:text-accent',
           ]}
-          style={`transition-delay:${i * 70}ms`}
+          style={`transition-delay:${80 + i * 50}ms`}
           aria-current={isActive(item.href) ? 'page' : undefined}
         >
-          {item.label}
+          <span class="font-display font-bold text-3xl tracking-[-0.025em]">
+            {isActive(item.href) && <span class="font-serif text-accent mr-2">§</span>}
+            {item.label}
+          </span>
+          <span class="kicker tabular-nums">{String(i + 1).padStart(2, '0')}</span>
         </a>
       ))}
-      <div class="mt-6 opacity-0 translate-x-8 mobile-menu-item" style="transition-delay:350ms">
-        <ThemeToggle />
+
+      {/* Mobile categories list — flat list, no dropdown */}
+      {categories.length > 0 && (
+        <div class="mt-8 pt-6 border-t border-paper-rule mobile-menu-item opacity-0 translate-x-4 transition-[opacity,transform] duration-300" style="transition-delay:340ms">
+          <p class="kicker mb-3">categories · 카테고리</p>
+          <ul class="space-y-2">
+            {categories.map((c) => (
+              <li class="flex items-baseline gap-3">
+                <span class="font-mono text-[0.7rem] tabular-nums text-accent shrink-0">·</span>
+                <a href={`/categories/${c.slug}/`} class="text-base text-ink-700 hover:text-accent transition-colors flex-1">
+                  {categoryLabel(c.slug)}
+                </a>
+                <span class="font-mono text-[0.65rem] tabular-nums text-ink-400">{c.count}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div class="mt-10 mobile-menu-item opacity-0 translate-x-4 transition-[opacity,transform] duration-300" style="transition-delay:420ms">
+        <p class="kicker">colophon</p>
+        <p class="mt-1 font-mono text-sm text-ink-600 tabular-nums">{issue}</p>
       </div>
     </nav>
   </div>
 </header>
 
 <style is:global>
-  .header-scrolled {
-    box-shadow: var(--shadow-sm);
-    border-bottom: 1px solid var(--ink-100);
-  }
+  .nav-scrolled { box-shadow: var(--shadow-sm); }
 
-  /* Mobile menu states */
-  .mobile-menu-open .menu-bar-top {
-    transform: translateY(6px) rotate(45deg);
-  }
-  .mobile-menu-open .menu-bar-mid {
-    opacity: 0;
-  }
-  .mobile-menu-open .menu-bar-bot {
-    transform: translateY(-6px) rotate(-45deg);
-  }
-  .mobile-menu-open #mobile-menu {
-    display: flex !important;
-  }
-  .mobile-menu-open .mobile-menu-item {
-    opacity: 1 !important;
-    transform: translateX(0) !important;
-  }
+  .mobile-menu-open .menu-bar-top { transform: translateY(6px) rotate(45deg); }
+  .mobile-menu-open .menu-bar-mid { opacity: 0; }
+  .mobile-menu-open .menu-bar-bot { transform: translateY(-6px) rotate(-45deg); }
+  .mobile-menu-open #mobile-menu  { display: flex !important; }
+  .mobile-menu-open .mobile-menu-item { opacity: 1 !important; transform: translateX(0) !important; }
 </style>
 
 <script>
   const btn = document.getElementById('mobile-menu-btn');
+  const closeBtn = document.getElementById('mobile-menu-close');
   const menu = document.getElementById('mobile-menu');
-  if (btn && menu) {
-    btn.addEventListener('click', () => {
-      const isOpen = document.documentElement.classList.toggle('mobile-menu-open');
-      btn.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
-      btn.setAttribute('aria-expanded', String(isOpen));
-      menu.setAttribute('aria-hidden', String(!isOpen));
-    });
 
-    // Close on link click
-    menu.querySelectorAll('a').forEach((link) => {
-      link.addEventListener('click', () => {
-        document.documentElement.classList.remove('mobile-menu-open');
-        btn.setAttribute('aria-label', '메뉴 열기');
-        btn.setAttribute('aria-expanded', 'false');
-        menu.setAttribute('aria-hidden', 'true');
-      });
-    });
+  function setOpen(open: boolean) {
+    document.documentElement.classList.toggle('mobile-menu-open', open);
+    if (btn) {
+      btn.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+      btn.setAttribute('aria-expanded', String(open));
+    }
+    if (menu) menu.setAttribute('aria-hidden', String(!open));
+  }
+
+  btn?.addEventListener('click', () => setOpen(!document.documentElement.classList.contains('mobile-menu-open')));
+  closeBtn?.addEventListener('click', () => setOpen(false));
+
+  menu?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => setOpen(false));
+  });
+
+  // Sticky shadow on scroll past masthead
+  const nav = document.getElementById('site-nav');
+  if (nav) {
+    let prev = false;
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY > 80;
+      if (scrolled !== prev) {
+        nav.classList.toggle('nav-scrolled', scrolled);
+        prev = scrolled;
+      }
+    }, { passive: true });
   }
 </script>

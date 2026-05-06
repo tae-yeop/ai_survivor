@@ -1,6 +1,6 @@
 ---
 import ListLayout from '../../layouts/ListLayout.astro';
-import { getAllPosts } from '../../lib/posts';
+import { getAllPosts, postUrl } from '../../lib/posts';
 import { toolBuckets } from '../../lib/taxonomy';
 import { buildPageSeo } from '../../lib/seo';
 
@@ -16,22 +16,36 @@ const seo = buildPageSeo({
 
 <ListLayout
   seo={seo}
-  title="도구별 글 모음"
+  kicker="index · tool dossiers"
+  title="도구별 기록"
   description="글에서 사용한 AI 도구·프레임워크별로 글을 묶어 보여준다."
   breadcrumbs={[{ href: '/', label: 'Home' }, { label: 'Tools' }]}
+  count={buckets.length}
+  countLabel="개"
 >
   {buckets.length === 0 ? (
-    <p class="rounded border border-dashed border-ink-200 bg-ink-50 p-6 text-center text-sm text-ink-500">
-      아직 도구 정보가 없습니다.
+    <p class="font-mono text-sm text-ink-500 py-16 text-center border-y border-paper-rule tracking-wider uppercase">
+      아직 도구 정보가 없다.
     </p>
   ) : (
-    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {buckets.map((t) => (
-        <li class="rounded-lg border border-ink-100 p-5">
-          <a href={`/tools/${t.slug}/`} class="block">
-            <p class="text-xs uppercase tracking-wide text-ink-500">도구 · 글 {t.count}편</p>
-            <p class="mt-1 text-lg font-semibold text-ink-900 hover:underline">{t.label}</p>
-          </a>
+    <ul class="divide-hair">
+      {buckets.map((t, i) => (
+        <li class="grid gap-y-3 py-7 sm:grid-cols-[5rem_minmax(0,1fr)_auto] sm:gap-x-8 sm:items-baseline">
+          <p class="font-mono text-xs text-accent tabular-nums">TOOL · {String(i + 1).padStart(2, '0')}</p>
+          <div>
+            <h2 class="font-display text-2xl text-ink-800 leading-tight tracking-tight">
+              <a href={`/tools/${t.slug}/`} class="hover:text-accent transition-colors">
+                {t.label}
+              </a>
+            </h2>
+            {t.posts[0] && (
+              <p class="mt-1.5 text-sm text-ink-500 line-clamp-1">
+                <span class="kicker mr-2">最近</span>
+                <a href={postUrl(t.posts[0])} class="hover:text-ink-800">{t.posts[0].data.title}</a>
+              </p>
+            )}
+          </div>
+          <p class="kicker tabular-nums sm:text-right">{t.count}편</p>
         </li>
       ))}
     </ul>
