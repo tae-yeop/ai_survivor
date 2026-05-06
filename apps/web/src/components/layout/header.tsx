@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { categoryBuckets } from "@/lib/content/posts";
 import { NAV_PRIMARY, SITE_NAME } from "@/lib/site";
+import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 function currentIssue() {
@@ -32,6 +33,7 @@ export function Header() {
           </Link>
 
           <div className="flex items-center gap-4">
+            <AdminStatusBadge />
             <span className="kicker hidden tabular-nums md:inline">{currentIssue()}</span>
             <ThemeToggle />
           </div>
