@@ -4,10 +4,10 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {
+  assertSafeMdxBody,
   loadPostsForTest,
   parsePostFrontmatter,
   publishedPosts,
-  renderPostBodyToHtml,
 } from "./posts.ts";
 
 const NOW = new Date("2026-05-06T00:00:00.000Z");
@@ -101,10 +101,10 @@ test("frontmatter validation rejects folder slug mismatch", () => {
   });
 });
 
-test("body renderer rejects unsafe script-like HTML", () => {
-  assert.throws(() => renderPostBodyToHtml("<script>alert('xss')</script>"), /Unsafe post body/i);
+test("body validator rejects unsafe script-like HTML", () => {
+  assert.throws(() => assertSafeMdxBody("<script>alert('xss')</script>"), /Unsafe post body/i);
   assert.throws(
-    () => renderPostBodyToHtml("<p onclick=\"alert('xss')\">bad</p>"),
+    () => assertSafeMdxBody("<p onclick=\"alert('xss')\">bad</p>"),
     /Unsafe post body/i,
   );
 });

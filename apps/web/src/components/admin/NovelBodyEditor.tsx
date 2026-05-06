@@ -2,21 +2,24 @@
 
 import { useCallback, useRef } from "react";
 import {
-  EditorRoot,
-  EditorContent,
+  Command,
+  EditorBubble,
   EditorCommand,
+  EditorCommandEmpty,
   EditorCommandItem,
   EditorCommandList,
-  EditorCommandEmpty,
-  EditorBubble,
+  EditorContent,
   type EditorInstance,
+  EditorRoot,
+  StarterKit,
+  TaskItem,
+  TaskList,
+  TiptapLink,
+  CodeBlockLowlight,
+  TiptapImage,
+  Youtube,
+  renderItems,
 } from "novel";
-import { Command, renderItems } from "novel/extensions";
-import StarterKit from "@tiptap/starter-kit";
-import TiptapLink from "@tiptap/extension-link";
-import TaskList from "@tiptap/extension-task-list";
-import TaskItem from "@tiptap/extension-task-item";
-import { CodeBlockLowlight } from "@tiptap/extension-code-block-lowlight";
 import { Markdown } from "tiptap-markdown";
 import { common, createLowlight } from "lowlight";
 
@@ -27,97 +30,199 @@ type CommandProps = {
   range: { from: number; to: number };
 };
 
-const SLASH_ITEMS = [
-  {
-    title: "Heading 2",
-    description: "대제목",
-    command: ({ editor, range }: CommandProps) =>
-      editor.chain().focus().deleteRange(range).setHeading({ level: 2 }).run(),
-  },
-  {
-    title: "Heading 3",
-    description: "소제목",
-    command: ({ editor, range }: CommandProps) =>
-      editor.chain().focus().deleteRange(range).setHeading({ level: 3 }).run(),
-  },
-  {
-    title: "Bullet List",
-    description: "글머리 기호",
-    command: ({ editor, range }: CommandProps) =>
-      editor.chain().focus().deleteRange(range).toggleBulletList().run(),
-  },
-  {
-    title: "Numbered List",
-    description: "번호 목록",
-    command: ({ editor, range }: CommandProps) =>
-      editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
-  },
-  {
-    title: "Task List",
-    description: "체크리스트",
-    command: ({ editor, range }: CommandProps) =>
-      editor.chain().focus().deleteRange(range).toggleTaskList().run(),
-  },
-  {
-    title: "Code Block",
-    description: "코드 블록",
-    command: ({ editor, range }: CommandProps) =>
-      editor.chain().focus().deleteRange(range).setCodeBlock().run(),
-  },
-  {
-    title: "Blockquote",
-    description: "인용문",
-    command: ({ editor, range }: CommandProps) =>
-      editor.chain().focus().deleteRange(range).setBlockquote().run(),
-  },
-  {
-    title: "Divider",
-    description: "구분선",
-    command: ({ editor, range }: CommandProps) =>
-      editor.chain().focus().deleteRange(range).setHorizontalRule().run(),
-  },
-];
+const YOUTUBE_ID = /^[A-Za-z0-9_-]{6,20}$/;
 
-const EXTENSIONS = [
-  StarterKit.configure({ codeBlock: false }),
-  TiptapLink.configure({
-    openOnClick: false,
-    HTMLAttributes: { rel: "noopener noreferrer" },
-  }),
-  TaskList,
-  TaskItem.configure({ nested: true }),
-  CodeBlockLowlight.configure({ lowlight }),
-  Markdown.configure({
-    html: true,
-    transformPastedText: true,
-    transformCopiedText: true,
-  }),
-  Command.configure({
-    suggestion: {
-      items: ({ query }: { query: string }) =>
-        SLASH_ITEMS.filter(
-          (item) =>
-            item.title.toLowerCase().includes(query.toLowerCase()) ||
-            item.description.includes(query),
-        ),
-      render: renderItems,
+function extractYouTubeId(input: string): string | null {
+  const trimmed = input.trim();
+  if (YOUTUBE_ID.test(trimmed)) return trimmed;
+  try {
+    const url = new URL(trimmed);
+    const v = url.searchParams.get("v");
+    if (v && YOUTUBE_ID.test(v)) return v;
+    const segs = url.pathname.split("/").filter(Boolean);
+    const last = segs[segs.length - 1] ?? "";
+    if (YOUTUBE_ID.test(last)) return last;
+  } catch {}
+  return null;
+}
+
+function pickImage(): Promise<File | null> {
+  return new Promise((resolve) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = () => resolve(input.files?.[0] ?? null);
+    input.oncancel = () => resolve(null);
+    input.click();
+  });
+}
+
+async function uploadImage(slug: string, file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`/api/admin/upload/${encodeURIComponent(slug)}`, {
+    method: "POST",
+    body: formData,
+    credentials: "same-origin",
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new Error(data?.error ?? `Upload failed (${res.status})`);
+  }
+  const data = (await res.json()) as { url: string };
+  return data.url;
+}
+
+function youtubeIframeToShortcode(markdown: string): string {
+  return markdown.replace(
+    /<iframe[^>]*src="https?:\/\/(?:www\.)?(?:youtube(?:-nocookie)?\.com\/embed|youtu\.be)\/([A-Za-z0-9_-]{6,20})[^"]*"[^>]*><\/iframe>/g,
+    (_match, id: string) => `<YouTube id="${id}" />`,
+  );
+}
+
+function buildSlashItems(slug: string) {
+  return [
+    {
+      title: "Heading 2",
+      description: "대제목",
+      command: ({ editor, range }: CommandProps) =>
+        editor.chain().focus().deleteRange(range).setHeading({ level: 2 }).run(),
     },
-  }),
-];
+    {
+      title: "Heading 3",
+      description: "소제목",
+      command: ({ editor, range }: CommandProps) =>
+        editor.chain().focus().deleteRange(range).setHeading({ level: 3 }).run(),
+    },
+    {
+      title: "Bullet List",
+      description: "글머리 기호",
+      command: ({ editor, range }: CommandProps) =>
+        editor.chain().focus().deleteRange(range).toggleBulletList().run(),
+    },
+    {
+      title: "Numbered List",
+      description: "번호 목록",
+      command: ({ editor, range }: CommandProps) =>
+        editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
+    },
+    {
+      title: "Task List",
+      description: "체크리스트",
+      command: ({ editor, range }: CommandProps) =>
+        editor.chain().focus().deleteRange(range).toggleTaskList().run(),
+    },
+    {
+      title: "Code Block",
+      description: "코드 블록",
+      command: ({ editor, range }: CommandProps) =>
+        editor.chain().focus().deleteRange(range).setCodeBlock().run(),
+    },
+    {
+      title: "Blockquote",
+      description: "인용문",
+      command: ({ editor, range }: CommandProps) =>
+        editor.chain().focus().deleteRange(range).setBlockquote().run(),
+    },
+    {
+      title: "Divider",
+      description: "구분선",
+      command: ({ editor, range }: CommandProps) =>
+        editor.chain().focus().deleteRange(range).setHorizontalRule().run(),
+    },
+    {
+      title: "Image",
+      description: "이미지 업로드",
+      command: async ({ editor, range }: CommandProps) => {
+        editor.chain().focus().deleteRange(range).run();
+        const file = await pickImage();
+        if (!file) return;
+        try {
+          const url = await uploadImage(slug, file);
+          editor.chain().focus().setImage({ src: url, alt: file.name }).run();
+        } catch (error) {
+          alert(error instanceof Error ? error.message : "Image upload failed");
+        }
+      },
+    },
+    {
+      title: "YouTube",
+      description: "유튜브 링크 임베드",
+      command: ({ editor, range }: CommandProps) => {
+        editor.chain().focus().deleteRange(range).run();
+        const input = window.prompt("YouTube URL 또는 비디오 ID");
+        if (!input) return;
+        const id = extractYouTubeId(input);
+        if (!id) {
+          alert("올바른 YouTube URL이 아닙니다.");
+          return;
+        }
+        editor
+          .chain()
+          .focus()
+          .setYoutubeVideo({ src: `https://www.youtube.com/watch?v=${id}` })
+          .run();
+      },
+    },
+  ];
+}
+
+function buildExtensions(slug: string) {
+  const slashItems = buildSlashItems(slug);
+  return [
+    StarterKit.configure({ codeBlock: false }),
+    TiptapLink.configure({
+      openOnClick: false,
+      HTMLAttributes: { rel: "noopener noreferrer" },
+    }),
+    TaskList,
+    TaskItem.configure({ nested: true }),
+    CodeBlockLowlight.configure({ lowlight }),
+    TiptapImage.configure({
+      HTMLAttributes: { class: "rounded-md border border-paper-rule" },
+    }),
+    Youtube.configure({
+      HTMLAttributes: { class: "rounded-md border border-paper-rule" },
+      inline: false,
+      width: 720,
+      height: 405,
+    }),
+    Markdown.configure({
+      html: true,
+      transformPastedText: true,
+      transformCopiedText: true,
+    }),
+    Command.configure({
+      suggestion: {
+        items: ({ query }: { query: string }) =>
+          slashItems.filter(
+            (item) =>
+              item.title.toLowerCase().includes(query.toLowerCase()) ||
+              item.description.includes(query),
+          ),
+        render: renderItems,
+      },
+    }),
+  ];
+}
 
 export function NovelBodyEditor({
+  slug,
   initialContent,
   onChange,
 }: {
+  slug: string;
   initialContent: string;
   onChange: (markdown: string) => void;
 }) {
   const editorRef = useRef<EditorInstance | null>(null);
+  const slashItems = buildSlashItems(slug);
+  const extensions = buildExtensions(slug);
 
   const handleUpdate = useCallback(
     ({ editor }: { editor: EditorInstance }) => {
       const md = editor.storage.markdown?.getMarkdown() as string | undefined;
-      if (md !== undefined) onChange(md);
+      if (md !== undefined) onChange(youtubeIframeToShortcode(md));
     },
     [onChange],
   );
@@ -137,7 +242,7 @@ export function NovelBodyEditor({
       <EditorRoot>
         <EditorContent
           className="px-6 py-5 [&_.ProseMirror]:min-h-[480px] [&_.ProseMirror]:outline-none"
-          extensions={EXTENSIONS}
+          extensions={extensions}
           editorProps={{
             attributes: {
               class: "prose prose-sm max-w-none text-ink-800 focus:outline-none",
@@ -151,7 +256,7 @@ export function NovelBodyEditor({
             결과 없음
           </EditorCommandEmpty>
           <EditorCommandList>
-            {SLASH_ITEMS.map((item) => (
+            {slashItems.map((item) => (
               <EditorCommandItem
                 key={item.title}
                 value={item.title}

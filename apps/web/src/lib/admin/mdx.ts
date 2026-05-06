@@ -1,5 +1,5 @@
 ﻿import type { PostAuthor, PostDifficulty, PostStatus } from "../content/posts.ts";
-import { parsePostFrontmatter, renderPostBodyToHtml } from "../content/posts.ts";
+import { assertSafeMdxBody, parsePostFrontmatter } from "../content/posts.ts";
 import { assertValidPostSlug, normalizePostSlug } from "./slug.ts";
 
 export type AdminPostDraft = {
@@ -189,7 +189,7 @@ export function serializeAdminPostDraft(draft: AdminPostDraft) {
   ].join("\n");
 
   parsePostFrontmatter(frontmatter, slug);
-  renderPostBodyToHtml(draft.body);
+  assertSafeMdxBody(draft.body);
 
   return `---\n${frontmatter}\n---\n\n${draft.body.trimEnd()}\n`;
 }

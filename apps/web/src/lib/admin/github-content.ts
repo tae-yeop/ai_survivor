@@ -107,10 +107,10 @@ export async function getGitHubContentFile(config: AdminContentConfig, path: str
   } satisfies GitHubContentFile;
 }
 
-export async function putGitHubContentFile(
+async function putGitHubContentBase64(
   config: AdminContentConfig,
   path: string,
-  source: string,
+  base64: string,
   message: string,
   sha?: string,
 ): Promise<GitHubCommitResult> {
@@ -122,7 +122,7 @@ export async function putGitHubContentFile(
     },
     body: JSON.stringify({
       message,
-      content: Buffer.from(source, "utf8").toString("base64"),
+      content: base64,
       branch: config.branch,
       ...(sha ? { sha } : {}),
     }),
@@ -136,6 +136,32 @@ export async function putGitHubContentFile(
     commitUrl: data.commit?.html_url ?? null,
     path,
   };
+}
+
+export function putGitHubContentFile(
+  config: AdminContentConfig,
+  path: string,
+  source: string,
+  message: string,
+  sha?: string,
+) {
+  return putGitHubContentBase64(
+    config,
+    path,
+    Buffer.from(source, "utf8").toString("base64"),
+    message,
+    sha,
+  );
+}
+
+export function putGitHubBinaryFile(
+  config: AdminContentConfig,
+  path: string,
+  data: Buffer,
+  message: string,
+  sha?: string,
+) {
+  return putGitHubContentBase64(config, path, data.toString("base64"), message, sha);
 }
 
 export async function getPostSourceFromGitHub(config: AdminContentConfig, slug: string) {

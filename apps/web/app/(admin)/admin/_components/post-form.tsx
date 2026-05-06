@@ -172,7 +172,7 @@ export function AdminPostForm({
             / 로 블록 삽입 · 텍스트 선택 시 서식 메뉴
           </span>
         </div>
-        <NovelBodyEditor initialContent={post.body} onChange={setBodyMarkdown} />
+        <NovelBodyEditor slug={post.slug} initialContent={post.body} onChange={setBodyMarkdown} />
       </section>
 
       <div className="flex flex-wrap items-center gap-3">

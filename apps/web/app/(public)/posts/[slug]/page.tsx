@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import { EditPostButton } from "@/components/admin/EditPostButton";
+import { mdxComponents } from "@/components/mdx/mdx-components";
 import { ArticleJsonLd } from "@/components/seo/article-json-ld";
 import { getPostBySlug, publishedPosts } from "@/lib/content/posts";
 import { categoryLabel } from "@/lib/labels";
@@ -34,15 +37,18 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
   return (
     <article className="container-prose py-16 sm:py-20">
       <ArticleJsonLd post={post} />
-      <nav
-        aria-label="Breadcrumb"
-        className="mb-8 font-mono text-xs uppercase tracking-[0.12em] text-ink-400"
-      >
-        <Link href="/posts" className="hover:text-accent">
-          Posts
-        </Link>{" "}
-        <span aria-hidden="true">/</span> {categoryLabel(post.category)}
-      </nav>
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <nav
+          aria-label="Breadcrumb"
+          className="font-mono text-xs uppercase tracking-[0.12em] text-ink-400"
+        >
+          <Link href="/posts" className="hover:text-accent">
+            Posts
+          </Link>{" "}
+          <span aria-hidden="true">/</span> {categoryLabel(post.category)}
+        </nav>
+        <EditPostButton slug={post.slug} />
+      </div>
       <header>
         <p className="kicker kicker-accent">{categoryLabel(post.category)}</p>
         <h1 className="mt-4 font-display text-mast text-ink-900 text-balance">{post.title}</h1>
@@ -55,10 +61,9 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
           <span className="dateline">{post.difficulty}</span>
         </div>
       </header>
-      <div
-        className="prose mt-12 drop-cap"
-        dangerouslySetInnerHTML={{ __html: post.contentHtml }}
-      />
+      <div className="prose mt-12 drop-cap">
+        <MDXRemote source={post.body} components={mdxComponents} />
+      </div>
       <footer className="mt-12 border-t border-paper-rule pt-6">
         <div className="flex flex-wrap gap-2">
           {post.tags.map((tag) => (

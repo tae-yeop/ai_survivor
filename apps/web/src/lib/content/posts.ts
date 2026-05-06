@@ -30,7 +30,7 @@ export type PostFrontmatter = {
 };
 
 export type Post = PostFrontmatter & {
-  contentHtml: string;
+  body: string;
   excerpt: string;
   readingTimeMinutes: number;
   sourcePath: string;
@@ -265,119 +265,10 @@ function extractFrontmatter(source: string, sourcePath: string) {
   return { frontmatter: match[1] ?? "", body: match[2] ?? "" };
 }
 
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
-function renderInlineMarkdown(value: string) {
-  let output = escapeHtml(value);
-  output = output.replace(/`([^`]+)`/g, "<code>$1</code>");
-  output = output.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  output = output.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]*)\)/g, '<a href="$2">$1</a>');
-  return output;
-}
-
-function markdownToHtml(markdown: string) {
-  const html: string[] = [];
-  const lines = markdown.trim().split(/\r?\n/);
-  let paragraph: string[] = [];
-  let list: string[] = [];
-  let code: string[] | null = null;
-
-  function flushParagraph() {
-    if (paragraph.length > 0) {
-      html.push(`<p>${renderInlineMarkdown(paragraph.join(" "))}</p>`);
-      paragraph = [];
-    }
-  }
-  function flushList() {
-    if (list.length > 0) {
-      html.push(
-        `<ul>${list.map((item) => `<li>${renderInlineMarkdown(item)}</li>`).join("")}</ul>`,
-      );
-      list = [];
-    }
-  }
-
-  for (const line of lines) {
-    if (line.trim().startsWith("```")) {
-      if (code) {
-        html.push(`<pre><code>${escapeHtml(code.join("\n"))}</code></pre>`);
-        code = null;
-      } else {
-        flushParagraph();
-        flushList();
-        code = [];
-      }
-      continue;
-    }
-    if (code) {
-      code.push(line);
-      continue;
-    }
-    if (!line.trim()) {
-      flushParagraph();
-      flushList();
-      continue;
-    }
-    const heading = /^(#{2,4})\s+(.+)$/.exec(line);
-    if (heading) {
-      flushParagraph();
-      flushList();
-      const level = heading[1].length;
-      html.push(`<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`);
-      continue;
-    }
-    const listItem = /^[-*]\s+(.+)$/.exec(line);
-    if (listItem) {
-      flushParagraph();
-      list.push(listItem[1]);
-      continue;
-    }
-    paragraph.push(line.trim());
-  }
-
-  flushParagraph();
-  flushList();
-  if (code) html.push(`<pre><code>${escapeHtml(code.join("\n"))}</code></pre>`);
-  return html.join("\n");
-}
-
-function assertSafeBody(body: string) {
-  const allowedTags = new Set([
-    "a",
-    "blockquote",
-    "br",
-    "code",
-    "em",
-    "figcaption",
-    "figure",
-    "h2",
-    "h3",
-    "h4",
-    "hr",
-    "img",
-    "li",
-    "mark",
-    "ol",
-    "p",
-    "pre",
-    "strong",
-    "ul",
-  ]);
-  for (const match of body.matchAll(/<\/?([a-z][a-z0-9-]*)\b[^>]*>/gi)) {
-    const tag = match[1].toLowerCase();
-    if (!allowedTags.has(tag)) throw new Error(`Unsafe post body: unsupported HTML tag <${tag}>`);
-  }
+export function assertSafeMdxBody(body: string) {
   const checks: Array<[RegExp, string]> = [
     [/<\/?script\b/i, "script tags are not allowed"],
     [/<\/?style\b/i, "style tags are not allowed"],
-    [/<\/?iframe\b/i, "iframe tags are not allowed yet"],
     [/<\/?object\b/i, "object tags are not allowed"],
     [/<\/?embed\b/i, "embed tags are not allowed"],
     [/\son[a-z]+\s*=/i, "inline event handlers are not allowed"],
@@ -386,20 +277,6 @@ function assertSafeBody(body: string) {
   for (const [pattern, reason] of checks) {
     if (pattern.test(body)) throw new Error(`Unsafe post body: ${reason}`);
   }
-}
-
-export function renderPostBodyToHtml(body: string) {
-  const trimmed = body.trim();
-  assertSafeBody(trimmed);
-  if (!trimmed) return "";
-  if (
-    /<(h2|h3|h4|p|ul|ol|li|blockquote|pre|code|figure|img|a|strong|em|mark|hr)\b[\s\S]*>/i.test(
-      trimmed,
-    )
-  ) {
-    return trimmed;
-  }
-  return markdownToHtml(trimmed);
 }
 
 function excerptFromBody(body: string, description: string) {
@@ -426,10 +303,10 @@ function readPostFile(filePath: string, folderSlug: string): Post {
   const source = readFileSync(filePath, "utf8");
   const { frontmatter, body } = extractFrontmatter(source, filePath);
   const metadata = parsePostFrontmatter(frontmatter, folderSlug);
-  const contentHtml = renderPostBodyToHtml(body);
+  assertSafeMdxBody(body);
   return {
     ...metadata,
-    contentHtml,
+    body: body.trim(),
     excerpt: excerptFromBody(body, metadata.description),
     readingTimeMinutes: readingTimeMinutes(body),
     sourcePath: filePath,
