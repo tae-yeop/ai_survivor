@@ -409,7 +409,6 @@ export function categoryBuckets(): Bucket[] {
         if (process.env.NODE_ENV === "production") {
           throw new Error(message);
         }
-        // eslint-disable-next-line no-console
         console.warn(message);
       }
       const firstRaw = [...rawValues][0]!;
@@ -441,7 +440,6 @@ export function tagBuckets(): Bucket[] {
         if (process.env.NODE_ENV === "production") {
           throw new Error(message);
         }
-        // eslint-disable-next-line no-console
         console.warn(message);
       }
       const firstRaw = [...rawValues][0]!;

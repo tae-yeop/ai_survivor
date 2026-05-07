@@ -78,6 +78,9 @@ export function PostsNavDropdown({ categories }: { categories: Bucket[] }) {
         setOpen(true);
       }}
       onPointerLeave={scheduleClose}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) scheduleClose();
+      }}
     >
       <Link
         ref={triggerRef}
@@ -88,6 +91,12 @@ export function PostsNavDropdown({ categories }: { categories: Bucket[] }) {
         onFocus={() => {
           cancelClose();
           setOpen(true);
+        }}
+        onClick={(e) => {
+          if (e.nativeEvent instanceof PointerEvent && e.nativeEvent.pointerType === "touch") {
+            e.preventDefault();
+            setOpen((v) => !v);
+          }
         }}
         className="relative flex items-center gap-1 px-3 py-1.5 font-mono text-[0.72rem] uppercase tracking-[0.12em] text-ink-500 transition-colors hover:text-ink-800"
       >
