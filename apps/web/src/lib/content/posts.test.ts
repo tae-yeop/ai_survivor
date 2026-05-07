@@ -116,3 +116,49 @@ test("default publishedPosts is backed by real content tree and excludes draft o
   assert.ok(!slugs.includes("draft-github-mdx-workflow-note"));
   assert.ok(!slugs.includes("scheduled-search-console-check"));
 });
+
+test("free-form category resolves via slugifyTaxonomy on both bucket and lookup", () => {
+  withContentRoot((root) => {
+    writePost(
+      root,
+      "post-cost-saving",
+      validBase
+        .replace("slug: published-one", "slug: post-cost-saving")
+        .replace("category: vibe-coding-lab", 'category: "비용 절감"'),
+    );
+    const posts = loadPostsForTest({ root, now: NOW });
+    assert.equal(posts.length, 1);
+    assert.equal(posts[0]?.category, "비용 절감");
+  });
+});
+
+test("categoryBuckets warns (dev) on two distinct categories that slugify to the same target", () => {
+  const original = console.warn;
+  const warnings: string[] = [];
+  console.warn = (msg: string) => warnings.push(msg);
+  try {
+    withContentRoot((root) => {
+      writePost(
+        root,
+        "post-a",
+        validBase
+          .replace("slug: published-one", "slug: post-a")
+          .replace("category: vibe-coding-lab", 'category: "Claude Code"'),
+      );
+      writePost(
+        root,
+        "post-b",
+        validBase
+          .replace("slug: published-one", "slug: post-b")
+          .replace("category: vibe-coding-lab", 'category: "claude code"'),
+      );
+      const posts = loadPostsForTest({ root, now: NOW });
+      assert.equal(posts.length, 2);
+      const seen = new Set<string>();
+      for (const post of posts) seen.add(post.category);
+      assert.deepEqual([...seen].sort(), ["Claude Code", "claude code"]);
+    });
+  } finally {
+    console.warn = original;
+  }
+});

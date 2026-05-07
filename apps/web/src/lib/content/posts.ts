@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { categoryLabel, labelFromSlug } from "../labels.ts";
+import { slugifyTaxonomy } from "./slugify.ts";
 
 export type PostStatus = "draft" | "published" | "scheduled" | "archived";
 export type PostDifficulty = "beginner" | "intermediate" | "advanced";
@@ -356,8 +357,8 @@ export function getPostBySlug(slug: string, opts?: { includeDrafts?: boolean }) 
   return list.find((post) => post.slug === slug) ?? null;
 }
 
-export function getPostsByCategory(category: string) {
-  return publishedPosts.filter((post) => post.category === category);
+export function getPostsByCategory(slug: string) {
+  return publishedPosts.filter((post) => slugifyTaxonomy(post.category) === slug);
 }
 
 export function getPostsByTag(tag: string) {
@@ -386,10 +387,33 @@ function bucketBy(values: string[], labeler: (slug: string) => string): Bucket[]
 }
 
 export function categoryBuckets(): Bucket[] {
-  return bucketBy(
-    publishedPosts.map((post) => post.category),
-    categoryLabel,
-  );
+  type Group = { rawValues: Set<string>; count: number };
+  const bySlug = new Map<string, Group>();
+
+  for (const post of publishedPosts) {
+    const slug = slugifyTaxonomy(post.category);
+    if (!slug) continue; // defensive — slugify-empty values don't get a bucket
+    const group = bySlug.get(slug) ?? { rawValues: new Set<string>(), count: 0 };
+    group.rawValues.add(post.category);
+    group.count += 1;
+    bySlug.set(slug, group);
+  }
+
+  return [...bySlug.entries()]
+    .map(([slug, { rawValues, count }]) => {
+      if (rawValues.size > 1) {
+        const arr = [...rawValues];
+        const message = `slug-collision: ${arr.map((v) => `"${v}"`).join(" and ")} both → /${slug}`;
+        if (process.env.NODE_ENV === "production") {
+          throw new Error(message);
+        }
+        // eslint-disable-next-line no-console
+        console.warn(message);
+      }
+      const firstRaw = [...rawValues][0]!;
+      return { slug, label: categoryLabel(firstRaw), count };
+    })
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 }
 
 export function tagBuckets(): Bucket[] {
