@@ -1,4 +1,4 @@
-const ALLOWED = /[a-z0-9가-힣ㄱ-ㅎㅏ-ㅣ\-]/;
+const ALLOWED = /[a-z0-9가-힣ㄱ-ㅎㅏ-ㅣ-]/u;
 
 export function slugifyTaxonomy(value: string): string {
   const trimmed = value.trim();
