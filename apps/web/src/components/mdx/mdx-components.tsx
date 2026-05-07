@@ -1,4 +1,5 @@
 import type { ComponentProps } from "react";
+import { Figure } from "./Figure";
 import { YouTube } from "./YouTube";
 
 function MdxImage({ src, alt = "", ...rest }: ComponentProps<"img">) {
@@ -14,6 +15,7 @@ function MdxImage({ src, alt = "", ...rest }: ComponentProps<"img">) {
 }
 
 export const mdxComponents = {
+  Figure,
   YouTube,
   img: MdxImage,
 };
