@@ -62,6 +62,7 @@ export const Figure = Node.create({
       },
       caption: { default: "" },
       uploading: { default: false, rendered: false },
+      placeholderID: { default: null, rendered: false },
     };
   },
 

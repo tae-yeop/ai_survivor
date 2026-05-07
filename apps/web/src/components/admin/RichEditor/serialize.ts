@@ -1,3 +1,5 @@
+// Tiptap's renderHTML always produces double-quoted attributes, so src/alt captures use double quotes.
+// data-* attributes from NodeView may use single quotes in test fixtures, so attr() handles both.
 const FIGURE_RE =
   /<figure[^>]*data-figure="true"([^>]*)>[\s\S]*?<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*\/?>[\s\S]*?<\/figure>/g;
 

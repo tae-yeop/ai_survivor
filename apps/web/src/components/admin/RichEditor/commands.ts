@@ -4,7 +4,7 @@ import { uploadImageForSlug, validateImageFile } from "./plugins/upload-image";
 export type SlashItem = {
   title: string;
   description: string;
-  command: (args: { editor: Editor; range: Range }) => void;
+  command: (args: { editor: Editor; range: Range }) => unknown;
 };
 
 const headingItems: SlashItem[] = [

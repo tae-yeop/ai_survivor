@@ -55,7 +55,7 @@ async function handleImageFile(
     src: previewUrl,
     alt: file.name,
     uploading: true,
-    "data-placeholder-id": placeholderId,
+    placeholderID: placeholderId,
   });
 
   try {
@@ -64,7 +64,7 @@ async function handleImageFile(
     state.doc.descendants((node, pos) => {
       if (
         node.type.name === "figure" &&
-        node.attrs["data-placeholder-id"] === placeholderId
+        node.attrs.placeholderID === placeholderId
       ) {
         editor
           .chain()
@@ -72,7 +72,7 @@ async function handleImageFile(
           .updateAttributes("figure", {
             src: url,
             uploading: false,
-            "data-placeholder-id": null,
+            placeholderID: null,
           })
           .run();
         return false;
