@@ -6,7 +6,7 @@ Last Updated: 2026-05-06
 
 ## 1. 저장소 역할
 
-AI Vibe Lab은 글을 두 단계로 관리한다.
+AI 시대 생존기는 글을 두 단계로 관리한다.
 
 | 위치                                      | 역할                                                | Git 공개 여부                                    |
 | ----------------------------------------- | --------------------------------------------------- | ------------------------------------------------ |
@@ -45,6 +45,8 @@ apps/web/public/media/posts/<slug>/
 ## 3. Post Frontmatter
 
 모든 발행 후보 글은 아래 frontmatter를 가진다.
+
+> `category`와 `tags` 값은 자유 문자열이다. 한국어, 공백, 대소문자 모두 가능. 기존 글의 kebab-case 슬러그도 그대로 유효하다.
 
 ```yaml
 title: "Cursor로 Astro 블로그를 만들어본 후기"
@@ -95,15 +97,18 @@ ogImage: "/images/og/default.svg"
 | `canonical`   | 선택 | 외부 원문 또는 중복 페이지 방지 시 사용          |
 | `ogImage`     | 선택 | 공유 이미지                                      |
 
-## 5. Category Slug
+## 5. Category 값 (free-form)
 
-| slug                     | 이름              |
-| ------------------------ | ----------------- |
-| `ai-tool-review`         | AI 도구 사용기    |
-| `vibe-coding-lab`        | 바이브코딩 실험실 |
-| `ai-workflow-automation` | AI 업무 자동화    |
-| `ai-productivity`        | AI 생산성 팁      |
-| `domain-ai`              | 전문 영역 적용기  |
+`category`는 자유 입력 문자열이다. enum이 아니다.
+
+- 값은 그대로 보존되며, 빌드 시 `slugifyTaxonomy()`로 URL 슬러그가 도출된다.
+- 표시 라벨은 `lib/labels.ts`의 `CATEGORY_LABELS`에서 우선 조회되며, 없으면 frontmatter에 적힌 원문이 그대로 노출된다.
+- 두 개의 서로 다른 `category` 값이 같은 슬러그로 정규화되면, `next dev`에서는 콘솔 경고가 나오고 `next build`는 실패한다 (SEO 이중-URL 방지).
+- 새 카테고리는 글을 쓰면서 자유롭게 추가할 수 있다.
+
+기존 슬러그(`vibe-coding-lab`, `ai-tool-review`, `ai-workflow-automation`, `ai-productivity`, `domain-ai`)는 `CATEGORY_LABELS` 테이블에 한국어 라벨이 등록되어 있어 그대로 표시된다. 새 값은 frontmatter 원문이 라벨로 사용된다.
+
+`tags` 필드도 동일한 규칙을 따른다 (자유 입력, slugify, 충돌 정책).
 
 ## 6. Media 규칙
 
@@ -129,6 +134,8 @@ ogImage: "/images/og/default.svg"
 초기 MVP에서는 긴 영상은 사이트에 직접 업로드하지 않는다. 필요하면 외부 영상 URL을 본문에 링크하거나 embed 정책을 별도로 정한다.
 
 ## 7. Slug 규칙
+
+> 글 폴더 슬러그(`<slug>/index.mdx`의 `<slug>`)는 영문 소문자·숫자·하이픈만 사용한다. 카테고리/태그 슬러그는 §5의 자유 입력 규칙을 따른다.
 
 - 영문 소문자 사용
 - 공백 대신 하이픈 사용
