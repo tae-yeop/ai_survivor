@@ -1,27 +1,53 @@
+import Link from "next/link";
 import type { CSSProperties } from "react";
+import { cn } from "@/lib/utils";
 
 /**
- * Renders the hero headline as per-character spans so global.css's
- * `.char-mast .char` keyframe (blur+slide-in stagger) can animate each
- * letter on page load. Server component — no client JS needed.
+ * Page-headline rendered as per-character spans so global.css's
+ * `.char-mast .char` keyframe (blur+slide-in stagger) animates each
+ * letter on load. Optional `href` wraps the spans in a Link so the
+ * heading can be the primary click target on the home lead post.
+ *
+ * Server component — no client JS.
  */
-export function HeroHeadline({ text }: { text: string }) {
+export function HeroHeadline({
+  text,
+  href,
+  className,
+}: {
+  text: string;
+  href?: string;
+  className?: string;
+}) {
   const chars = Array.from(text);
+  const inner = chars.map((ch, i) => (
+    <span
+      key={i}
+      className="char"
+      style={{ "--ci": i } as CSSProperties}
+      aria-hidden="true"
+    >
+      {ch === " " ? " " : ch}
+    </span>
+  ));
   return (
     <h1
-      className="char-mast mt-4 max-w-4xl font-display text-mast text-ink-900 text-balance leading-[1.05]"
+      className={cn(
+        "char-mast font-display text-mast text-ink-900 text-balance leading-[1.05]",
+        className,
+      )}
       aria-label={text}
     >
-      {chars.map((ch, i) => (
-        <span
-          key={i}
-          className="char"
-          style={{ "--ci": i } as CSSProperties}
-          aria-hidden="true"
+      {href ? (
+        <Link
+          href={href}
+          className="transition-colors hover:text-accent focus-visible:text-accent"
         >
-          {ch === " " ? " " : ch}
-        </span>
-      ))}
+          {inner}
+        </Link>
+      ) : (
+        inner
+      )}
     </h1>
   );
 }
