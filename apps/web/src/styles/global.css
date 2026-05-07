@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 /* ============================================================
-   Lab Terminal Notebook — Design Tokens (Light)
-   Cool slate paper · pure ink · electric cyan-teal accent
+   AI 시대 생존기 — Design Tokens (Light)
+   Cool slate paper · pure ink · cinnabar accent (editorial signature)
    ============================================================ */
 :root {
   /* Paper — cool neutral slate stack */
@@ -36,16 +36,16 @@
   --ink-800: #0d1015;
   --ink-900: #05070a;
 
-  /* Accent — Electric Teal/Cyan (terminal-flavored, not generic blue) */
-  --accent: #0e7490; /* deep teal — main */
+  /* Accent — Cinnabar / vermilion (editorial signature mark, not decoration) */
+  --accent: #b8341c; /* cinnabar — main */
   --accent-fg: #ffffff;
-  --accent-soft: #cffafe; /* cyan-100 */
-  --accent-muted: #67e8f9; /* cyan-300 */
-  --accent-deep: #155e75; /* cyan-800 */
+  --accent-soft: #fee2e2; /* red-100 */
+  --accent-muted: #fca5a5; /* red-300 */
+  --accent-deep: #7f1d1d; /* red-900 */
 
   /* Markers */
-  --mark: rgba(14, 116, 144, 0.22);
-  --tick: #0e7490;
+  --mark: rgba(184, 52, 28, 0.22);
+  --tick: #b8341c;
 
   /* Radii — sharp, editorial */
   --radius-sm: 0;
@@ -75,8 +75,8 @@
 }
 
 /* ============================================================
-   Lab Terminal Notebook — Design Tokens (Dark)
-   Deep cool ink · cool cream · bright cyan accent
+   AI 시대 생존기 — Design Tokens (Dark)
+   Deep cool ink · cinnabar-pink accent (readable on slate)
    ============================================================ */
 .dark {
   --paper: #0b0e13;
@@ -105,15 +105,15 @@
   --ink-800: #e8eaef;
   --ink-900: #f1f3f6;
 
-  /* Accent — Bright cyan, terminal-feel */
-  --accent: #22d3ee; /* cyan-400 */
+  /* Accent — Cinnabar / vermilion (dark mode — readable on deep slate) */
+  --accent: #fca5a5; /* red-300 */
   --accent-fg: #0b0e13;
-  --accent-soft: #0e3a47;
-  --accent-muted: #155e75;
-  --accent-deep: #67e8f9;
+  --accent-soft: #4a1414;
+  --accent-muted: #7f1d1d;
+  --accent-deep: #fee2e2;
 
-  --mark: rgba(34, 211, 238, 0.22);
-  --tick: #22d3ee;
+  --mark: rgba(252, 165, 165, 0.22);
+  --tick: #fca5a5;
 
   --shadow-sm: 0 1px 0 rgba(0, 0, 0, 0.5);
   --shadow: 0 1px 0 rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(220, 230, 240, 0.04);
