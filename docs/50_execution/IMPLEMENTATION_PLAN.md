@@ -56,7 +56,7 @@ docs/50_execution/
 | 2 | Git-backed MDX Public Read Path | [phase-2-public-read/](./phase-2-public-read/) | MDX 실제 글로 신규 사이트 공개 가능 |
 | 3 | Editorial Workflow on GitHub | [phase-3-admin-auth/](./phase-3-admin-auth/) | 보류: GitHub/Pages CMS/Decap CMS 중 선택 전까지 기존 Admin Auth 계획은 실행하지 않음 |
 | 4 | Content Production & Review | [phase-4-admin-crud/](./phase-4-admin-crud/) | 보류: CRUD 대신 PR 기반 작성/검수로 대체 예정 |
-| 5 | MDX Components & Media | [phase-5-editor-media/](./phase-5-editor-media/) | 보류: Tiptap/Storage 대신 MDX 컴포넌트와 repo-local asset 기준으로 재작성 예정 |
+| 5 | MDX Components & Rich Editor | [phase-5-editor-media/](./phase-5-editor-media/) | Active (ADR-004 Phase C/D): 리치 에디터 + 이미지 paste/리사이즈 + 비디오 R2 + 8종 임베드 + 인플레이스 편집 |
 | 6 | Content Ops (cadence/taxonomy/SEO) | [phase-6-content-ops/](./phase-6-content-ops/) | 운영 부담 최소화 |
 | 7 | SEO & AdSense Readiness | [phase-7-seo-adsense/](./phase-7-seo-adsense/) | AdSense 신청 가능 상태 |
 | 8 | Production Launch | [phase-8-launch/](./phase-8-launch/) | 도메인 + 검색엔진 + AdSense |
@@ -73,7 +73,8 @@ P0 ──▶ P1 ──▶ P2 ──▶ P7 ──▶ P8 ──▶ P9
 ```
 
 - **P2 종료**: 기존 Astro 사이트와 시각적/콘텐츠적 동등 + 실제 MDX 글 렌더링 → 도메인 스왑 가능 시점.
-- **P3~P6**: Supabase/Tiptap admin 경로는 실행하지 않는다. GitHub 편집 흐름이 불편하다는 운영 근거가 생기면 재계획한다.
+- **P3~P4, P6**: Supabase/Tiptap admin 경로는 실행하지 않는다. GitHub 편집 흐름이 불편하다는 운영 근거가 생기면 재계획한다.
+- **P5**: ADR-004 기반으로 reactivated — Supabase 없이 GitHub repo + Cloudflare R2 + Tiptap NodeView 로 리치 에디터 / 비디오 / 임베드 / 인플레이스 편집을 6개 slice (5.1~5.6) 로 실행. 자세한 설계는 [phase-5-editor-media/_design/2026-05-07-rich-editor-overhaul.md](./phase-5-editor-media/_design/2026-05-07-rich-editor-overhaul.md).
 - **P7 종료**: AdSense 신청 가능 상태.
 - **P8 종료**: 정식 운영 시작.
 
