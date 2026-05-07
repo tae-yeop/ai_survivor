@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { NAV_FOOTER, SITE_NAME, SITE_TAGLINE } from "@/lib/site";
+import { NAV_FOOTER, SITE_FOOTER_SIGNATURE, SITE_NAME, SITE_TAGLINE } from "@/lib/site";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -14,7 +14,7 @@ export function Footer() {
           <div>
             <p className="kicker kicker-accent">end of dispatch</p>
             <p className="mt-3 font-display text-2xl font-bold leading-[1.2] tracking-[-0.022em] text-ink-800">
-              {SITE_NAME}
+              {SITE_FOOTER_SIGNATURE}
             </p>
             <p className="mt-3 max-w-md leading-relaxed text-ink-500">{SITE_TAGLINE}</p>
             <div className="mt-8 flex items-center gap-3">
@@ -48,18 +48,8 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/series" className="transition-colors hover:text-accent">
-                    시리즈
-                  </Link>
-                </li>
-                <li>
                   <Link href="/tags" className="transition-colors hover:text-accent">
                     태그
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/tools" className="transition-colors hover:text-accent">
-                    도구별
                   </Link>
                 </li>
               </ul>
