@@ -1,6 +1,6 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
-import { PostList } from "@/components/post/post-list";
+import { PostCard } from "@/components/post/post-card";
 import { Button } from "@/components/ui/button";
 import { categoryBuckets, publishedPosts, seriesBuckets, toolBuckets } from "@/lib/content/posts";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
@@ -16,6 +16,14 @@ export default function HomePage() {
   const categories = categoryBuckets();
   const series = seriesBuckets();
   const tools = toolBuckets();
+  const latestPosts = publishedPosts.slice(0, 3);
+  const lead = latestPosts[0];
+  const runnersUp = latestPosts.slice(1);
+  const taxonomyColumns = [
+    { label: "categories", href: "/categories", items: categories },
+    { label: "series", href: "/series", items: series },
+    { label: "tools", href: "/tools", items: tools.slice(0, 5) },
+  ];
 
   return (
     <>
@@ -36,64 +44,114 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="container-hero py-8">
-        <div className="section-marker">
-          <div>
+      <section className="container-mast py-12">
+        <header className="section-marker mb-8">
+          <p className="kicker tabular-nums">01 / 03</p>
+          <div className="min-w-0">
             <p className="kicker">latest dispatches</p>
-            <h2 className="mt-2 font-display text-display text-ink-900">최신 글 3개</h2>
+            <h2 className="mt-2 font-display text-display text-ink-900">최신 기록</h2>
+          </div>
+          <Link
+            href="/posts"
+            className="ml-auto hidden font-mono text-xs uppercase tracking-[0.12em] text-ink-500 transition-colors hover:text-accent sm:block"
+          >
+            모두 보기 →
+          </Link>
+        </header>
+
+        {lead ? (
+          <div className="grid gap-x-12 lg:grid-cols-[1.35fr_1fr]">
+            <div className="lg:border-r lg:border-paper-rule lg:pr-12">
+              <p className="kicker mb-4">feature / 이번 호 대표</p>
+              <PostCard post={lead} variant="feature" />
+            </div>
+            <ol className="mt-10 list-none lg:mt-0">
+              <li className="kicker mb-3 block">runners up</li>
+              {runnersUp.map((post, index) => (
+                <li key={post.slug}>
+                  <PostCard post={post} index={index + 1} />
+                </li>
+              ))}
+            </ol>
+          </div>
+        ) : (
+          <p className="border-y border-paper-rule py-16 text-center font-mono text-sm uppercase tracking-wider text-ink-500">
+            아직 공개된 기록이 없습니다.
+          </p>
+        )}
+      </section>
+
+      <section className="border-y border-paper-rule bg-paper-deep">
+        <div className="container-mast py-16">
+          <header className="section-marker mb-10">
+            <p className="kicker tabular-nums">02 / 03</p>
+            <div>
+              <p className="kicker">index</p>
+              <h2 className="mt-2 font-display text-display text-ink-900">읽을 경로 고르기</h2>
+            </div>
+          </header>
+
+          <div className="grid gap-10 lg:grid-cols-3">
+            {taxonomyColumns.map((column) => (
+              <section key={column.label} className="min-w-0">
+                <div className="mb-5 flex items-baseline justify-between gap-4 border-b border-ink-900 pb-3">
+                  <p className="kicker kicker-accent">{column.label}</p>
+                  <Link
+                    href={column.href}
+                    className="font-mono text-[0.7rem] uppercase tracking-[0.12em] text-ink-500 hover:text-accent"
+                  >
+                    전체 →
+                  </Link>
+                </div>
+                <ol className="list-none divide-y divide-paper-rule">
+                  {column.items.map((item, index) => (
+                    <li key={item.slug}>
+                      <Link
+                        href={`${column.href}/${item.slug}`}
+                        className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-baseline gap-3 py-3 text-ink-700 transition-colors hover:text-accent"
+                      >
+                        <span className="font-mono text-[0.7rem] text-accent tabular-nums">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span className="min-w-0 break-words">{item.label}</span>
+                        <span className="font-mono text-[0.7rem] text-ink-400 tabular-nums">
+                          {item.count}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            ))}
           </div>
         </div>
       </section>
-      <PostList posts={publishedPosts.slice(0, 3)} />
 
-      <section className="container-wide grid gap-5 py-10 md:grid-cols-3">
-        <div className="card-elevated p-6">
-          <p className="kicker kicker-accent">categories</p>
-          <ul className="mt-5 space-y-3">
-            {categories.map((category) => (
-              <li
-                key={category.slug}
-                className="flex items-baseline justify-between gap-3 border-b border-paper-rule pb-2"
-              >
-                <Link href={`/categories/${category.slug}`} className="hover:text-accent">
-                  {category.label}
-                </Link>
-                <span className="dateline">{category.count}</span>
-              </li>
+      <section className="container-mast py-16">
+        <header className="section-marker mb-8">
+          <p className="kicker tabular-nums">03 / 03</p>
+          <div>
+            <p className="kicker">why this site</p>
+            <h2 className="mt-2 font-display text-display text-ink-900">원본은 여기 남긴다</h2>
+          </div>
+        </header>
+        <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
+          <p className="max-w-prose text-ink-600 leading-relaxed">
+            외부 플랫폼은 유통 채널이다. 원본은 검색, 맥락, 디자인, 수정 이력을 모두 통제할 수 있는
+            이 사이트에 둔다.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              ["canonical", "원본 URL과 SEO를 직접 관리"],
+              ["archive", "카테고리·시리즈·도구로 재탐색"],
+              ["evidence", "실험 조건과 실패까지 보존"],
+            ].map(([label, body]) => (
+              <div key={label} className="border border-paper-rule bg-paper-elevated p-4">
+                <p className="kicker kicker-accent">{label}</p>
+                <p className="mt-3 text-sm leading-relaxed text-ink-600">{body}</p>
+              </div>
             ))}
-          </ul>
-        </div>
-        <div className="card-elevated p-6">
-          <p className="kicker kicker-accent">series</p>
-          <ul className="mt-5 space-y-3">
-            {series.map((item) => (
-              <li
-                key={item.slug}
-                className="flex items-baseline justify-between gap-3 border-b border-paper-rule pb-2"
-              >
-                <Link href={`/series/${item.slug}`} className="hover:text-accent">
-                  {item.label}
-                </Link>
-                <span className="dateline">{item.count}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="card-elevated p-6">
-          <p className="kicker kicker-accent">tools</p>
-          <ul className="mt-5 space-y-3">
-            {tools.slice(0, 5).map((item) => (
-              <li
-                key={item.slug}
-                className="flex items-baseline justify-between gap-3 border-b border-paper-rule pb-2"
-              >
-                <Link href={`/tools/${item.slug}`} className="hover:text-accent">
-                  {item.label}
-                </Link>
-                <span className="dateline">{item.count}</span>
-              </li>
-            ))}
-          </ul>
+          </div>
         </div>
       </section>
     </>

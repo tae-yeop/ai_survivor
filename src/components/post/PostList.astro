@@ -18,7 +18,16 @@ const { posts, emptyText = '아직 발행된 글이 없습니다.', hideCategory
 ) : (
   <ol class="list-none">
     {posts.map((p) => (
-      <li>
+      <li
+        data-post-item
+        data-search={[
+          p.data.title,
+          p.data.description,
+          p.data.category,
+          ...(p.data.tags ?? []),
+          ...(p.data.tools ?? []),
+        ].join(' ').toLowerCase()}
+      >
         <PostCard post={p} hideCategory={hideCategory} />
       </li>
     ))}

@@ -20,7 +20,7 @@ const isFeature = variant === 'feature';
 
 <article
   class:list={[
-    'group relative grid gap-y-3 py-7 border-b border-paper-rule transition-colors',
+    'group relative grid gap-y-3 overflow-hidden py-7 border-b border-paper-rule transition-colors',
     isFeature
       ? 'sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-x-10 py-10'
       : 'sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-x-8',
@@ -59,7 +59,7 @@ const isFeature = variant === 'feature';
 
     <h2
       class:list={[
-        'font-display text-ink-800 leading-[1.1] tracking-tightest text-balance',
+        'font-display text-ink-800 leading-[1.1] tracking-tightest text-balance break-words',
         isFeature ? 'text-3xl sm:text-5xl' : 'text-2xl sm:text-[1.75rem]',
       ]}
     >
@@ -72,7 +72,7 @@ const isFeature = variant === 'feature';
           relative bg-[length:0_1.5px] bg-no-repeat bg-bottom hover:bg-[length:100%_1.5px]
           [background-image:linear-gradient(theme(colors.accent.DEFAULT),theme(colors.accent.DEFAULT))]
           transition-[background-size] duration-300
-          after:absolute after:inset-0 after:left-[-100vw] after:right-[-100vw]
+          after:absolute after:inset-0 after:left-0 after:right-0 xl:after:left-[-100vw] xl:after:right-[-100vw]
           after:-top-7 after:bottom-[-1.75rem] after:content-['']
         "
       >

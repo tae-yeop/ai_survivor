@@ -1,5 +1,5 @@
-import { PageHeader } from "@/components/layout/page-header";
-import { PostList } from "@/components/post/post-list";
+﻿import { PageHeader } from "@/components/layout/page-header";
+import { PostSearch } from "@/components/post/post-search";
 import { publishedPosts } from "@/lib/content/posts";
 import { pageMetadata } from "@/lib/seo/metadata";
 
@@ -14,10 +14,10 @@ export default function PostsPage() {
     <>
       <PageHeader
         kicker="posts"
-        title="전체 글"
+        title="전체 기록"
         description="직접 실험한 AI 도구, 바이브코딩, 업무 자동화 기록을 최신순으로 모았습니다."
       />
-      <PostList posts={publishedPosts} />
+      <PostSearch posts={publishedPosts} />
     </>
   );
 }

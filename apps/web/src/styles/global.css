@@ -136,6 +136,8 @@
   }
 
   html {
+    max-width: 100%;
+    overflow-x: hidden;
     scroll-behavior: smooth;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -144,6 +146,8 @@
   }
 
   body {
+    max-width: 100%;
+    overflow-x: hidden;
     background-color: var(--bg-primary);
     color: var(--ink-700);
     font-family: var(--font-sans);
@@ -180,6 +184,19 @@
 
   a {
     color: inherit;
+  }
+
+  img,
+  video,
+  iframe,
+  table,
+  pre {
+    max-width: 100%;
+  }
+
+  pre,
+  table {
+    overflow-x: auto;
   }
 
   :focus-visible {
@@ -237,6 +254,13 @@
     @apply mx-auto w-full max-w-7xl px-5;
   }
 
+  .container-prose,
+  .container-wide,
+  .container-hero,
+  .container-mast {
+    min-width: 0;
+  }
+
   /* font-display = Pretendard semi/bold for headlines (calmer than ExtraBold) */
   .font-display {
     font-family: var(--font-display);
@@ -260,6 +284,7 @@
     text-transform: uppercase;
     color: var(--ink-400);
     font-weight: 500;
+    overflow-wrap: anywhere;
   }
   /* Reduce letter-spacing for CJK glyphs — wide tracking on Hangul looks broken */
   .kicker:lang(ko) {
@@ -275,6 +300,7 @@
     letter-spacing: 0.04em;
     color: var(--ink-500);
     font-feature-settings: "tnum";
+    overflow-wrap: anywhere;
   }
 
   .section-marker {
@@ -372,6 +398,8 @@
       color 0.15s ease,
       background 0.15s ease;
     text-decoration: none;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
   .label-chip:hover {
     border-color: var(--ink-900);
@@ -549,6 +577,10 @@ html.no-js .char-mast .char-accent-bar {
   }
   .text-pretty {
     text-wrap: pretty;
+  }
+  .text-balance,
+  .text-pretty {
+    overflow-wrap: anywhere;
   }
   .divide-hair > * + * {
     border-top: 1px solid var(--paper-rule);
