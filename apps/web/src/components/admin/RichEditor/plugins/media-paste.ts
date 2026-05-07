@@ -1,9 +1,8 @@
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import {
-  ALLOWED_IMAGE_MIME,
-  MAX_IMAGE_BYTES,
   uploadImageForSlug,
+  validateImageFile,
 } from "./upload-image";
 
 export type MediaPasteOptions = {
@@ -41,12 +40,9 @@ async function handleImageFile(
   slug: string,
   onError?: (message: string) => void,
 ) {
-  if (!ALLOWED_IMAGE_MIME.has(file.type)) {
-    onError?.(`Unsupported image type: ${file.type}`);
-    return;
-  }
-  if (file.size > MAX_IMAGE_BYTES) {
-    onError?.("Image exceeds 4MB limit");
+  const issue = validateImageFile(file);
+  if (issue) {
+    onError?.(issue);
     return;
   }
   const previewUrl = URL.createObjectURL(file);

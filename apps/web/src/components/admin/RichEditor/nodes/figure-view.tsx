@@ -93,14 +93,13 @@ export function FigureNodeView({
           </div>
         )}
         {selected && (
+          <>
           <button
             type="button"
             aria-label="Resize"
             className="absolute bottom-1 right-1 h-6 w-6 cursor-se-resize rounded-full border border-paper-rule bg-paper shadow"
             onPointerDown={onCornerDrag}
           />
-        )}
-        {selected && (
           <div className="absolute -top-10 left-1/2 flex -translate-x-1/2 items-center gap-0.5 rounded-md border border-paper-rule bg-paper p-1 shadow">
             <button
               type="button"
@@ -150,12 +149,13 @@ export function FigureNodeView({
             <button
               type="button"
               aria-label="Delete"
-              onClick={() => deleteNode()}
+              onClick={deleteNode}
               className="rounded px-2 py-1 text-sm text-red-600 hover:bg-paper-deep"
             >
               🗑
             </button>
           </div>
+          </>
         )}
       </div>
       {isCaptionEditing ? (
