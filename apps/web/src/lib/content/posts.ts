@@ -361,8 +361,10 @@ export function getPostsByCategory(slug: string) {
   return publishedPosts.filter((post) => slugifyTaxonomy(post.category) === slug);
 }
 
-export function getPostsByTag(tag: string) {
-  return publishedPosts.filter((post) => post.tags.includes(tag));
+export function getPostsByTag(slug: string) {
+  return publishedPosts.filter((post) =>
+    post.tags.some((tag) => slugifyTaxonomy(tag) === slug),
+  );
 }
 
 export function getPostsBySeries(series: string) {
@@ -417,10 +419,36 @@ export function categoryBuckets(): Bucket[] {
 }
 
 export function tagBuckets(): Bucket[] {
-  return bucketBy(
-    publishedPosts.flatMap((post) => post.tags),
-    labelFromSlug,
-  );
+  type Group = { rawValues: Set<string>; count: number };
+  const bySlug = new Map<string, Group>();
+
+  for (const post of publishedPosts) {
+    for (const tag of post.tags) {
+      const slug = slugifyTaxonomy(tag);
+      if (!slug) continue;
+      const group = bySlug.get(slug) ?? { rawValues: new Set<string>(), count: 0 };
+      group.rawValues.add(tag);
+      group.count += 1;
+      bySlug.set(slug, group);
+    }
+  }
+
+  return [...bySlug.entries()]
+    .map(([slug, { rawValues, count }]) => {
+      if (rawValues.size > 1) {
+        const arr = [...rawValues];
+        const message = `slug-collision: ${arr.map((v) => `"${v}"`).join(" and ")} both → /${slug}`;
+        if (process.env.NODE_ENV === "production") {
+          throw new Error(message);
+        }
+        // eslint-disable-next-line no-console
+        console.warn(message);
+      }
+      const firstRaw = [...rawValues][0]!;
+      // For tags, prefer the raw string as label since there's no CATEGORY_LABELS analogue.
+      return { slug, label: firstRaw, count };
+    })
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 }
 
 export function seriesBuckets(): Bucket[] {

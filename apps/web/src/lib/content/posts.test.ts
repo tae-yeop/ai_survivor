@@ -162,3 +162,18 @@ test("categoryBuckets warns (dev) on two distinct categories that slugify to the
     console.warn = original;
   }
 });
+
+test("free-form tag resolves via slugifyTaxonomy on bucket and lookup", () => {
+  withContentRoot((root) => {
+    writePost(
+      root,
+      "post-tag-test",
+      validBase
+        .replace("slug: published-one", "slug: post-tag-test")
+        .replace("- vibe-coding\n  - mdx", '- "Claude Code"\n  - 비용절감'),
+    );
+    const posts = loadPostsForTest({ root, now: NOW });
+    assert.equal(posts.length, 1);
+    assert.deepEqual(posts[0]?.tags.sort(), ["Claude Code", "비용절감"]);
+  });
+});
