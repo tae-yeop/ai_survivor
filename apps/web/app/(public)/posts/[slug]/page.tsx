@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { EditPostButton } from "@/components/admin/EditPostButton";
+import { EditOverlay } from "@/components/admin/EditOverlay";
 import { mdxComponents } from "@/components/mdx/mdx-components";
 import { ArticleJsonLd } from "@/components/seo/article-json-ld";
+import { getAdminSession } from "@/lib/admin/session";
+import { isInPlaceEditEnabled } from "@/lib/admin/inplace-flag";
 import { getPostBySlug, publishedPosts } from "@/lib/content/posts";
 import { categoryLabel } from "@/lib/labels";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -31,7 +33,9 @@ export async function generateMetadata({
 
 export default async function PostDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const session = isInPlaceEditEnabled() ? await getAdminSession() : null;
+  const isAdmin = !!session;
+  const post = isAdmin ? getPostBySlug(slug, { includeDrafts: true }) : getPostBySlug(slug);
   if (!post) notFound();
 
   return (
@@ -47,7 +51,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
           </Link>{" "}
           <span aria-hidden="true">/</span> {categoryLabel(post.category)}
         </nav>
-        <EditPostButton slug={post.slug} />
       </div>
       <header>
         <p className="kicker kicker-accent">{categoryLabel(post.category)}</p>
@@ -73,6 +76,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
           ))}
         </div>
       </footer>
+      {isAdmin && <EditOverlay slug={post.slug} />}
     </article>
   );
 }

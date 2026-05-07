@@ -351,8 +351,9 @@ export function getPublishedPosts(options: Omit<LoadPostsOptions, "includeNonPub
 
 export const publishedPosts = getPublishedPosts();
 
-export function getPostBySlug(slug: string) {
-  return publishedPosts.find((post) => post.slug === slug);
+export function getPostBySlug(slug: string, opts?: { includeDrafts?: boolean }) {
+  const list = opts?.includeDrafts ? loadPosts({ includeNonPublic: true }) : publishedPosts;
+  return list.find((post) => post.slug === slug) ?? null;
 }
 
 export function getPostsByCategory(category: string) {

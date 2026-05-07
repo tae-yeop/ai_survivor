@@ -168,6 +168,37 @@ export async function getPostSourceFromGitHub(config: AdminContentConfig, slug: 
   return getGitHubContentFile(config, postContentPath(slug));
 }
 
+export class GitHubShaConflictError extends Error {
+  public readonly currentSha: string;
+  public readonly baseSha: string;
+
+  constructor(currentSha: string, baseSha: string) {
+    super(`GitHub sha changed since load (base=${baseSha}, current=${currentSha})`);
+    this.currentSha = currentSha;
+    this.baseSha = baseSha;
+    this.name = "GitHubShaConflictError";
+  }
+}
+
+export async function savePostSourceWithBaseShaGuard(
+  config: AdminContentConfig,
+  slug: string,
+  source: string,
+  message: string,
+  baseSha: string,
+): Promise<GitHubCommitResult> {
+  const path = postContentPath(slug);
+  const currentFile = await getGitHubContentFile(config, path);
+  if (!currentFile) {
+    if (baseSha) throw new GitHubShaConflictError("none", baseSha);
+    return putGitHubContentFile(config, path, source, message);
+  }
+  if (currentFile.sha !== baseSha) {
+    throw new GitHubShaConflictError(currentFile.sha, baseSha);
+  }
+  return putGitHubContentFile(config, path, source, message, currentFile.sha);
+}
+
 export async function savePostSourceToGitHub(
   config: AdminContentConfig,
   slug: string,

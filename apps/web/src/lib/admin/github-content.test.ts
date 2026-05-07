@@ -1,6 +1,6 @@
 ﻿import assert from "node:assert/strict";
 import test from "node:test";
-import { postContentPath } from "./github-content.ts";
+import { GitHubShaConflictError, postContentPath } from "./github-content.ts";
 import { assertValidPostSlug, normalizePostSlug } from "./slug.ts";
 
 test("post content paths are constrained to the MDX content tree", () => {
@@ -11,4 +11,11 @@ test("post slugs normalize titles and reject unsafe paths", () => {
   assert.equal(normalizePostSlug(" My First Post! "), "my-first-post");
   assert.equal(assertValidPostSlug("My First Post"), "my-first-post");
   assert.throws(() => assertValidPostSlug("../../secret"), /slug/i);
+});
+
+test("GitHubShaConflictError carries currentSha and baseSha", () => {
+  const e = new GitHubShaConflictError("aaa", "bbb");
+  assert.equal(e.currentSha, "aaa");
+  assert.equal(e.baseSha, "bbb");
+  assert.equal(e.name, "GitHubShaConflictError");
 });

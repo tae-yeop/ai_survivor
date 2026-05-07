@@ -167,6 +167,10 @@ The `/admin` editor is disabled until these server-only variables are configured
 - `GITHUB_REPO`: `tae-yeop/ai_survivor`.
 - `GITHUB_BRANCH`: `master` unless the production branch changes.
 
+### Admin in-place editing
+
+`INPLACE_EDIT_ENABLED` — `true` (기본) / `false` 로 설정. `false` 면 공개 페이지에서 admin EditOverlay가 마운트되지 않음. 비상 시 빠른 토글용. 기본값 `true` 이므로 별도 설정 없이 활성화됨.
+
 GitHub OAuth callback URL for production should be:
 
 ```text
