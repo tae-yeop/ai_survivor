@@ -16,10 +16,10 @@ export async function generateMetadata({
   params: Promise<{ category: string }>;
 }): Promise<Metadata> {
   const { category } = await params;
+  const label = categoryLabel(category);
   return pageMetadata({
-    title: categoryLabel(category),
-    description:
-      CATEGORY_DESCRIPTIONS[category] ?? `${categoryLabel(category)} 카테고리 글 목록입니다.`,
+    title: label,
+    description: CATEGORY_DESCRIPTIONS[category] ?? `${label} 카테고리 글 목록입니다.`,
     path: `/categories/${category}`,
   });
 }
@@ -30,16 +30,20 @@ export default async function CategoryDetailPage({
   params: Promise<{ category: string }>;
 }) {
   const { category } = await params;
+  const buckets = categoryBuckets();
+  const bucket = buckets.find((b) => b.slug === category);
+  if (!bucket) notFound();
+
   const posts = getPostsByCategory(category);
-  if (posts.length === 0) notFound();
+
   return (
     <>
       <PageHeader
-        kicker="category"
-        title={categoryLabel(category)}
-        description={CATEGORY_DESCRIPTIONS[category] ?? "발행된 글이 있는 카테고리입니다."}
+        kicker={`category · ${posts.length} published`}
+        title={bucket.label}
+        description={CATEGORY_DESCRIPTIONS[category] ?? "이 카테고리의 발행된 글입니다."}
       />
-      <PostList posts={posts} />
+      <PostList posts={posts} emptyText="아직 발행된 글이 없습니다." />
     </>
   );
 }
