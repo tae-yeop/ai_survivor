@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { PageHeader } from "@/components/layout/page-header";
+import { HeroHeadline } from "@/components/layout/hero-headline";
+import { HeroMarquee } from "@/components/layout/hero-marquee";
 import { PostCard } from "@/components/post/post-card";
 import { Button } from "@/components/ui/button";
 import { categoryBuckets, publishedPosts, tagBuckets } from "@/lib/content/posts";
@@ -31,27 +32,15 @@ export default function HomePage() {
 
   const showIndex = categories.length > 0 || tags.length > 0;
 
-  const promiseChips: Array<{ label: string; body: string }> = [
-    {
-      label: "tutorial",
-      body: "직접 따라 한 튜토리얼 기록. 시키는 대로 했을 때 진짜 되는지부터 확인합니다.",
-    },
-    {
-      label: "survived",
-      body: "막힌 부분, 비용, 약관 주의점, 결과물까지 — 살아남은 것만 정리합니다.",
-    },
-    {
-      label: "archive",
-      body: "카테고리·태그·시간순으로 다시 찾을 수 있게 정리한 1인 기록소입니다.",
-    },
-  ];
-
   return (
     <>
-      <PageHeader kicker="AI 시대 생존기" title={SITE_HERO_HEADLINE} description={SITE_HERO_LEDE} />
-
-      <section className="container-hero py-10">
-        <div className="flex flex-wrap gap-3">
+      <section className="container-hero pt-16 sm:pt-20 pb-8">
+        <p className="kicker kicker-accent">AI 시대 생존기</p>
+        <HeroHeadline text={SITE_HERO_HEADLINE} />
+        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-500 text-pretty">
+          {SITE_HERO_LEDE}
+        </p>
+        <div className="mt-7 flex flex-wrap gap-3">
           <Button asChild>
             <Link href="/posts">최신 글 보기</Link>
           </Button>
@@ -61,9 +50,11 @@ export default function HomePage() {
         </div>
       </section>
 
+      <HeroMarquee />
+
       <section className="container-mast py-12">
         <header className="section-marker mb-8">
-          <p className="kicker tabular-nums">01 / 03</p>
+          <p className="kicker tabular-nums">01 / 02</p>
           <div className="min-w-0">
             <p className="kicker">latest dispatches</p>
             <h2 className="mt-2 font-display text-display text-ink-900">최신 기록</h2>
@@ -102,7 +93,7 @@ export default function HomePage() {
         <section className="border-y border-paper-rule bg-paper-deep">
           <div className="container-mast py-16">
             <header className="section-marker mb-10">
-              <p className="kicker tabular-nums">02 / 03</p>
+              <p className="kicker tabular-nums">02 / 02</p>
               <div>
                 <p className="kicker">index</p>
                 <h2 className="mt-2 font-display text-display text-ink-900">기록소 가는 길</h2>
@@ -149,30 +140,6 @@ export default function HomePage() {
           </div>
         </section>
       ) : null}
-
-      <section className="container-mast py-16">
-        <header className="section-marker mb-8">
-          <p className="kicker tabular-nums">03 / 03</p>
-          <div>
-            <p className="kicker">why this site</p>
-            <h2 className="mt-2 font-display text-display text-ink-900">진짜 되는 것만 남긴다</h2>
-          </div>
-        </header>
-        <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
-          <p className="max-w-prose text-ink-600 leading-relaxed">
-            인터넷에 떠도는 AI 튜토리얼을 직접 따라 해보고, 안 된 부분과 막힌 지점, 비용까지 기록합니다.
-            새로운 도구가 좋아 보이는 글이 아니라, 직접 끝까지 해본 사람의 기록만 남깁니다.
-          </p>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {promiseChips.map((chip) => (
-              <div key={chip.label} className="border border-paper-rule bg-paper-elevated p-4">
-                <p className="kicker kicker-accent">{chip.label}</p>
-                <p className="mt-3 text-sm leading-relaxed text-ink-600">{chip.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </>
   );
 }

@@ -569,6 +569,65 @@ html.no-js .char-mast .char-accent-bar {
 }
 
 /* ============================================================
+   Hero marquee — editorial ticker tape under the home hero.
+   Track is duplicated; -50% translate produces a seamless loop.
+   ============================================================ */
+@keyframes hero-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.hero-marquee {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--ink-900);
+  border-bottom: 1px solid var(--paper-rule);
+  background: var(--paper-elevated);
+}
+
+.hero-marquee-track {
+  display: flex;
+  width: max-content;
+  list-style: none;
+  padding: 0.875rem 0;
+  margin: 0;
+  gap: 2.5rem;
+  animation: hero-marquee 48s linear infinite;
+}
+
+.hero-marquee:hover .hero-marquee-track {
+  animation-play-state: paused;
+}
+
+.hero-marquee-item {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.hero-marquee-item::before {
+  content: "✦";
+  color: var(--accent);
+  font-size: 0.7em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-marquee-track {
+    animation: none;
+  }
+}
+
+/* ============================================================
    Utility layer
    ============================================================ */
 @layer utilities {
