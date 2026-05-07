@@ -19,11 +19,11 @@ Last Updated: 2026-05-05
 
 ```text
 Home
-Posts
-Series
-Tools
+Posts (호버 시 카테고리 드롭다운)
 About
 ```
+
+POSTS 트리거는 호버(데스크톱) 또는 키보드 포커스 시 카테고리 드롭다운을 열고, 클릭 시 `/posts`로 이동한다. 패널 항목: 전체 글 + 상위 8개 카테고리 (post count 내림차순) + "+ 카테고리 모두 보기" 링크. `/series`, `/tools`, `/categories`, `/tags` 라우트는 IA 트리에 남지만 상단 메뉴에서는 빠진다.
 
 하단 메뉴:
 

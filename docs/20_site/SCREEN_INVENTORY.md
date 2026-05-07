@@ -13,10 +13,10 @@ Last Updated: 2026-05-05
 | Post Detail | `/posts/[slug]/` | 콘텐츠 소비와 내부 링크 | P0 |
 | Category Detail | `/categories/[category]/` | 주제별 글 탐색 | P0 |
 | Tag Detail | `/tags/[tag]/` | 세부 키워드별 글 탐색 | P1 |
-| Series Index | `/series/` | 연재 콘텐츠 탐색 | P1 |
-| Series Detail | `/series/[series]/` | 연재 순서 제공 | P1 |
-| Tools Index | `/tools/` | 도구별 콘텐츠 탐색 | P1 |
-| Tool Detail | `/tools/[tool]/` | 특정 도구 관련 글 탐색 | P1 |
+| Series Index | `/series/` | 연재 콘텐츠 탐색 (low-priority — not promoted in nav) | P2 |
+| Series Detail | `/series/[series]/` | 연재 순서 제공 (low-priority — not promoted in nav) | P2 |
+| Tools Index | `/tools/` | 도구별 콘텐츠 탐색 (low-priority — not promoted in nav) | P2 |
+| Tool Detail | `/tools/[tool]/` | 특정 도구 관련 글 탐색 (low-priority — not promoted in nav) | P2 |
 | About | `/about/` | 운영자 신뢰도와 소개 | P0 |
 | Contact | `/contact/` | 연락 수단 제공 | P0 |
 | Privacy | `/privacy/` | 광고/분석/쿠키 정책 고지 | P0 |
@@ -152,3 +152,35 @@ Last Updated: 2026-05-05
 - 문의 방법
 
 실제 배포 전 법적/정책 문구는 최신 기준으로 재검토한다.
+
+---
+
+## 8. Header POSTS Dropdown
+
+### 목적
+
+상단 메뉴에서 카테고리 진입을 한 번에 노출한다.
+
+### 트리거
+
+- 데스크톱: POSTS 호버 또는 키보드 포커스 시 패널 열림
+- 모바일: 탭 시 인라인 확장 (slide-out drawer 아님)
+- POSTS 자체 클릭 시 `/posts`로 이동 (트리거가 link이자 disclosure)
+
+### 패널 항목
+
+1. 전체 글 → `/posts`
+2. 상위 8개 카테고리 (post count 내림차순) → `/categories/<slug>`, 우측에 카운트 표기
+3. + 카테고리 모두 보기 → `/categories`
+
+### 키보드 지원
+
+- Escape: 패널 닫고 트리거에 포커스
+- 외부 클릭: 패널 닫음
+- 라우트 변경: 패널 닫음
+- Tab: 메뉴를 빠져나가면서 닫음
+- 호버 grace: 트리거+패널에서 200ms 떠나면 닫음
+
+### 빈 상태
+
+카테고리가 0개일 때 패널이 열리지 않고 POSTS는 plain link로 동작 (▾ glyph 미노출).
