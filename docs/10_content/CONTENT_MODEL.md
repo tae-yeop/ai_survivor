@@ -114,6 +114,7 @@ ogImage: "/images/og/default.svg"
 - 권장 위치: `apps/web/public/media/posts/<slug>/...`
 - 파일명은 영문 소문자/kebab-case를 사용한다.
 - 모든 본문 이미지는 alt text를 쓴다.
+- 이미지: 기본 `![alt](url)`. 정렬·크기·캡션이 필요하면 `<Figure src alt width align caption />` (Phase 5 도입).
 
 ### 영상
 
