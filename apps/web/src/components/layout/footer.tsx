@@ -13,10 +13,10 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
           <div>
             <p className="kicker kicker-accent">end of dispatch</p>
-            <p className="mt-3 font-display text-3xl font-bold leading-[1.2] tracking-[-0.022em] text-ink-800 text-balance sm:text-[2rem]">
-              기록되지 않은 실험은 <span className="text-accent">사라진다.</span>
+            <p className="mt-3 font-display text-2xl font-bold leading-[1.2] tracking-[-0.022em] text-ink-800">
+              {SITE_NAME}
             </p>
-            <p className="mt-5 max-w-md leading-relaxed text-ink-500">{SITE_TAGLINE}</p>
+            <p className="mt-3 max-w-md leading-relaxed text-ink-500">{SITE_TAGLINE}</p>
             <div className="mt-8 flex items-center gap-3">
               <Link
                 href="/rss.xml"

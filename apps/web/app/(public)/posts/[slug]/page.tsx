@@ -5,7 +5,6 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { EditOverlay } from "@/components/admin/EditOverlay";
 import { mdxComponents } from "@/components/mdx/mdx-components";
 import { ArticleJsonLd } from "@/components/seo/article-json-ld";
-import { getAdminSession } from "@/lib/admin/session";
 import { isInPlaceEditEnabled } from "@/lib/admin/inplace-flag";
 import { getPostBySlug, publishedPosts } from "@/lib/content/posts";
 import { categoryLabel } from "@/lib/labels";
@@ -33,10 +32,10 @@ export async function generateMetadata({
 
 export default async function PostDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const session = isInPlaceEditEnabled() ? await getAdminSession() : null;
-  const isAdmin = !!session;
-  const post = isAdmin ? getPostBySlug(slug, { includeDrafts: true }) : getPostBySlug(slug);
+  const post = getPostBySlug(slug);
   if (!post) notFound();
+
+  const inplaceEnabled = isInPlaceEditEnabled();
 
   const prose = (
     <div className="prose mt-12 drop-cap">
@@ -71,7 +70,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
         </div>
       </header>
 
-      {isAdmin ? (
+      {inplaceEnabled ? (
         <EditOverlay slug={post.slug}>{prose}</EditOverlay>
       ) : (
         prose

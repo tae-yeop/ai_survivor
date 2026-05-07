@@ -127,33 +127,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="container-mast py-16">
-        <header className="section-marker mb-8">
-          <p className="kicker tabular-nums">03 / 03</p>
-          <div>
-            <p className="kicker">why this site</p>
-            <h2 className="mt-2 font-display text-display text-ink-900">원본은 여기 남긴다</h2>
-          </div>
-        </header>
-        <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
-          <p className="max-w-prose text-ink-600 leading-relaxed">
-            외부 플랫폼은 유통 채널이다. 원본은 검색, 맥락, 디자인, 수정 이력을 모두 통제할 수 있는
-            이 사이트에 둔다.
-          </p>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {[
-              ["canonical", "원본 URL과 SEO를 직접 관리"],
-              ["archive", "카테고리·시리즈·도구로 재탐색"],
-              ["evidence", "실험 조건과 실패까지 보존"],
-            ].map(([label, body]) => (
-              <div key={label} className="border border-paper-rule bg-paper-elevated p-4">
-                <p className="kicker kicker-accent">{label}</p>
-                <p className="mt-3 text-sm leading-relaxed text-ink-600">{body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </>
   );
 }

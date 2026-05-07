@@ -24,6 +24,7 @@ const RichEditor = dynamic(
 type Mode = "view" | "loading" | "editing";
 
 export function EditOverlay({ slug, children }: { slug: string; children: React.ReactNode }) {
+  const [isAdmin, setIsAdmin] = useState(false);
   const [mode, setMode] = useState<Mode>("view");
   const [draft, setDraft] = useState<AdminPostDraft | null>(null);
   const [sha, setSha] = useState<string>("");
@@ -32,6 +33,17 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/me", { cache: "no-store", credentials: "same-origin" })
+      .then(async (res) => {
+        if (res.ok) {
+          const data = (await res.json()) as { admin?: boolean };
+          if (data.admin) setIsAdmin(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (mode !== "editing") return;
@@ -100,20 +112,22 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
     }
   }
 
-  /* ─── view / loading: 본문 그대로 + Edit 버튼 ─── */
+  /* ─── view / loading: 본문 그대로 + Edit 버튼 (어드민만) ─── */
   if (mode === "view" || mode === "loading") {
     return (
       <>
         {children}
-        <button
-          type="button"
-          onClick={mode === "view" ? startEditing : undefined}
-          disabled={mode === "loading"}
-          aria-label="Edit post in place"
-          className="fixed bottom-6 right-6 z-30 rounded-full border border-paper-rule bg-paper px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-700 shadow-lg hover:border-accent hover:text-accent disabled:opacity-50"
-        >
-          {mode === "loading" ? "Loading…" : "Edit"}
-        </button>
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={mode === "view" ? startEditing : undefined}
+            disabled={mode === "loading"}
+            aria-label="Edit post in place"
+            className="fixed bottom-6 right-6 z-30 rounded-full border border-paper-rule bg-paper px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-700 shadow-lg hover:border-accent hover:text-accent disabled:opacity-50"
+          >
+            {mode === "loading" ? "Loading…" : "Edit"}
+          </button>
+        )}
         {error && (
           <p className="mt-2 text-sm text-red-600">{error}</p>
         )}
