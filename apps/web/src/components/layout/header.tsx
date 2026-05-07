@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { categoryBuckets } from "@/lib/content/posts";
-import { NAV_PRIMARY, SITE_NAME } from "@/lib/site";
+import { NAV_PRIMARY } from "@/lib/site";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 
@@ -21,14 +21,14 @@ export function Header() {
         <div className="flex items-end justify-between gap-6">
           <Link href="/" className="group flex items-baseline gap-3 leading-none">
             <span className="font-display text-2xl font-bold leading-none tracking-[-0.025em] text-ink-800 sm:text-[1.75rem]">
-              AI <span className="text-accent">Vibe</span> Lab
+              AI 시대 <span className="text-accent">생존기</span>
             </span>
             <span
               className="hidden h-1.5 w-1.5 translate-y-[-2px] rounded-full bg-accent sm:inline-block"
               aria-hidden="true"
             />
             <span className="kicker hidden sm:inline-block">
-              {SITE_NAME === "AI Vibe Lab" ? "실험 기록 저널" : SITE_NAME}
+              컴퓨터쟁이의 기록소
             </span>
           </Link>
 
@@ -47,7 +47,7 @@ export function Header() {
       </div>
 
       <div className="container-mast flex items-center justify-between gap-3 border-b border-paper-rule py-2 sm:hidden">
-        <span className="kicker">실험 기록 저널</span>
+        <span className="kicker">컴퓨터쟁이의 기록소</span>
         <span className="kicker tabular-nums">{currentIssue()}</span>
       </div>
 
