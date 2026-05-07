@@ -9,16 +9,22 @@ import {
   renderItems,
 } from "novel";
 import { buildCoreExtensions } from "./extensions";
-import { buildCoreSlashItems, filterSlashItems, type SlashItem } from "./commands";
+import {
+  buildCoreSlashItems,
+  buildImageSlashItems,
+  filterSlashItems,
+  type SlashItem,
+} from "./commands";
 import { SlashMenu } from "./slash-menu";
 import { BubbleMenu } from "./bubble";
 import { StickyToolbar } from "./toolbar";
 
 export type RichEditorProps = {
+  slug: string;
   initialContent: string;
   onChange: (markdown: string) => void;
-  /** Slice 5.2+ adds image/video/embed slash items via this prop */
   extraSlashItems?: SlashItem[];
+  onMediaError?: (message: string) => void;
 };
 
 export { type SlashItem };
@@ -26,29 +32,34 @@ export { type SlashItem };
 const EMPTY_SLASH_ITEMS: SlashItem[] = [];
 
 export function RichEditor({
+  slug,
   initialContent,
   onChange,
   extraSlashItems = EMPTY_SLASH_ITEMS,
+  onMediaError,
 }: RichEditorProps) {
-  // useState so passing editor to toolbar/bubble is reactive.
-  // (useRef would not trigger re-renders when the editor mounts)
   const [editor, setEditor] = useState<EditorInstance | null>(null);
 
   const slashItems = useMemo<SlashItem[]>(
-    () => [...buildCoreSlashItems(), ...extraSlashItems],
-    [extraSlashItems],
+    () => [
+      ...buildCoreSlashItems(),
+      ...buildImageSlashItems(slug, onMediaError ?? (() => {})),
+      ...extraSlashItems,
+    ],
+    [slug, onMediaError, extraSlashItems],
   );
 
   const extensions = useMemo(() => {
-    const core = buildCoreExtensions();
+    const core = buildCoreExtensions({ slug, onMediaError });
     const slash = Command.configure({
       suggestion: {
-        items: ({ query }: { query: string }) => filterSlashItems(slashItems, query),
+        items: ({ query }: { query: string }) =>
+          filterSlashItems(slashItems, query),
         render: renderItems,
       },
     });
     return [...core, slash];
-  }, [slashItems]);
+  }, [slug, onMediaError, slashItems]);
 
   const handleUpdate = useCallback(
     ({ editor: e }: { editor: EditorInstance }) => {

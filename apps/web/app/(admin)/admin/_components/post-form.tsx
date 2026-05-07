@@ -172,7 +172,12 @@ export function AdminPostForm({
             / 로 블록 삽입 · 텍스트 선택 시 서식 메뉴
           </span>
         </div>
-        <RichEditor initialContent={post.body} onChange={setBodyMarkdown} />
+        <RichEditor
+          slug={post.slug}
+          initialContent={post.body}
+          onChange={setBodyMarkdown}
+          onMediaError={(msg) => alert(msg)}
+        />
       </section>
 
       <div className="flex flex-wrap items-center gap-3">

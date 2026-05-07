@@ -21,10 +21,17 @@ import Typography from "@tiptap/extension-typography";
 import Underline from "@tiptap/extension-underline";
 import { Markdown } from "tiptap-markdown";
 import { common, createLowlight } from "lowlight";
+import { Figure } from "./nodes/figure-node";
+import { MediaPaste } from "./plugins/media-paste";
 
 const lowlight = createLowlight(common);
 
-export function buildCoreExtensions() {
+export type CoreExtensionsOptions = {
+  slug: string;
+  onMediaError?: (message: string) => void;
+};
+
+export function buildCoreExtensions(options: CoreExtensionsOptions) {
   return [
     StarterKit.configure({ codeBlock: false }),
     Underline,
@@ -59,6 +66,11 @@ export function buildCoreExtensions() {
       html: true,
       transformPastedText: true,
       transformCopiedText: true,
+    }),
+    Figure,
+    MediaPaste.configure({
+      slug: options.slug,
+      onError: options.onMediaError,
     }),
   ];
 }
