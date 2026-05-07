@@ -38,6 +38,12 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
   const post = isAdmin ? getPostBySlug(slug, { includeDrafts: true }) : getPostBySlug(slug);
   if (!post) notFound();
 
+  const prose = (
+    <div className="prose mt-12 drop-cap">
+      <MDXRemote source={post.body} components={mdxComponents} />
+    </div>
+  );
+
   return (
     <article className="container-prose py-16 sm:py-20">
       <ArticleJsonLd post={post} />
@@ -64,9 +70,13 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
           <span className="dateline">{post.difficulty}</span>
         </div>
       </header>
-      <div className="prose mt-12 drop-cap">
-        <MDXRemote source={post.body} components={mdxComponents} />
-      </div>
+
+      {isAdmin ? (
+        <EditOverlay slug={post.slug}>{prose}</EditOverlay>
+      ) : (
+        prose
+      )}
+
       <footer className="mt-12 border-t border-paper-rule pt-6">
         <div className="flex flex-wrap gap-2">
           {post.tags.map((tag) => (
@@ -76,7 +86,6 @@ export default async function PostDetailPage({ params }: { params: Promise<{ slu
           ))}
         </div>
       </footer>
-      {isAdmin && <EditOverlay slug={post.slug} />}
     </article>
   );
 }

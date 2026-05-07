@@ -23,7 +23,7 @@ const RichEditor = dynamic(
 
 type Mode = "view" | "loading" | "editing";
 
-export function EditOverlay({ slug }: { slug: string }) {
+export function EditOverlay({ slug, children }: { slug: string; children: React.ReactNode }) {
   const [mode, setMode] = useState<Mode>("view");
   const [draft, setDraft] = useState<AdminPostDraft | null>(null);
   const [sha, setSha] = useState<string>("");
@@ -72,7 +72,6 @@ export function EditOverlay({ slug }: { slug: string }) {
     setBody(res.draft.body);
     setDirty(false);
     setMode("editing");
-    document.querySelector("article .prose")?.classList.add("hidden");
   }
 
   function cancel() {
@@ -81,7 +80,6 @@ export function EditOverlay({ slug }: { slug: string }) {
     setDraft(null);
     setError(null);
     setDirty(false);
-    document.querySelector("article .prose")?.classList.remove("hidden");
   }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -96,85 +94,86 @@ export function EditOverlay({ slug }: { slug: string }) {
     setSaving(false);
     if (res.ok) {
       setDirty(false);
-      setMode("view");
-      document.querySelector("article .prose")?.classList.remove("hidden");
       window.location.reload();
     } else {
       setError(res.error);
     }
   }
 
-  if (mode === "view") {
+  /* ─── view / loading: 본문 그대로 + Edit 버튼 ─── */
+  if (mode === "view" || mode === "loading") {
     return (
-      <button
-        type="button"
-        onClick={startEditing}
-        aria-label="Edit post in place"
-        className="fixed bottom-6 right-6 z-30 rounded-full border border-paper-rule bg-paper px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-700 shadow-lg hover:border-accent hover:text-accent sm:sticky sm:top-6 sm:bottom-auto sm:right-auto sm:ml-auto"
-      >
-        Edit
-      </button>
+      <>
+        {children}
+        <button
+          type="button"
+          onClick={mode === "view" ? startEditing : undefined}
+          disabled={mode === "loading"}
+          aria-label="Edit post in place"
+          className="fixed bottom-6 right-6 z-30 rounded-full border border-paper-rule bg-paper px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-700 shadow-lg hover:border-accent hover:text-accent disabled:opacity-50"
+        >
+          {mode === "loading" ? "Loading…" : "Edit"}
+        </button>
+        {error && (
+          <p className="mt-2 text-sm text-red-600">{error}</p>
+        )}
+      </>
     );
   }
 
-  if (mode === "loading") {
-    return (
-      <div className="fixed bottom-6 right-6 z-30 rounded-full border border-paper-rule bg-paper px-4 py-2 font-mono text-[11px] text-ink-400 shadow-lg">
-        Loading…
-      </div>
-    );
-  }
-
+  /* ─── editing: prose 자리를 RichEditor 로 교체 ─── */
   if (!draft) return null;
 
   return (
-    <div className="fixed inset-0 z-40 overflow-y-auto bg-paper/95 backdrop-blur">
-      <form ref={formRef} onSubmit={onSubmit} className="container-prose space-y-6 py-8">
-        <div className="sticky top-0 z-10 flex items-center justify-end gap-2 bg-paper/95 py-2 backdrop-blur">
+    <form ref={formRef} onSubmit={onSubmit} className="mt-12 space-y-4">
+      {/* sticky 액션 바 */}
+      <div className="sticky top-0 z-10 -mx-4 flex items-center justify-between gap-2 border-b border-paper-rule bg-paper/95 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6">
+        <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-400">
+          Editing
+        </span>
+        <div className="flex items-center gap-2">
+          {error && (
+            <span role="alert" className="text-xs text-red-600">{error}</span>
+          )}
           <button
             type="submit"
             disabled={saving}
-            className="rounded-md bg-ink-900 px-4 py-2 font-mono text-xs uppercase tracking-[0.12em] text-paper hover:bg-accent disabled:opacity-60"
+            className="rounded-md bg-ink-900 px-4 py-1.5 font-mono text-xs uppercase tracking-[0.12em] text-paper hover:bg-accent disabled:opacity-60"
           >
             {saving ? "Saving…" : "Save"}
           </button>
           <button
             type="button"
             onClick={cancel}
-            className="rounded-md border border-paper-rule bg-paper px-4 py-2 font-mono text-xs uppercase tracking-[0.12em] text-ink-700 hover:border-accent"
+            className="rounded-md border border-paper-rule bg-paper px-4 py-1.5 font-mono text-xs uppercase tracking-[0.12em] text-ink-700 hover:border-accent"
           >
             Cancel
           </button>
           <Link
             href={`/admin/posts/${slug}`}
-            className="rounded-md border border-paper-rule bg-paper px-4 py-2 font-mono text-xs uppercase tracking-[0.12em] text-ink-700 hover:border-accent"
+            className="hidden rounded-md border border-paper-rule bg-paper px-4 py-1.5 font-mono text-xs uppercase tracking-[0.12em] text-ink-700 hover:border-accent sm:inline-block"
           >
             Open in /admin
           </Link>
         </div>
-        {error && (
-          <div
-            role="alert"
-            className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
-          >
-            {error}
-          </div>
-        )}
-        <input type="hidden" name="_mode" value="update" />
-        <input type="hidden" name="_originalSlug" value={slug} />
-        <input type="hidden" name="body" value={body} />
-        <input type="hidden" name="_baseSha" value={sha} />
-        <MetadataPanel post={draft} defaultOpen={false} collapsible />
-        <RichEditor
-          slug={slug}
-          initialContent={draft.body}
-          onChange={(md) => {
-            setBody(md);
-            setDirty(true);
-          }}
-          onMediaError={(m) => setError(m)}
-        />
-      </form>
-    </div>
+      </div>
+
+      <input type="hidden" name="_mode" value="update" />
+      <input type="hidden" name="_originalSlug" value={slug} />
+      <input type="hidden" name="body" value={body} />
+      <input type="hidden" name="_baseSha" value={sha} />
+
+      <MetadataPanel post={draft} defaultOpen={false} collapsible />
+
+      <RichEditor
+        slug={slug}
+        initialContent={draft.body}
+        onChange={(md) => {
+          setBody(md);
+          setDirty(true);
+        }}
+        onMediaError={(m) => setError(m)}
+      />
+    </form>
   );
 }
