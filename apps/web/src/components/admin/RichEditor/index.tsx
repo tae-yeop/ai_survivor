@@ -9,6 +9,7 @@ import {
   renderItems,
 } from "novel";
 import { buildCoreExtensions } from "./extensions";
+import { htmlFigureToMdx } from "./serialize";
 import {
   buildCoreSlashItems,
   buildImageSlashItems,
@@ -64,7 +65,7 @@ export function RichEditor({
   const handleUpdate = useCallback(
     ({ editor: e }: { editor: EditorInstance }) => {
       const md = e.storage.markdown?.getMarkdown() as string | undefined;
-      if (md !== undefined) onChange(md);
+      if (md !== undefined) onChange(htmlFigureToMdx(md));
     },
     [onChange],
   );
