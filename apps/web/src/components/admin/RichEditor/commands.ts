@@ -1,5 +1,3 @@
-"use client";
-
 import type { Editor, Range } from "@tiptap/core";
 
 export type SlashItem = {

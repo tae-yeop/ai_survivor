@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Command,
   EditorContent,
@@ -23,12 +23,16 @@ export type RichEditorProps = {
 
 export { type SlashItem };
 
+const EMPTY_SLASH_ITEMS: SlashItem[] = [];
+
 export function RichEditor({
   initialContent,
   onChange,
-  extraSlashItems = [],
+  extraSlashItems = EMPTY_SLASH_ITEMS,
 }: RichEditorProps) {
-  const editorRef = useRef<EditorInstance | null>(null);
+  // useState so passing editor to toolbar/bubble is reactive.
+  // (useRef would not trigger re-renders when the editor mounts)
+  const [editor, setEditor] = useState<EditorInstance | null>(null);
 
   const slashItems = useMemo<SlashItem[]>(
     () => [...buildCoreSlashItems(), ...extraSlashItems],
@@ -47,17 +51,17 @@ export function RichEditor({
   }, [slashItems]);
 
   const handleUpdate = useCallback(
-    ({ editor }: { editor: EditorInstance }) => {
-      const md = editor.storage.markdown?.getMarkdown() as string | undefined;
+    ({ editor: e }: { editor: EditorInstance }) => {
+      const md = e.storage.markdown?.getMarkdown() as string | undefined;
       if (md !== undefined) onChange(md);
     },
     [onChange],
   );
 
   const handleCreate = useCallback(
-    ({ editor }: { editor: EditorInstance }) => {
-      editorRef.current = editor;
-      if (initialContent) editor.commands.setContent(initialContent);
+    ({ editor: e }: { editor: EditorInstance }) => {
+      setEditor(e);
+      if (initialContent) e.commands.setContent(initialContent);
     },
     [initialContent],
   );
@@ -65,7 +69,8 @@ export function RichEditor({
   return (
     <div className="overflow-hidden rounded-md border border-paper-rule bg-paper shadow-sm">
       <EditorRoot>
-        <StickyToolbar editorRef={editorRef} />
+        {/* StickyToolbar sits above EditorContent and receives editor as a prop */}
+        <StickyToolbar editor={editor} />
         <EditorContent
           className="px-6 py-5 [&_.ProseMirror]:min-h-[480px] [&_.ProseMirror]:outline-none"
           extensions={extensions}
@@ -76,9 +81,11 @@ export function RichEditor({
           }}
           onUpdate={handleUpdate}
           onCreate={handleCreate}
-        />
-        <SlashMenu items={slashItems} />
-        <BubbleMenu editorRef={editorRef} />
+        >
+          {/* SlashMenu and BubbleMenu must be children of EditorContent to access Novel context */}
+          <SlashMenu items={slashItems} />
+          <BubbleMenu editor={editor} />
+        </EditorContent>
       </EditorRoot>
     </div>
   );
