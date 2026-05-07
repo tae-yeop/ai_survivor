@@ -1,6 +1,6 @@
-﻿# AI Vibe Lab Design Standard
+﻿# AI 시대 생존기 Design Standard
 
-AI Vibe Lab is an editorial lab notebook, not a SaaS landing page.
+AI 시대 생존기 is a survival journal — tutorials taken end-to-end, with cost, errors, and what was left after they ran. Not a SaaS landing page.
 
 The design should feel like a field report: sharp rules, calm paper, mono metadata, strong Korean headlines, and enough whitespace that the evidence can breathe. If a change makes the site look like a generic AI tools blog, reject it.
 
@@ -18,7 +18,7 @@ The interface must make three things obvious:
 
 - Surface: cool slate paper, not pure white marketing gloss.
 - Ink: near-black editorial text, restrained gray metadata.
-- Accent: teal/cyan as a lab marker, not a decorative gradient.
+- Accent: cinnabar / vermilion as an editorial signature mark, not a decorative gradient. Used only for the wordmark accent word, drop cap, kicker-accent, section §, focus ring, and the existing highlight band. Body links and buttons stay ink-on-paper.
 - Shape: square edges by default. Rounded cards are not the brand.
 - Rules: horizontal and vertical lines should structure the page like a print spread.
 - Motion: subtle reveal is allowed. Motion must never hide content or create layout shift that blocks reading.
@@ -41,6 +41,8 @@ The home page should read as an editorial issue:
 2. featured/latest dispatches
 3. index paths by category, series, and tool
 4. why the site exists / canonical ownership
+
+Section markers are numbered `01 / 03`, `02 / 03`, `03 / 03` after the unnumbered hero. The third section is a restored editorial promise block with three left-aligned chip cards — never a centered icon-feature grid.
 
 Avoid a generic three-card first impression. Cards are allowed only when the card is the interaction. Post lists should usually be editorial rows with a date rail, category, title, description, and tags.
 
@@ -85,6 +87,7 @@ Reject these patterns unless there is a specific product reason:
 - decorative blobs or wave dividers
 - repeated rounded cards with the same radius everywhere
 - generic copy like “unlock the power of AI”
+- colored left-border on cards as visual decoration
 
 ## Platform and cross-posting policy
 
@@ -97,7 +100,7 @@ External platforms are distribution channels:
 - Medium only for selected republished essays.
 - Brunch only for narrative essays, not technical source-of-truth posts.
 
-Every cross-post should point back to the canonical article on `aivibelab.com` when possible. Do not design the main site around the limits of external platforms.
+Every cross-post should point back to the canonical article on `aivibelab.com` (aisurvivor) when possible. Do not design the main site around the limits of external platforms.
 
 ## Definition of done for public UI changes
 
@@ -107,4 +110,4 @@ Before shipping public UI changes:
 2. 390px mobile screenshots show no horizontal clipping.
 3. Desktop first screen still communicates the site promise.
 4. Archive/search empty state is tested when touched.
-5. The page still looks like AI Vibe Lab, not a template.
+5. The page still looks like AI 시대 생존기, not a template.
