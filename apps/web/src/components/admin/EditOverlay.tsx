@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { AdminPostDraft } from "@/lib/admin/mdx";
-import { MetadataPanel } from "./MetadataPanel";
+import { adminInputClass, MetadataPanel } from "./MetadataPanel";
 import {
   loadInPlace,
   savePostInPlaceAction,
@@ -12,7 +12,7 @@ import {
 } from "../../../app/(public)/posts/[slug]/save-action";
 
 const RichEditor = dynamic(
-  () => import("@/components/admin/RichEditor").then((m) => ({ default: m.RichEditor })),
+  () => import("@/components/admin/RichEditor").then((module) => ({ default: module.RichEditor })),
   {
     ssr: false,
     loading: () => (
@@ -27,8 +27,8 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
   const [isAdmin, setIsAdmin] = useState(false);
   const [mode, setMode] = useState<Mode>("view");
   const [draft, setDraft] = useState<AdminPostDraft | null>(null);
-  const [sha, setSha] = useState<string>("");
-  const [body, setBody] = useState<string>("");
+  const [sha, setSha] = useState("");
+  const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -36,30 +36,29 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
 
   useEffect(() => {
     fetch("/api/admin/me", { cache: "no-store", credentials: "same-origin" })
-      .then(async (res) => {
-        if (res.ok) {
-          const data = (await res.json()) as { admin?: boolean };
-          if (data.admin) setIsAdmin(true);
-        }
+      .then(async (response) => {
+        if (!response.ok) return;
+        const data = (await response.json()) as { admin?: boolean };
+        if (data.admin) setIsAdmin(true);
       })
       .catch(() => {});
   }, []);
 
   useEffect(() => {
     if (mode !== "editing") return;
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
-        e.preventDefault();
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
         formRef.current?.requestSubmit();
-      } else if (e.key === "Escape") {
-        e.preventDefault();
+      } else if (event.key === "Escape") {
+        event.preventDefault();
         cancel();
       }
     };
-    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
       if (!dirty) return;
-      e.preventDefault();
-      e.returnValue = "";
+      event.preventDefault();
+      event.returnValue = "";
     };
     window.addEventListener("keydown", onKey);
     window.addEventListener("beforeunload", onBeforeUnload);
@@ -67,52 +66,52 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("beforeunload", onBeforeUnload);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // cancel is intentionally not a dependency; it reads current dirty state for the active edit session.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, dirty]);
 
   async function startEditing() {
     setMode("loading");
     setError(null);
-    const res = await loadInPlace(slug);
-    if (!res.ok) {
-      setError(res.error);
+    const result = await loadInPlace(slug);
+    if (!result.ok) {
+      setError(result.error);
       setMode("view");
       return;
     }
-    setDraft(res.draft);
-    setSha(res.sha);
-    setBody(res.draft.body);
+    setDraft(result.draft);
+    setSha(result.sha);
+    setBody(result.draft.body);
     setDirty(false);
     setMode("editing");
   }
 
   function cancel() {
-    if (dirty && !window.confirm("저장하지 않은 변경이 있습니다. 닫을까요?")) return;
+    if (dirty && !window.confirm("저장하지 않은 변경이 있습니다. 편집을 취소할까요?")) return;
     setMode("view");
     setDraft(null);
     setError(null);
     setDirty(false);
   }
 
-  async function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     if (!formRef.current) return;
     setSaving(true);
     setError(null);
     const formData = new FormData(formRef.current);
     formData.set("body", body);
     formData.set("_baseSha", sha);
-    const res: SaveResult = await savePostInPlaceAction(formData);
+    const result: SaveResult = await savePostInPlaceAction(formData);
     setSaving(false);
-    if (res.ok) {
+    if (result.ok) {
       setDirty(false);
       window.location.reload();
-    } else {
-      setError(res.error);
+      return;
     }
+    setError(result.error);
   }
 
-  /* ─── view / loading: 본문 그대로 + Edit 버튼 (어드민만) ─── */
   if (mode === "view" || mode === "loading") {
     return (
       <>
@@ -122,39 +121,37 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
             type="button"
             onClick={mode === "view" ? startEditing : undefined}
             disabled={mode === "loading"}
-            aria-label="Edit post in place"
+            aria-label="Edit this page directly"
             className="fixed bottom-6 right-6 z-30 rounded-full border border-paper-rule bg-paper px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-700 shadow-lg hover:border-accent hover:text-accent disabled:opacity-50"
           >
-            {mode === "loading" ? "Loading…" : "Edit"}
+            {mode === "loading" ? "Loading..." : "Edit page"}
           </button>
         )}
-        {error && (
-          <p className="mt-2 text-sm text-red-600">{error}</p>
-        )}
+        {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
       </>
     );
   }
 
-  /* ─── editing: prose 자리를 RichEditor 로 교체 ─── */
   if (!draft) return null;
 
   return (
-    <form ref={formRef} onSubmit={onSubmit} className="mt-12 space-y-4">
-      {/* sticky 액션 바 */}
-      <div className="sticky top-0 z-10 -mx-4 flex items-center justify-between gap-2 border-b border-paper-rule bg-paper/95 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6">
+    <form ref={formRef} onSubmit={onSubmit} className="space-y-6">
+      <div className="sticky top-0 z-20 -mx-4 flex items-center justify-between gap-2 border-b border-paper-rule bg-paper/95 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6">
         <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink-400">
-          Editing
+          Direct editing this page
         </span>
         <div className="flex items-center gap-2">
-          {error && (
-            <span role="alert" className="text-xs text-red-600">{error}</span>
-          )}
+          {error ? (
+            <span role="alert" className="max-w-xs text-xs text-red-600">
+              {error}
+            </span>
+          ) : null}
           <button
             type="submit"
             disabled={saving}
             className="rounded-md bg-ink-900 px-4 py-1.5 font-mono text-xs uppercase tracking-[0.12em] text-paper hover:bg-accent disabled:opacity-60"
           >
-            {saving ? "Saving…" : "Save"}
+            {saving ? "Saving..." : "Save"}
           </button>
           <button
             type="button"
@@ -163,12 +160,6 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
           >
             Cancel
           </button>
-          <Link
-            href={`/admin/posts/${slug}`}
-            className="hidden rounded-md border border-paper-rule bg-paper px-4 py-1.5 font-mono text-xs uppercase tracking-[0.12em] text-ink-700 hover:border-accent sm:inline-block"
-          >
-            Open in /admin
-          </Link>
         </div>
       </div>
 
@@ -177,17 +168,85 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
       <input type="hidden" name="body" value={body} />
       <input type="hidden" name="_baseSha" value={sha} />
 
-      <MetadataPanel post={draft} defaultOpen={false} collapsible />
+      <header className="rounded-3xl border border-dashed border-accent/40 bg-paper/80 p-5 shadow-sm md:p-7">
+        <p className="kicker kicker-accent">Editing visible page</p>
+        <label className="mt-4 block">
+          <span className="sr-only">Title</span>
+          <input
+            className={`${adminInputClass} border-0 bg-transparent px-0 py-2 font-display text-4xl font-semibold leading-tight shadow-none focus:ring-0 md:text-6xl`}
+            name="title"
+            required
+            defaultValue={draft.title}
+            onChange={() => setDirty(true)}
+          />
+        </label>
+        <label className="mt-5 block">
+          <span className="sr-only">Description</span>
+          <textarea
+            className={`${adminInputClass} min-h-24 border-0 bg-transparent px-0 text-lg leading-relaxed text-ink-500 shadow-none focus:ring-0`}
+            name="description"
+            required
+            defaultValue={draft.description}
+            onChange={() => setDirty(true)}
+          />
+        </label>
+        <div className="mt-6 grid gap-4 border-y border-paper-rule py-4 md:grid-cols-[1fr_11rem_11rem]">
+          <label className="block space-y-2">
+            <span className="dateline">Slug</span>
+            <input
+              className={`${adminInputClass} bg-paper-deep text-ink-500`}
+              name="slug"
+              pattern="[a-z0-9]+(-[a-z0-9]+)*"
+              required
+              readOnly
+              defaultValue={draft.slug}
+            />
+          </label>
+          <label className="block space-y-2">
+            <span className="dateline">Published</span>
+            <input
+              className={adminInputClass}
+              type="date"
+              name="publishedAt"
+              required
+              defaultValue={draft.publishedAt}
+              onChange={() => setDirty(true)}
+            />
+          </label>
+          <label className="block space-y-2">
+            <span className="dateline">Updated</span>
+            <input
+              className={adminInputClass}
+              type="date"
+              name="updatedAt"
+              required
+              defaultValue={draft.updatedAt}
+              onChange={() => setDirty(true)}
+            />
+          </label>
+        </div>
+      </header>
 
       <RichEditor
         slug={slug}
         initialContent={draft.body}
-        onChange={(md) => {
-          setBody(md);
+        onChange={(markdown) => {
+          setBody(markdown);
           setDirty(true);
         }}
-        onMediaError={(m) => setError(m)}
+        onMediaError={(message) => setError(message)}
       />
+
+      <MetadataPanel post={draft} defaultOpen={false} collapsible showPrimaryFields={false} />
+
+      <div className="flex justify-end">
+        <Link
+          href={`/admin/posts/${slug}`}
+          className="text-sm text-ink-500 underline decoration-paper-rule underline-offset-4 hover:text-accent"
+        >
+          Advanced admin editor
+        </Link>
+      </div>
     </form>
   );
 }

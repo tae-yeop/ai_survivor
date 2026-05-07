@@ -11,10 +11,10 @@ export function AdminStatusBadge() {
   useEffect(() => {
     let cancelled = false;
     fetch("/api/admin/me", { cache: "no-store", credentials: "same-origin" })
-      .then(async (res) => {
+      .then(async (response) => {
         if (cancelled) return;
-        if (res.ok) {
-          const data = (await res.json()) as { admin?: boolean; login?: string };
+        if (response.ok) {
+          const data = (await response.json()) as { admin?: boolean; login?: string };
           if (data.admin && data.login) {
             setState({ login: data.login });
             return;
@@ -52,6 +52,12 @@ export function AdminStatusBadge() {
 
   return (
     <span className="flex items-center gap-2 font-mono text-[0.65rem] uppercase tracking-[0.12em]">
+      <Link href="/write" className="text-accent hover:text-ink-800">
+        Write
+      </Link>
+      <span aria-hidden="true" className="text-ink-300">
+        ·
+      </span>
       <Link href="/admin" className="flex items-center gap-1.5 text-ink-600 hover:text-accent">
         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
         <span>{state.login}</span>

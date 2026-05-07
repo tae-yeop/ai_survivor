@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "format": "prettier --check .",
-    "test": "node --test src/lib/content/posts.test.ts src/lib/admin/session-token.test.ts src/lib/admin/mdx.test.ts src/lib/admin/github-content.test.ts src/lib/admin/inplace-flag.test.ts src/components/admin/RichEditor/markdown-roundtrip.test.ts src/components/admin/RichEditor/figure-serialize.test.ts"
+    "test": "node --test src/lib/content/posts.test.ts src/lib/admin/session-token.test.ts src/lib/admin/mdx.test.ts src/lib/admin/html-to-mdx.test.ts src/lib/admin/github-content.test.ts src/lib/admin/inplace-flag.test.ts src/components/admin/RichEditor/markdown-roundtrip.test.ts src/components/admin/RichEditor/figure-serialize.test.ts",
+    "post:html-to-mdx": "node scripts/html-to-mdx.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "latest",

@@ -78,9 +78,9 @@ export default async function AdminPage() {
         </p>
         <Link
           className="rounded-md bg-ink-900 px-4 py-3 font-mono text-xs uppercase tracking-[0.12em] text-paper transition hover:bg-accent"
-          href="/admin/posts/new"
+          href="/write"
         >
-          New draft
+          Write
         </Link>
       </div>
 

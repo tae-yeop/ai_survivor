@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { revalidatePath } from "next/cache";
 import {
@@ -75,7 +75,7 @@ export async function savePostInPlaceAction(formData: FormData): Promise<SaveRes
     if (error instanceof GitHubShaConflictError) {
       return {
         ok: false,
-        error: "다른 곳에서 수정되었습니다. reload 후 다시 시도하세요.",
+        error: "다른 곳에서 먼저 수정되었습니다. 페이지를 새로고침한 뒤 다시 시도하세요.",
         conflict: true,
       };
     }

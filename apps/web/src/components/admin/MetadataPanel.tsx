@@ -13,7 +13,7 @@ const CATEGORY_OPTIONS = [
   "domain-ai",
 ] as const;
 
-const inputClass =
+export const adminInputClass =
   "w-full rounded-md border border-paper-rule bg-paper px-3 py-2 text-sm text-ink-900 shadow-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -29,10 +29,12 @@ export function MetadataPanel({
   post,
   defaultOpen = true,
   collapsible = false,
+  showPrimaryFields = true,
 }: {
   post: AdminPostDraft;
   defaultOpen?: boolean;
   collapsible?: boolean;
+  showPrimaryFields?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const summary = `status:${post.status} · category:${post.category} · ${post.tags.length} tags`;
@@ -42,42 +44,53 @@ export function MetadataPanel({
       {collapsible && (
         <button
           type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="flex w-full items-center justify-between text-sm font-medium text-ink-700"
+          onClick={() => setOpen((value) => !value)}
+          className="flex w-full items-center justify-between gap-4 text-left text-sm font-medium text-ink-700"
           aria-expanded={open}
         >
-          <span>Metadata · {summary}</span>
-          <span aria-hidden>{open ? "▲" : "▼"}</span>
+          <span>설정 · {summary}</span>
+          <span className="font-mono text-xs uppercase tracking-[0.12em] text-ink-400" aria-hidden>
+            {open ? "close" : "open"}
+          </span>
         </button>
       )}
       {open && (
         <div className={`grid gap-4 md:grid-cols-2 ${collapsible ? "mt-4" : ""}`}>
-          <Field label="Title">
-            <input className={inputClass} name="title" required defaultValue={post.title} />
-          </Field>
-          <Field label="Slug">
-            <input
-              className={inputClass}
-              name="slug"
-              pattern="[a-z0-9]+(-[a-z0-9]+)*"
-              placeholder="kebab-case-slug"
-              required
-              defaultValue={post.slug}
-            />
-          </Field>
-          <div className="md:col-span-2">
-            <Field label="Description">
-              <textarea
-                className={`${inputClass} min-h-24`}
-                name="description"
-                required
-                defaultValue={post.description}
-              />
-            </Field>
-          </div>
+          {showPrimaryFields && (
+            <>
+              <Field label="Title">
+                <input
+                  className={adminInputClass}
+                  name="title"
+                  required
+                  defaultValue={post.title}
+                />
+              </Field>
+              <Field label="Slug">
+                <input
+                  className={adminInputClass}
+                  name="slug"
+                  pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                  placeholder="kebab-case-slug"
+                  required
+                  defaultValue={post.slug}
+                />
+              </Field>
+              <div className="md:col-span-2">
+                <Field label="Description">
+                  <textarea
+                    className={`${adminInputClass} min-h-24`}
+                    name="description"
+                    required
+                    defaultValue={post.description}
+                  />
+                </Field>
+              </div>
+            </>
+          )}
           <Field label="Published date">
             <input
-              className={inputClass}
+              className={adminInputClass}
               type="date"
               name="publishedAt"
               required
@@ -86,7 +99,7 @@ export function MetadataPanel({
           </Field>
           <Field label="Updated date">
             <input
-              className={inputClass}
+              className={adminInputClass}
               type="date"
               name="updatedAt"
               required
@@ -94,29 +107,45 @@ export function MetadataPanel({
             />
           </Field>
           <Field label="Status">
-            <select className={inputClass} name="status" required defaultValue={post.status}>
-              {STATUS_OPTIONS.map((s) => (
-                <option key={s} value={s}>{s}</option>
+            <select className={adminInputClass} name="status" required defaultValue={post.status}>
+              {STATUS_OPTIONS.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
               ))}
             </select>
           </Field>
           <Field label="Category">
-            <select className={inputClass} name="category" required defaultValue={post.category}>
-              {CATEGORY_OPTIONS.map((c) => (
-                <option key={c} value={c}>{c}</option>
+            <select
+              className={adminInputClass}
+              name="category"
+              required
+              defaultValue={post.category}
+            >
+              {CATEGORY_OPTIONS.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
               ))}
             </select>
           </Field>
           <Field label="Difficulty">
-            <select className={inputClass} name="difficulty" required defaultValue={post.difficulty}>
-              {DIFFICULTY_OPTIONS.map((d) => (
-                <option key={d} value={d}>{d}</option>
+            <select
+              className={adminInputClass}
+              name="difficulty"
+              required
+              defaultValue={post.difficulty}
+            >
+              {DIFFICULTY_OPTIONS.map((difficulty) => (
+                <option key={difficulty} value={difficulty}>
+                  {difficulty}
+                </option>
               ))}
             </select>
           </Field>
           <Field label="Tags (comma separated)">
             <input
-              className={inputClass}
+              className={adminInputClass}
               name="tags"
               required
               defaultValue={post.tags.join(", ")}
@@ -124,18 +153,18 @@ export function MetadataPanel({
           </Field>
           <Field label="Tools (comma separated)">
             <input
-              className={inputClass}
+              className={adminInputClass}
               name="tools"
               required
               defaultValue={post.tools.join(", ")}
             />
           </Field>
           <Field label="Series">
-            <input className={inputClass} name="series" defaultValue={post.series ?? ""} />
+            <input className={adminInputClass} name="series" defaultValue={post.series ?? ""} />
           </Field>
           <Field label="Series order">
             <input
-              className={inputClass}
+              className={adminInputClass}
               type="number"
               min="1"
               name="seriesOrder"
@@ -144,14 +173,14 @@ export function MetadataPanel({
           </Field>
           <Field label="Cover image path">
             <input
-              className={inputClass}
+              className={adminInputClass}
               name="coverImage"
               placeholder="/media/posts/slug/cover.webp"
               defaultValue={post.coverImage ?? ""}
             />
           </Field>
           <Field label="Cover alt text">
-            <input className={inputClass} name="coverAlt" defaultValue={post.coverAlt ?? ""} />
+            <input className={adminInputClass} name="coverAlt" defaultValue={post.coverAlt ?? ""} />
           </Field>
         </div>
       )}

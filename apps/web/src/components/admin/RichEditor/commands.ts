@@ -10,25 +10,25 @@ export type SlashItem = {
 const headingItems: SlashItem[] = [
   {
     title: "Heading 1",
-    description: "최상위 제목",
+    description: "가장 큰 제목",
     command: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).setHeading({ level: 1 }).run(),
   },
   {
     title: "Heading 2",
-    description: "대제목",
+    description: "섹션 제목",
     command: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).setHeading({ level: 2 }).run(),
   },
   {
     title: "Heading 3",
-    description: "소제목",
+    description: "작은 제목",
     command: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).setHeading({ level: 3 }).run(),
   },
   {
     title: "Heading 4",
-    description: "서브 소제목",
+    description: "보조 제목",
     command: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).setHeading({ level: 4 }).run(),
   },
@@ -37,7 +37,7 @@ const headingItems: SlashItem[] = [
 const blockItems: SlashItem[] = [
   {
     title: "Bullet List",
-    description: "글머리 기호",
+    description: "글머리 기호 목록",
     command: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).toggleBulletList().run(),
   },
@@ -56,14 +56,12 @@ const blockItems: SlashItem[] = [
   {
     title: "Blockquote",
     description: "인용문",
-    command: ({ editor, range }) =>
-      editor.chain().focus().deleteRange(range).setBlockquote().run(),
+    command: ({ editor, range }) => editor.chain().focus().deleteRange(range).setBlockquote().run(),
   },
   {
     title: "Code Block",
     description: "코드 블록",
-    command: ({ editor, range }) =>
-      editor.chain().focus().deleteRange(range).setCodeBlock().run(),
+    command: ({ editor, range }) => editor.chain().focus().deleteRange(range).setCodeBlock().run(),
   },
   {
     title: "Divider",
@@ -132,8 +130,8 @@ export function buildImageSlashItems(
               },
             })
             .run();
-        } catch (e) {
-          onError(e instanceof Error ? e.message : "Image upload failed");
+        } catch (error) {
+          onError(error instanceof Error ? error.message : "Image upload failed");
         }
       },
     },
@@ -141,11 +139,11 @@ export function buildImageSlashItems(
 }
 
 export function filterSlashItems(items: SlashItem[], query: string): SlashItem[] {
-  const q = query.trim().toLowerCase();
-  if (!q) return items;
+  const normalized = query.trim().toLowerCase();
+  if (!normalized) return items;
   return items.filter(
     (item) =>
-      item.title.toLowerCase().includes(q) ||
-      item.description.toLowerCase().includes(q),
+      item.title.toLowerCase().includes(normalized) ||
+      item.description.toLowerCase().includes(normalized),
   );
 }

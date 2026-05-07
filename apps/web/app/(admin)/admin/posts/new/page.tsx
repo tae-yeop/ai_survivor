@@ -19,7 +19,7 @@ export default async function NewAdminPostPage({
     <div>
       <AdminHeader
         title="New draft"
-        description="Create a new MDX file in apps/web/content/posts/<slug>/index.mdx. Status starts as draft."
+        description="Write in a blog-style editor. Saving creates apps/web/content/posts/<slug>/index.mdx."
       />
       <AdminPostForm post={createEmptyAdminPostDraft()} mode="new" error={error} />
     </div>
