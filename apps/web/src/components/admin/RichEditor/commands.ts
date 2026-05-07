@@ -1,4 +1,5 @@
 import type { Editor, Range } from "@tiptap/core";
+import { uploadImageForSlug, validateImageFile } from "./plugins/upload-image";
 
 export type SlashItem = {
   title: string;
@@ -85,6 +86,58 @@ const blockItems: SlashItem[] = [
 
 export function buildCoreSlashItems(): SlashItem[] {
   return [...headingItems, ...blockItems];
+}
+
+function pickFile(accept: string): Promise<File | null> {
+  return new Promise((resolve) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = accept;
+    input.onchange = () => resolve(input.files?.[0] ?? null);
+    input.oncancel = () => resolve(null);
+    input.click();
+  });
+}
+
+export function buildImageSlashItems(
+  slug: string,
+  onError: (message: string) => void,
+): SlashItem[] {
+  return [
+    {
+      title: "Image",
+      description: "이미지 업로드",
+      command: async ({ editor, range }) => {
+        editor.chain().focus().deleteRange(range).run();
+        const file = await pickFile("image/*");
+        if (!file) return;
+        const issue = validateImageFile(file);
+        if (issue) {
+          onError(issue);
+          return;
+        }
+        try {
+          const { url } = await uploadImageForSlug(slug, file);
+          editor
+            .chain()
+            .focus()
+            .insertContent({
+              type: "figure",
+              attrs: {
+                src: url,
+                alt: file.name,
+                width: "100%",
+                align: "center",
+                caption: "",
+              },
+            })
+            .run();
+        } catch (e) {
+          onError(e instanceof Error ? e.message : "Image upload failed");
+        }
+      },
+    },
+  ];
 }
 
 export function filterSlashItems(items: SlashItem[], query: string): SlashItem[] {
