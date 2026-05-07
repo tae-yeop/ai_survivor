@@ -5,8 +5,8 @@ import dynamic from "next/dynamic";
 import type { AdminPostDraft } from "@/lib/admin/mdx";
 import { savePostAction } from "../actions";
 
-const NovelBodyEditor = dynamic(
-  () => import("@/components/admin/NovelBodyEditor").then((m) => ({ default: m.NovelBodyEditor })),
+const RichEditor = dynamic(
+  () => import("@/components/admin/RichEditor").then((m) => ({ default: m.RichEditor })),
   {
     ssr: false,
     loading: () => (
@@ -172,7 +172,7 @@ export function AdminPostForm({
             / 로 블록 삽입 · 텍스트 선택 시 서식 메뉴
           </span>
         </div>
-        <NovelBodyEditor slug={post.slug} initialContent={post.body} onChange={setBodyMarkdown} />
+        <RichEditor initialContent={post.body} onChange={setBodyMarkdown} />
       </section>
 
       <div className="flex flex-wrap items-center gap-3">
