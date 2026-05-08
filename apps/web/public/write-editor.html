@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blog Write Editor</title>
+    <style>
+      :root {
+        --bg: #f7f3ec;
+        --paper: #fffdf8;
+        --paper-deep: #f0e8dc;
+        --ink: #1f2933;
+        --muted: #6b7280;
+        --rule: #ded2c0;
+        --accent: #c44528;
+        --accent-soft: #fff0e9;
+        --shadow: 0 24px 80px rgba(31, 41, 51, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top left, rgba(196, 69, 40, 0.1), transparent 28rem),
+          linear-gradient(180deg, #fbf7f0 0%, var(--bg) 100%);
+        color: var(--ink);
+        font-family:
+          Pretendard,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      .shell {
+        min-height: 100vh;
+        padding: 24px;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin: -24px -24px 24px;
+        padding: 16px 24px;
+        border-bottom: 1px solid rgba(222, 210, 192, 0.8);
+        background: rgba(247, 243, 236, 0.86);
+        backdrop-filter: blur(16px);
+      }
+
+      .brand {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+
+      .brand strong {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(22px, 2vw, 30px);
+        letter-spacing: -0.04em;
+      }
+
+      .brand span,
+      .eyebrow,
+      .button,
+      .tool,
+      .meta-label {
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .brand span,
+      .eyebrow,
+      .meta-label {
+        color: var(--muted);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .button {
+        border: 1px solid var(--rule);
+        border-radius: 999px;
+        background: var(--paper);
+        color: var(--ink);
+        cursor: pointer;
+        padding: 10px 14px;
+        transition:
+          border-color 0.15s,
+          color 0.15s,
+          background 0.15s;
+      }
+
+      .button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .button.primary {
+        border-color: var(--ink);
+        background: var(--ink);
+        color: #fffaf3;
+      }
+
+      .button.primary:hover {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: white;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 20px;
+        max-width: 1440px;
+        margin: 0 auto;
+      }
+
+      .editor-card,
+      .side-card,
+      .mdx-card {
+        border: 1px solid var(--rule);
+        border-radius: 28px;
+        background: rgba(255, 253, 248, 0.92);
+        box-shadow: var(--shadow);
+      }
+
+      .editor-card {
+        overflow: hidden;
+      }
+
+      .title-zone {
+        padding: clamp(24px, 4vw, 48px) clamp(24px, 5vw, 72px) 24px;
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .title-input {
+        width: 100%;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--ink);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(36px, 6vw, 78px);
+        font-weight: 700;
+        letter-spacing: -0.06em;
+        line-height: 0.98;
+      }
+
+      .title-input::placeholder,
+      .desc-input::placeholder,
+      .editor[contenteditable="true"]:empty::before {
+        color: rgba(107, 114, 128, 0.45);
+      }
+
+      .desc-input {
+        width: 100%;
+        min-height: 64px;
+        margin-top: 20px;
+        resize: vertical;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--muted);
+        font-size: clamp(17px, 2vw, 21px);
+        line-height: 1.65;
+      }
+
+      .toolbar {
+        position: sticky;
+        top: 65px;
+        z-index: 8;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 12px clamp(16px, 4vw, 40px);
+        border-bottom: 1px solid var(--rule);
+        background: rgba(255, 253, 248, 0.95);
+        backdrop-filter: blur(14px);
+      }
+
+      .tool {
+        min-width: 36px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--ink);
+        cursor: pointer;
+        padding: 8px 10px;
+      }
+
+      .tool:hover,
+      .tool.active {
+        border-color: var(--rule);
+        background: var(--paper-deep);
+        color: var(--accent);
+      }
+
+      .editor {
+        min-height: 720px;
+        padding: clamp(28px, 4vw, 56px) clamp(24px, 5vw, 72px);
+        outline: none;
+        font-size: 18px;
+        line-height: 1.9;
+      }
+
+      .editor:empty::before {
+        content: "여기에 글을 쓰세요. 네이버/티스토리처럼 붙여넣기, 제목, 목록, 인용문, 이미지 URL 삽입을 할 수 있습니다.";
+      }
+
+      .editor h2 {
+        margin: 2.2em 0 0.7em;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 34px;
+        letter-spacing: -0.04em;
+        line-height: 1.15;
+      }
+
+      .editor h3 {
+        margin: 2em 0 0.65em;
+        font-size: 24px;
+        line-height: 1.25;
+      }
+
+      .editor p {
+        margin: 0 0 1.15em;
+      }
+
+      .editor blockquote {
+        margin: 1.5em 0;
+        padding: 18px 22px;
+        border-left: 4px solid var(--accent);
+        border-radius: 14px;
+        background: var(--accent-soft);
+        color: #6b2b1e;
+      }
+
+      .editor pre {
+        overflow: auto;
+        padding: 18px;
+        border-radius: 16px;
+        background: #18202a;
+        color: #f8efe4;
+      }
+
+      .editor img {
+        display: block;
+        max-width: 100%;
+        margin: 24px auto 8px;
+        border-radius: 18px;
+        border: 1px solid var(--rule);
+      }
+
+      .side {
+        display: grid;
+        align-content: start;
+        gap: 16px;
+      }
+
+      .side-card,
+      .mdx-card {
+        padding: 18px;
+      }
+
+      .field {
+        display: grid;
+        gap: 7px;
+        margin-top: 14px;
+      }
+
+      .field input,
+      .field select,
+      .field textarea {
+        width: 100%;
+        border: 1px solid var(--rule);
+        border-radius: 12px;
+        background: var(--paper);
+        color: var(--ink);
+        outline: none;
+        padding: 11px 12px;
+      }
+
+      .field textarea {
+        min-height: 74px;
+        resize: vertical;
+      }
+
+      .hint {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .mdx-output {
+        width: 100%;
+        min-height: 260px;
+        resize: vertical;
+        border: 1px solid var(--rule);
+        border-radius: 16px;
+        background: #191f27;
+        color: #f8efe4;
+        outline: none;
+        padding: 14px;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.65;
+      }
+
+      .toast {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        z-index: 20;
+        transform: translateY(18px);
+        opacity: 0;
+        border-radius: 999px;
+        background: var(--ink);
+        color: white;
+        padding: 12px 16px;
+        font-size: 13px;
+        transition:
+          opacity 0.18s,
+          transform 0.18s;
+      }
+
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      @media (max-width: 980px) {
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+
+        .toolbar {
+          top: 62px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .shell {
+          padding: 14px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          margin: -14px -14px 14px;
+          padding: 12px 14px;
+        }
+
+        .brand {
+          display: grid;
+          gap: 4px;
+        }
+
+        .actions {
+          justify-content: flex-end;
+        }
+
+        .button {
+          padding: 9px 11px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <strong>Write Studio</strong>
+          <span>AI Survivor Blog</span>
+        </div>
+        <div class="actions">
+          <button class="button" type="button" id="previewMdx">MDX preview</button>
+          <button class="button" type="button" id="copyMdx">Copy MDX</button>
+          <button class="button primary" type="button" id="downloadMdx">Download .mdx</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="editor-card" aria-label="Post editor">
+          <div class="title-zone">
+            <p class="eyebrow">New post</p>
+            <input id="title" class="title-input" placeholder="제목을 입력하세요" />
+            <textarea
+              id="description"
+              class="desc-input"
+              placeholder="글 목록과 검색 결과에 보일 요약을 입력하세요"
+            ></textarea>
+          </div>
+
+          <div class="toolbar" aria-label="Editor toolbar">
+            <button class="tool" type="button" data-command="formatBlock" data-value="h2">H2</button>
+            <button class="tool" type="button" data-command="formatBlock" data-value="h3">H3</button>
+            <button class="tool" type="button" data-command="bold"><b>B</b></button>
+            <button class="tool" type="button" data-command="italic"><i>I</i></button>
+            <button class="tool" type="button" data-command="underline"><u>U</u></button>
+            <button class="tool" type="button" data-command="insertUnorderedList">• List</button>
+            <button class="tool" type="button" data-command="insertOrderedList">1. List</button>
+            <button class="tool" type="button" data-action="quote">Quote</button>
+            <button class="tool" type="button" data-action="code">Code</button>
+            <button class="tool" type="button" data-action="link">Link</button>
+            <button class="tool" type="button" data-action="image">Image</button>
+            <button class="tool" type="button" data-command="removeFormat">Clear</button>
+          </div>
+
+          <article id="editor" class="editor" contenteditable="true" spellcheck="true"></article>
+        </section>
+
+        <aside class="side" aria-label="Post settings">
+          <section class="side-card">
+            <p class="eyebrow">Post settings</p>
+            <label class="field">
+              <span class="meta-label">Slug</span>
+              <input id="slug" placeholder="my-first-post" />
+            </label>
+            <label class="field">
+              <span class="meta-label">Status</span>
+              <select id="status">
+                <option value="draft">draft</option>
+                <option value="published">published</option>
+                <option value="scheduled">scheduled</option>
+                <option value="archived">archived</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="meta-label">Category</span>
+              <input id="category" value="vibe-coding-lab" />
+            </label>
+            <label class="field">
+              <span class="meta-label">Tags</span>
+              <input id="tags" value="ai, blog" />
+            </label>
+            <label class="field">
+              <span class="meta-label">Tools</span>
+              <input id="tools" value="ChatGPT, Codex" />
+            </label>
+            <label class="field">
+              <span class="meta-label">Difficulty</span>
+              <select id="difficulty">
+                <option value="beginner">beginner</option>
+                <option value="intermediate">intermediate</option>
+                <option value="advanced">advanced</option>
+              </select>
+            </label>
+            <p class="hint">
+              여기서 만든 MDX는 현재 블로그의
+              <code>content/posts/&lt;slug&gt;/index.mdx</code> 형식과 맞춥니다.
+            </p>
+          </section>
+
+          <section class="mdx-card">
+            <p class="eyebrow">Generated MDX</p>
+            <textarea id="mdxOutput" class="mdx-output" readonly></textarea>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const editor = $("editor");
+      const mdxOutput = $("mdxOutput");
+      const today = new Date().toISOString().slice(0, 10);
+
+      function slugify(value) {
+        return value
+          .trim()
+          .toLowerCase()
+          .replace(/&/g, " and ")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+      }
+
+      function csv(value) {
+        return value
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+
+      function yamlString(value) {
+        return JSON.stringify(value || "");
+      }
+
+      function yamlList(values) {
+        return values.map((value) => `  - ${yamlString(value)}`).join("\n") || '  - "blog"';
+      }
+
+      function escapeAttr(value) {
+        return String(value || "").replace(/"/g, "&quot;");
+      }
+
+      function inlineMarkdown(node) {
+        if (node.nodeType === Node.TEXT_NODE) return node.textContent || "";
+        if (node.nodeType !== Node.ELEMENT_NODE) return "";
+
+        const tag = node.tagName.toLowerCase();
+        const content = Array.from(node.childNodes).map(inlineMarkdown).join("");
+
+        if (tag === "strong" || tag === "b") return `**${content}**`;
+        if (tag === "em" || tag === "i") return `*${content}*`;
+        if (tag === "u") return `<u>${content}</u>`;
+        if (tag === "code") return "`" + content.replace(/`/g, "\\`") + "`";
+        if (tag === "a") return `[${content}](${node.getAttribute("href") || ""})`;
+        if (tag === "br") return "\n";
+        return content;
+      }
+
+      function blockMarkdown(node, depth = 0) {
+        if (node.nodeType === Node.TEXT_NODE) return node.textContent.trim();
+        if (node.nodeType !== Node.ELEMENT_NODE) return "";
+
+        const tag = node.tagName.toLowerCase();
+        const content = Array.from(node.childNodes).map((child) => blockMarkdown(child, depth)).join("\n");
+
+        if (tag === "h1") return `# ${inlineMarkdown(node).trim()}`;
+        if (tag === "h2") return `## ${inlineMarkdown(node).trim()}`;
+        if (tag === "h3") return `### ${inlineMarkdown(node).trim()}`;
+        if (tag === "h4") return `#### ${inlineMarkdown(node).trim()}`;
+        if (tag === "p" || tag === "div") return inlineMarkdown(node).trim();
+        if (tag === "blockquote") {
+          return inlineMarkdown(node)
+            .trim()
+            .split("\n")
+            .map((line) => `> ${line}`)
+            .join("\n");
+        }
+        if (tag === "pre") return "```\n" + node.innerText.trim() + "\n```";
+        if (tag === "ul") {
+          return Array.from(node.children)
+            .filter((child) => child.tagName.toLowerCase() === "li")
+            .map((child) => `${"  ".repeat(depth)}- ${inlineMarkdown(child).trim()}`)
+            .join("\n");
+        }
+        if (tag === "ol") {
+          return Array.from(node.children)
+            .filter((child) => child.tagName.toLowerCase() === "li")
+            .map((child, index) => `${"  ".repeat(depth)}${index + 1}. ${inlineMarkdown(child).trim()}`)
+            .join("\n");
+        }
+        if (tag === "img") {
+          return `<Figure src="${escapeAttr(node.getAttribute("src"))}" alt="${escapeAttr(
+            node.getAttribute("alt"),
+          )}" />`;
+        }
+        return content;
+      }
+
+      function bodyToMarkdown() {
+        return Array.from(editor.childNodes)
+          .map((node) => blockMarkdown(node))
+          .filter((part) => part && part.trim())
+          .join("\n\n")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+      }
+
+      function generateMdx() {
+        const title = $("title").value.trim();
+        const slug = $("slug").value.trim() || slugify(title) || "untitled-post";
+        const source = [
+          "---",
+          `title: ${yamlString(title)}`,
+          `description: ${yamlString($("description").value.trim())}`,
+          `slug: ${yamlString(slug)}`,
+          `publishedAt: ${today}`,
+          `updatedAt: ${today}`,
+          `status: ${$("status").value}`,
+          `category: ${yamlString($("category").value.trim() || "vibe-coding-lab")}`,
+          "tags:",
+          yamlList(csv($("tags").value)),
+          "series: null",
+          "seriesOrder: null",
+          "author: owner",
+          `difficulty: ${$("difficulty").value}`,
+          "tools:",
+          yamlList(csv($("tools").value)),
+          "coverImage: null",
+          "coverAlt: null",
+          "---",
+          "",
+          bodyToMarkdown(),
+          "",
+        ].join("\n");
+        mdxOutput.value = source;
+        return { source, slug };
+      }
+
+      function toast(message) {
+        const node = $("toast");
+        node.textContent = message;
+        node.classList.add("show");
+        window.setTimeout(() => node.classList.remove("show"), 1800);
+      }
+
+      document.querySelectorAll("[data-command]").forEach((button) => {
+        button.addEventListener("click", () => {
+          editor.focus();
+          document.execCommand(button.dataset.command, false, button.dataset.value || null);
+          generateMdx();
+        });
+      });
+
+      document.querySelector("[data-action='quote']").addEventListener("click", () => {
+        editor.focus();
+        document.execCommand("formatBlock", false, "blockquote");
+        generateMdx();
+      });
+
+      document.querySelector("[data-action='code']").addEventListener("click", () => {
+        editor.focus();
+        document.execCommand("formatBlock", false, "pre");
+        generateMdx();
+      });
+
+      document.querySelector("[data-action='link']").addEventListener("click", () => {
+        const url = prompt("링크 URL을 입력하세요");
+        if (!url) return;
+        editor.focus();
+        document.execCommand("createLink", false, url);
+        generateMdx();
+      });
+
+      document.querySelector("[data-action='image']").addEventListener("click", () => {
+        const url = prompt("이미지 URL을 입력하세요");
+        if (!url) return;
+        const alt = prompt("대체 텍스트를 입력하세요") || "";
+        editor.focus();
+        document.execCommand("insertHTML", false, `<img src="${escapeAttr(url)}" alt="${escapeAttr(alt)}">`);
+        generateMdx();
+      });
+
+      ["title", "description", "slug", "status", "category", "tags", "tools", "difficulty"].forEach((id) => {
+        $(id).addEventListener("input", () => {
+          if (id === "title" && !$("slug").value.trim()) $("slug").value = slugify($("title").value);
+          generateMdx();
+        });
+      });
+
+      editor.addEventListener("input", generateMdx);
+      editor.addEventListener("paste", () => window.setTimeout(generateMdx, 0));
+
+      $("previewMdx").addEventListener("click", () => {
+        generateMdx();
+        mdxOutput.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+
+      $("copyMdx").addEventListener("click", async () => {
+        const { source } = generateMdx();
+        await navigator.clipboard.writeText(source);
+        toast("MDX를 복사했습니다");
+      });
+
+      $("downloadMdx").addEventListener("click", () => {
+        const { source, slug } = generateMdx();
+        const blob = new Blob([source], { type: "text/markdown;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${slug || "post"}.mdx`;
+        link.click();
+        URL.revokeObjectURL(url);
+        toast("MDX 파일을 다운로드했습니다");
+      });
+
+      editor.innerHTML = "<h2>섹션 제목</h2><p>여기에 첫 문단을 작성하세요.</p>";
+      generateMdx();
+    </script>
+  </body>
+</html>
