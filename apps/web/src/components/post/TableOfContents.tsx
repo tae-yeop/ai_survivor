@@ -29,7 +29,7 @@ export function TableOfContents({ className }: Props) {
 
     const visible = new Set<string>();
 
-    observerRef.current = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
@@ -43,13 +43,14 @@ export function TableOfContents({ className }: Props) {
       },
       { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
     );
+    observerRef.current = observer;
 
     for (const h of hs) {
       const el = document.getElementById(h.id);
-      if (el) observerRef.current.observe(el);
+      if (el) observer.observe(el);
     }
 
-    return () => observerRef.current?.disconnect();
+    return () => observer.disconnect();
   }, []);
 
   if (headings.length === 0) return null;
@@ -66,7 +67,12 @@ export function TableOfContents({ className }: Props) {
               href={`#${h.id}`}
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById(h.id)?.scrollIntoView({ behavior: "smooth" });
+                const target = document.getElementById(h.id);
+                if (target) {
+                  target.scrollIntoView({ behavior: "smooth" });
+                  target.setAttribute("tabindex", "-1");
+                  target.focus({ preventScroll: true });
+                }
               }}
               className={cn(
                 "block border-l-2 py-1 text-[11px] leading-snug transition-all",
