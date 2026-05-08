@@ -203,3 +203,19 @@ test("featured field defaults to false when absent from frontmatter", () => {
     assert.equal(posts[0]?.featured, false);
   });
 });
+
+test("featured field rejects non-boolean values", () => {
+  withContentRoot((root) => {
+    writePost(
+      root,
+      "bad-featured",
+      validBase
+        .replace("slug: published-one", "slug: bad-featured")
+        .replace("series: building-ai-blog", "series: building-ai-blog\nfeatured: banana"),
+    );
+    assert.throws(
+      () => loadPostsForTest({ root, now: NOW }),
+      /featured must be true or false/i,
+    );
+  });
+});
