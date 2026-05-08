@@ -66,6 +66,9 @@ const config = {
           overlay: "var(--surface-overlay)",
         },
         bg: {
+          page: "var(--bg-page)",
+          surface: "var(--bg-surface)",
+          subtle: "var(--bg-subtle)",
           primary: "var(--bg-primary)",
           secondary: "var(--bg-secondary)",
           tertiary: "var(--bg-tertiary)",
@@ -75,6 +78,10 @@ const config = {
           deep: "var(--paper-deep)",
           elevated: "var(--paper-elevated)",
           rule: "var(--paper-rule)",
+        },
+        line: {
+          DEFAULT: "var(--border)",
+          strong: "var(--border-strong)",
         },
       },
       maxWidth: {
