@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Bucket } from "@/lib/content/posts";
+import { Reveal } from "@/components/ui/Reveal";
 
 type Props = { tags: Bucket[] };
 
@@ -9,10 +10,12 @@ export function TagCloud({ tags }: Props) {
 
   return (
     <section>
-      <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-ink-400">
-        태그
-      </p>
-      <div className="flex flex-wrap gap-2">
+      <Reveal>
+        <p className="mb-3 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-ink-400">
+          태그
+        </p>
+      </Reveal>
+      <Reveal stagger={25} className="flex flex-wrap gap-2">
         {visible.map((tag) => (
           <Link
             key={tag.slug}
@@ -22,7 +25,7 @@ export function TagCloud({ tags }: Props) {
             #{tag.label}
           </Link>
         ))}
-      </div>
+      </Reveal>
     </section>
   );
 }

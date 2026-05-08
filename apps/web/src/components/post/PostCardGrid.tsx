@@ -4,6 +4,7 @@ import type { Post } from "@/lib/content/posts";
 import { categoryLabel } from "@/lib/labels";
 import { slugifyTaxonomy } from "@/lib/content/slugify";
 import { cn } from "@/lib/utils";
+import { Reveal } from "@/components/ui/Reveal";
 
 type Props = {
   posts: Post[];
@@ -20,11 +21,11 @@ export function PostCardGrid({ posts, className }: Props) {
   }
 
   return (
-    <div className={cn("grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3", className)}>
+    <Reveal stagger={90} className={cn("grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3", className)}>
       {posts.map((post) => (
         <PostGridCard key={post.slug} post={post} />
       ))}
-    </div>
+    </Reveal>
   );
 }
 

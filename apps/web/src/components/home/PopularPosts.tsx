@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Post } from "@/lib/content/posts";
+import { Reveal } from "@/components/ui/Reveal";
 
 type Props = { posts: Post[] };
 
@@ -8,10 +9,12 @@ export function PopularPosts({ posts }: Props) {
 
   return (
     <section>
-      <p className="mb-4 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-ink-400">
-        인기 글
-      </p>
-      <ol className="space-y-0">
+      <Reveal>
+        <p className="mb-4 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-ink-400">
+          인기 글
+        </p>
+      </Reveal>
+      <Reveal as="ol" stagger={70} className="space-y-0">
         {posts.map((post, i) => (
           <li
             key={post.slug}
@@ -39,7 +42,7 @@ export function PopularPosts({ posts }: Props) {
             </div>
           </li>
         ))}
-      </ol>
+      </Reveal>
     </section>
   );
 }

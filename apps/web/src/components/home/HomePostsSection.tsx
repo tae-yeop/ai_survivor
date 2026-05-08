@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { CategoryFilterPills } from "./CategoryFilterPills";
 import { PostCardGrid } from "@/components/post/PostCardGrid";
+import { Reveal } from "@/components/ui/Reveal";
 import type { Post } from "@/lib/content/posts";
 import { slugifyTaxonomy } from "@/lib/content/slugify";
 
@@ -29,19 +30,21 @@ export function HomePostsSection({ posts, categoryPills, hasMore }: Props) {
 
   return (
     <section className="mt-8 space-y-5">
-      <div className="flex items-baseline justify-between">
-        <p className="font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-ink-400">
-          최신 기록
-        </p>
-        {hasMore && selected === null ? (
-          <Link
-            href="/posts"
-            className="font-mono text-[10px] text-ink-400 transition-colors hover:text-accent"
-          >
-            모두 보기 →
-          </Link>
-        ) : null}
-      </div>
+      <Reveal>
+        <div className="flex items-baseline justify-between">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-ink-400">
+            최신 기록
+          </p>
+          {hasMore && selected === null ? (
+            <Link
+              href="/posts"
+              className="font-mono text-[10px] text-ink-400 transition-colors hover:text-accent"
+            >
+              모두 보기 →
+            </Link>
+          ) : null}
+        </div>
+      </Reveal>
       <CategoryFilterPills pills={categoryPills} selected={selected} onSelect={setSelected} />
       <PostCardGrid posts={filtered} />
     </section>

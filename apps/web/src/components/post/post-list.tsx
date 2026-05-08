@@ -1,5 +1,6 @@
 ﻿import type { Post } from "@/lib/content/posts";
 import { PostCard } from "@/components/post/post-card";
+import { Reveal } from "@/components/ui/Reveal";
 
 export function PostList({
   posts,
@@ -19,12 +20,12 @@ export function PostList({
   }
 
   return (
-    <ol className="container-wide list-none py-12">
+    <Reveal as="ol" stagger={0} className="container-wide list-none py-12">
       {posts.map((post, index) => (
         <li key={post.slug}>
           <PostCard post={post} index={index} />
         </li>
       ))}
-    </ol>
+    </Reveal>
   );
 }
