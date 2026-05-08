@@ -177,3 +177,29 @@ test("free-form tag resolves via slugifyTaxonomy on bucket and lookup", () => {
     assert.deepEqual(posts[0]?.tags.sort(), ["Claude Code", "비용절감"]);
   });
 });
+
+test("featured field is parsed as true when set in frontmatter", () => {
+  withContentRoot((root) => {
+    writePost(
+      root,
+      "featured-post",
+      validBase
+        .replace("slug: published-one", "slug: featured-post")
+        .replace("series: building-ai-blog", "series: building-ai-blog\nfeatured: true"),
+    );
+    const posts = loadPostsForTest({ root, now: NOW });
+    assert.equal(posts[0]?.featured, true);
+  });
+});
+
+test("featured field defaults to false when absent from frontmatter", () => {
+  withContentRoot((root) => {
+    writePost(
+      root,
+      "normal-post",
+      validBase.replace("slug: published-one", "slug: normal-post"),
+    );
+    const posts = loadPostsForTest({ root, now: NOW });
+    assert.equal(posts[0]?.featured, false);
+  });
+});

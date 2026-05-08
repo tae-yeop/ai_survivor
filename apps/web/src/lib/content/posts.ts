@@ -28,6 +28,7 @@ export type PostFrontmatter = {
   difficulty: PostDifficulty;
   tools: string[];
   coverImage: string | null;
+  featured: boolean;
 };
 
 export type Post = PostFrontmatter & {
@@ -169,6 +170,14 @@ function optionalNumber(data: Record<string, unknown>, key: string) {
   return value;
 }
 
+function optionalBoolean(data: Record<string, unknown>, key: string): boolean {
+  const value = data[key];
+  if (value === undefined || value === null || value === "") return false;
+  if (value === true || value === "true") return true;
+  if (value === false || value === "false") return false;
+  throw new Error(`${key} must be true or false when provided`);
+}
+
 function requireStringArray(data: Record<string, unknown>, key: string, errors: string[]) {
   const value = data[key];
   if (
@@ -254,6 +263,7 @@ export function parsePostFrontmatter(frontmatter: string, folderSlug: string): P
     difficulty: difficultyValue as PostDifficulty,
     tools,
     coverImage: optionalString(data, "coverImage"),
+    featured: optionalBoolean(data, "featured"),
   };
 }
 
