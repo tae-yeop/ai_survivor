@@ -217,7 +217,8 @@ export function HeroCanvas() {
     let H = 0;
     let dpr = 1;
     const mouse = { x: -9999, y: -9999 };
-    let startTime = performance.now();
+    let animTime = 0;
+    let lastFrame = performance.now();
 
     function resize() {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -230,7 +231,8 @@ export function HeroCanvas() {
       canvas!.style.height = `${H}px`;
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
       buildLetters();
-      startTime = performance.now();
+      animTime = 0;
+      lastFrame = performance.now();
     }
 
     function buildLetters() {
@@ -322,12 +324,18 @@ export function HeroCanvas() {
     }
 
     function loop() {
+      const now = performance.now();
+      if (!document.hidden) {
+        animTime += (now - lastFrame) / 1000;
+      }
+      lastFrame = now;
+
       if (document.hidden) {
         raf = requestAnimationFrame(loop);
         return;
       }
 
-      const t = (performance.now() - startTime) / 1000;
+      const t = animTime;
       ctx!.fillStyle = CANVAS_BG;
       ctx!.fillRect(0, 0, W, H);
       drawGrid();
