@@ -40,7 +40,7 @@ function PostGridCard({ post }: { post: Post }) {
         src={post.coverImage}
         alt={post.title}
         categorySlug={catSlug}
-        className="h-40 w-full flex-shrink-0"
+        className="h-40 w-full flex-shrink-0 rounded-none"
       />
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex items-center justify-between">
