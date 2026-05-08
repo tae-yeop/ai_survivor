@@ -22,32 +22,42 @@ export function TableOfContents({ className }: Props) {
   const [activeId, setActiveId] = useState<string>("");
 
   useEffect(() => {
-    const hs = extractHeadings();
-    setHeadings(hs);
-    if (hs.length === 0) return;
+    let observer: IntersectionObserver | null = null;
+    let cancelled = false;
 
-    const visible = new Set<string>();
+    const frame = requestAnimationFrame(() => {
+      const hs = extractHeadings();
+      if (cancelled) return;
+      setHeadings(hs);
+      if (hs.length === 0) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            visible.add(entry.target.id);
-          } else {
-            visible.delete(entry.target.id);
+      const visible = new Set<string>();
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              visible.add(entry.target.id);
+            } else {
+              visible.delete(entry.target.id);
+            }
           }
-        }
-        const active = hs.find((h) => visible.has(h.id));
-        if (active) setActiveId(active.id);
-      },
-      { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
-    );
-    for (const h of hs) {
-      const el = document.getElementById(h.id);
-      if (el) observer.observe(el);
-    }
+          const active = hs.find((h) => visible.has(h.id));
+          if (active) setActiveId(active.id);
+        },
+        { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
+      );
+      for (const h of hs) {
+        const el = document.getElementById(h.id);
+        if (el) observer.observe(el);
+      }
+    });
 
-    return () => observer.disconnect();
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+    };
   }, []);
 
   if (headings.length === 0) return null;

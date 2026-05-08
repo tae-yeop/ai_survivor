@@ -8,7 +8,28 @@ const HEADLINE_2 = "직접 써보고 기록합니다.";
 const SUBLINE = "설치, 에러, 비용, 결과물 — 직접 겪은 것만 씁니다.";
 const ACCENT_WORD = "기록합니다";
 const MAX_DOTS = 90;
-const CANVAS_BG = "#ffffff";
+
+type CanvasPalette = {
+  bg: string;
+  grid: string;
+  crosshair: string;
+  inkRgb: string;
+  accentRgb: string;
+};
+
+function readCanvasPalette(el: HTMLElement): CanvasPalette {
+  const styles = getComputedStyle(el);
+  const css = (name: string, fallback: string) =>
+    styles.getPropertyValue(name).trim() || fallback;
+
+  return {
+    bg: css("--hero-canvas-bg", "#ffffff"),
+    grid: css("--hero-grid", "rgba(0, 0, 0, 0.022)"),
+    crosshair: css("--hero-crosshair", "rgba(0, 0, 0, 0.10)"),
+    inkRgb: css("--hero-ink-rgb", "0, 0, 0"),
+    accentRgb: css("--hero-accent-rgb", "184, 52, 28"),
+  };
+}
 
 // ── SpaceDot: cosmic particle spawned from canvas edges ────────────────────
 class SpaceDot {
@@ -79,7 +100,7 @@ class SpaceDot {
     this.life = Math.min(1, this.life + this.lifeSpeed);
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, palette: CanvasPalette) {
     const alpha = Math.sin(this.life * Math.PI) * this.maxAlpha;
     if (alpha <= 0) return;
 
@@ -89,16 +110,16 @@ class SpaceDot {
       ctx.beginPath();
       ctx.arc(pt.x, pt.y, this.r * 0.5, 0, Math.PI * 2);
       ctx.fillStyle = this.isAccent
-        ? `rgba(184,52,28,${trailAlpha})`
-        : `rgba(0,0,0,${trailAlpha})`;
+        ? `rgba(${palette.accentRgb},${trailAlpha})`
+        : `rgba(${palette.inkRgb},${trailAlpha})`;
       ctx.fill();
     }
 
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
     ctx.fillStyle = this.isAccent
-      ? `rgba(184,52,28,${alpha})`
-      : `rgba(0,0,0,${alpha})`;
+      ? `rgba(${palette.accentRgb},${alpha})`
+      : `rgba(${palette.inkRgb},${alpha})`;
     ctx.fill();
   }
 
@@ -156,13 +177,18 @@ class Letter {
     if (this.alpha < 1) this.alpha = Math.min(1, this.alpha + 0.035);
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, palette: CanvasPalette) {
     if (this.alpha <= 0) return;
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(this.rotation);
     ctx.globalAlpha = this.alpha;
-    ctx.fillStyle = this.isAccent ? "#b8341c" : "#000000";
+    ctx.font = `800 ${this.fontSize}px Pretendard Variable, Pretendard, system-ui, sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = this.isAccent
+      ? `rgb(${palette.accentRgb})`
+      : `rgb(${palette.inkRgb})`;
     ctx.fillText(this.char, 0, 0);
     ctx.restore();
     ctx.globalAlpha = 1;
@@ -264,9 +290,9 @@ export function HeroCanvas() {
       letters = [...line1, ...line2];
     }
 
-    function drawGrid() {
+    function drawGrid(palette: CanvasPalette) {
       const step = 40;
-      ctx!.strokeStyle = "rgba(0,0,0,0.022)";
+      ctx!.strokeStyle = palette.grid;
       ctx!.lineWidth = 1;
       for (let x = 0; x < W; x += step) {
         ctx!.beginPath();
@@ -282,8 +308,8 @@ export function HeroCanvas() {
       }
     }
 
-    function drawCrosshairs() {
-      ctx!.strokeStyle = "rgba(0,0,0,0.10)";
+    function drawCrosshairs(palette: CanvasPalette) {
+      ctx!.strokeStyle = palette.crosshair;
       ctx!.lineWidth = 1;
       const marks: [number, number][] = [
         [10, 10],
@@ -303,7 +329,7 @@ export function HeroCanvas() {
       }
     }
 
-    function drawConnections() {
+    function drawConnections(palette: CanvasPalette) {
       const MAX_DIST = 75;
       for (let i = 0; i < dots.length; i++) {
         for (let j = i + 1; j < dots.length; j++) {
@@ -315,7 +341,7 @@ export function HeroCanvas() {
             ctx!.beginPath();
             ctx!.moveTo(dots[i]!.x, dots[i]!.y);
             ctx!.lineTo(dots[j]!.x, dots[j]!.y);
-            ctx!.strokeStyle = `rgba(0,0,0,${a})`;
+            ctx!.strokeStyle = `rgba(${palette.inkRgb},${a})`;
             ctx!.lineWidth = 0.5;
             ctx!.stroke();
           }
@@ -336,22 +362,23 @@ export function HeroCanvas() {
       }
 
       const t = animTime;
-      ctx!.fillStyle = CANVAS_BG;
+      const palette = readCanvasPalette(container!);
+      ctx!.fillStyle = palette.bg;
       ctx!.fillRect(0, 0, W, H);
-      drawGrid();
+      drawGrid(palette);
 
       dots = dots.filter((d) => !d.isDead);
       while (dots.length < MAX_DOTS) dots.push(new SpaceDot(W, H));
       for (const dot of dots) dot.update();
-      drawConnections();
-      for (const dot of dots) dot.draw(ctx!);
+      drawConnections(palette);
+      for (const dot of dots) dot.draw(ctx!, palette);
 
       for (const letter of letters) {
         letter.update(t, mouse.x, mouse.y);
-        letter.draw(ctx!);
+        letter.draw(ctx!, palette);
       }
 
-      drawCrosshairs();
+      drawCrosshairs(palette);
       raf = requestAnimationFrame(loop);
     }
 

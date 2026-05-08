@@ -42,7 +42,6 @@ export function ScrambleText({
 
     const glyphs = Array.from(text); // handles multi-byte (Korean, emoji)
     const pool = Array.from(chars);
-    const len = glyphs.length;
     // Per-character duration with slight variation so they don't all finish at once
     const durations = glyphs.map(() => revealDuration * (0.75 + Math.random() * 0.5));
     const start = performance.now();

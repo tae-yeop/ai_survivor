@@ -34,7 +34,7 @@ function PostGridCard({ post }: { post: Post }) {
   return (
     <Link
       href={`/posts/${post.slug}`}
-      className="group flex flex-col overflow-hidden rounded-[6px] border border-line bg-bg-surface transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong"
+      className="group flex flex-col overflow-hidden rounded-[6px] border border-line bg-bg-surface shadow-[0_18px_50px_-36px_rgba(0,0,0,0.55)] transition-all duration-200 hover:-translate-y-0.5 hover:border-line-strong hover:shadow-[0_24px_70px_-42px_rgba(0,0,0,0.70)]"
     >
       <PostCoverImage
         src={post.coverImage}

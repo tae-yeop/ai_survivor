@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { CategoryFilterPills } from "./CategoryFilterPills";
 import { PostCardGrid } from "@/components/post/PostCardGrid";
@@ -33,12 +34,12 @@ export function HomePostsSection({ posts, categoryPills, hasMore }: Props) {
           최신 기록
         </p>
         {hasMore && selected === null ? (
-          <a
+          <Link
             href="/posts"
             className="font-mono text-[10px] text-ink-400 transition-colors hover:text-accent"
           >
             모두 보기 →
-          </a>
+          </Link>
         ) : null}
       </div>
       <CategoryFilterPills pills={categoryPills} selected={selected} onSelect={setSelected} />
