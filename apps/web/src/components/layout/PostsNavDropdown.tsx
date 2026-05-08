@@ -72,7 +72,7 @@ export function PostsNavDropdown({ categories }: { categories: Bucket[] }) {
 
   return (
     <div
-      className="relative"
+      className="relative flex items-center"
       onPointerEnter={() => {
         cancelClose();
         setOpen(true);
