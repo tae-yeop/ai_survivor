@@ -3,6 +3,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import type { AdminPostDraft } from "@/lib/admin/mdx";
+import { shouldOpenMetadataPanel } from "@/lib/admin/form-state";
 import { adminInputClass, MetadataPanel } from "@/components/admin/MetadataPanel";
 import { savePostAction } from "../actions";
 
@@ -20,17 +21,23 @@ export function AdminPostForm({
   post,
   mode,
   error,
+  returnTo,
 }: {
   post: AdminPostDraft;
   mode: "new" | "edit";
   error?: string;
+  returnTo?: string;
 }) {
   const [bodyMarkdown, setBodyMarkdown] = useState(post.body);
+  const metadataDefaultOpen = shouldOpenMetadataPanel(post, mode);
+  const fallbackPath =
+    returnTo ?? (mode === "new" ? "/admin/posts/new" : `/admin/posts/${post.slug}`);
 
   return (
     <form action={savePostAction} className="space-y-6">
       <input type="hidden" name="_mode" value={mode} />
       <input type="hidden" name="_originalSlug" value={post.slug} />
+      <input type="hidden" name="_returnTo" value={fallbackPath} />
       <input type="hidden" name="body" value={bodyMarkdown} />
 
       {error ? (
@@ -120,7 +127,12 @@ export function AdminPostForm({
         </details>
       </section>
 
-      <MetadataPanel post={post} defaultOpen={false} collapsible showPrimaryFields={false} />
+      <MetadataPanel
+        post={post}
+        defaultOpen={metadataDefaultOpen}
+        collapsible
+        showPrimaryFields={false}
+      />
 
       <div className="flex flex-wrap items-center gap-3">
         <button className="rounded-md bg-ink-900 px-5 py-3 font-mono text-xs uppercase tracking-[0.12em] text-paper transition hover:bg-accent">

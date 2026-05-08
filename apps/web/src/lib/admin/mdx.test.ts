@@ -1,6 +1,7 @@
-﻿import assert from "node:assert/strict";
+import assert from "node:assert/strict";
 import test from "node:test";
 import { parsePostFrontmatter } from "../content/posts.ts";
+import { fallbackEditorPath, shouldOpenMetadataPanel } from "./form-state.ts";
 import { createEmptyAdminPostDraft, parseAdminPostSource, serializeAdminPostDraft } from "./mdx.ts";
 
 const NOW = new Date("2026-05-06T00:00:00.000Z");
@@ -45,4 +46,36 @@ test("admin MDX parser preserves editable body", () => {
   const parsed = parseAdminPostSource(source, "parse-me");
   assert.equal(parsed.slug, "parse-me");
   assert.match(parsed.body, /HTML body/);
+});
+
+test("new post forms open metadata when required list fields start empty", () => {
+  const draft = createEmptyAdminPostDraft(NOW);
+  assert.equal(shouldOpenMetadataPanel(draft, "new"), true);
+});
+
+test("edit forms keep complete metadata collapsed by default", () => {
+  const draft = {
+    ...createEmptyAdminPostDraft(NOW),
+    tags: ["admin"],
+    tools: ["GitHub"],
+  };
+  assert.equal(shouldOpenMetadataPanel(draft, "edit"), false);
+});
+
+test("new post save errors return to the originating form instead of a missing slug page", () => {
+  const formData = new FormData();
+  formData.set("_mode", "new");
+  formData.set("_returnTo", "/write");
+  formData.set("slug", "unsaved-post");
+
+  assert.equal(fallbackEditorPath(formData), "/write");
+});
+
+test("edit save errors return to the original existing slug", () => {
+  const formData = new FormData();
+  formData.set("_mode", "edit");
+  formData.set("_originalSlug", "existing-post");
+  formData.set("slug", "renamed-post");
+
+  assert.equal(fallbackEditorPath(formData), "/admin/posts/existing-post");
 });

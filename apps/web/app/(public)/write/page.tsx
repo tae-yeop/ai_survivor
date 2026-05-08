@@ -25,7 +25,12 @@ export default async function WritePage() {
           이 화면에서 바로 글을 쓰면 기존 MDX 포스트 구조로 GitHub에 저장됩니다.
         </p>
       </div>
-      <AdminPostForm post={createEmptyAdminPostDraft()} mode="new" error={undefined} />
+      <AdminPostForm
+        post={createEmptyAdminPostDraft()}
+        mode="new"
+        error={undefined}
+        returnTo="/write"
+      />
     </div>
   );
 }

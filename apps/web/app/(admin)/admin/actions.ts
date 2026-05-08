@@ -3,19 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getAdminContentConfigStatus, missingEnvMessage } from "@/lib/admin/env";
+import { fallbackEditorPath } from "@/lib/admin/form-state";
 import { savePostSourceToGitHub } from "@/lib/admin/github-content";
 import { adminPostDraftFromFormData, serializeAdminPostDraft } from "@/lib/admin/mdx";
-import { normalizePostSlug } from "@/lib/admin/slug";
 import { requireAdminSession } from "@/lib/admin/session";
 
 function errorText(error: unknown) {
   return error instanceof Error ? error.message : "Unknown admin save error";
-}
-
-function fallbackEditorPath(formData: FormData) {
-  const rawSlug = formData.get("slug");
-  const slug = typeof rawSlug === "string" ? normalizePostSlug(rawSlug) : "";
-  return slug ? `/admin/posts/${slug}` : "/admin/posts/new";
 }
 
 export async function savePostAction(formData: FormData) {
