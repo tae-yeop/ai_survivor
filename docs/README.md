@@ -1,106 +1,44 @@
-# Docs README
+# AI 시대 생존기 Docs
 
-Status: Active
-Owner: 개인 운영자
-Last Updated: 2026-05-06
+이 폴더는 블로그의 제품 방향, 콘텐츠 운영, 사이트 구조, 실행 계획, 의사결정, 배포 운영 문서를 보관한다.
 
-이 문서 공간은 **AI Vibe Lab**을 만들 때 사람과 LLM이 같은 기준을 보고 작업하기 위한 문서 세트다.
+현재 표시 브랜드는 **AI 시대 생존기 / AI Survivor**다. 운영 도메인은 코드 기본값 기준 `aivibelab.com`이며, 브랜드와 도메인은 분리해서 관리한다.
 
-현재 활성 구현 방향은 `ADR-003`에 따른 **Next.js + GitHub + MDX + Vercel 기반 공개 블로그**다. `ADR-002`의 Supabase + Tiptap 비공개 관리자 CMS는 보류한다. 사이트에서 로그인 후 글을 쓰는 기능은 `ADR-004`의 GitHub-backed admin editor로 검토한다.
+## 문서 지도
 
-## 0. 현재 운영 범위
+| 폴더 | 역할 | 대표 문서 |
+| --- | --- | --- |
+| `00_overview/` | 제품 목적, 브랜드, 열려 있는 질문 | `PRODUCT_BRIEF.md`, `BRAND_OVERVIEW.md`, `OPEN_QUESTIONS.md` |
+| `10_content/` | 글 저장 방식, 글쓰기 흐름, 콘텐츠 전략 | `CONTENT_MODEL.md`, `CONTENT_STRATEGY.md`, `ARTICLE_TEMPLATE.md`, `ARTICLE_WORKFLOW.md` |
+| `20_features/` | 기능별 사용자/운영 설명 | admin CMS, GitHub backed editor, media library |
+| `20_site/` | 화면 목록과 정보 구조 | `SCREEN_INVENTORY.md`, `SERVICE_IA.md` |
+| `30_seo_monetization/` | 검색/광고 준비 | `SEO_ADSENSE_CHECKLIST.md` |
+| `40_architecture/` | 시스템 구조와 권한 모델 | `ARCHITECTURE.md`, `AUTH_AND_PERMISSIONS.md` |
+| `50_execution/` | 구현 단계, 로드맵, 실행 산출물 | `IMPLEMENTATION_PLAN.md`, `ROADMAP.md`, phase folders |
+| `60_decisions/` | ADR과 디자인 결정 기록 | `ADR-*.md`, `design-notes/` |
+| `70_ops/` | 배포와 운영 절차 | `DEPLOYMENT.md` |
 
-```text
-/
-├─ articles/                         # 자유 초안/조사 메모
-├─ apps/web/                         # Vercel production target
-│  ├─ content/posts/<slug>/index.mdx # 발행 후보 글
-│  └─ public/media/posts/<slug>/     # 공개 이미지/짧은 미디어
-└─ docs/
-   ├─ README.md
-   ├─ 00_overview/
-   ├─ 10_content/
-   │  ├─ CONTENT_STRATEGY.md
-   │  ├─ CONTENT_MODEL.md
-   │  ├─ ARTICLE_TEMPLATE.md
-   │  └─ ARTICLE_WORKFLOW.md
-   ├─ 20_features/
-   │  ├─ admin-cms.md                # 보류: ADR-002 admin CMS
-   │  ├─ media-library.md            # 보류: ADR-002 storage/media library
-   │  └─ github-backed-admin-editor.md
-   ├─ 30_seo_monetization/
-   ├─ 40_architecture/
-   ├─ 50_execution/
-   ├─ 60_decisions/
-   │  ├─ ADR-001-static-content-first-blog.md
-   │  ├─ ADR-002-nextjs-supabase-admin-cms.md
-   │  ├─ ADR-003-github-mdx-content-workflow.md
-   │  └─ ADR-004-github-backed-admin-editor.md
-   └─ 70_ops/
-      └─ DEPLOYMENT.md
-```
+## 현재 기준 문서
 
-## 1. Source of Truth
+1. 제품/브랜드를 바꾸면 `00_overview/PRODUCT_BRIEF.md`와 `00_overview/BRAND_OVERVIEW.md`를 먼저 수정한다.
+2. 글의 카테고리, 태그, frontmatter, 저장 위치를 바꾸면 `10_content/CONTENT_MODEL.md`를 수정한다.
+3. 글쓰기 방식이나 운영 루틴을 바꾸면 `10_content/ARTICLE_WORKFLOW.md`와 `10_content/CONTENT_STRATEGY.md`를 수정한다.
+4. 구현 순서나 완료 상태를 바꾸면 `50_execution/IMPLEMENTATION_PLAN.md`와 `50_execution/ROADMAP.md`를 수정한다.
+5. 되돌리기 어려운 기술/제품 결정을 내리면 `60_decisions/ADR-*.md`를 추가한다.
+6. 배포, 도메인, 환경 변수, Vercel 설정이 바뀌면 `70_ops/DEPLOYMENT.md`를 수정한다.
 
-| 주제                          | Source of Truth                                       |
-| ----------------------------- | ----------------------------------------------------- |
-| 제품 목적 / 사용자 / MVP 범위 | `00_overview/PRODUCT_BRIEF.md`                        |
-| 현재 콘텐츠 워크플로우        | `60_decisions/ADR-003-github-mdx-content-workflow.md` |
-| 향후 로그인 기반 글쓰기       | `60_decisions/ADR-004-github-backed-admin-editor.md`  |
-| 초안→발행 운영                | `10_content/ARTICLE_WORKFLOW.md`                      |
-| 글 metadata/frontmatter       | `10_content/CONTENT_MODEL.md`                         |
-| SEO/AdSense 타이밍            | `30_seo_monetization/SEO_ADSENSE_CHECKLIST.md`        |
-| 배포/도메인/Vercel 설정       | `70_ops/DEPLOYMENT.md`                                |
-| 기술 구조                     | `40_architecture/ARCHITECTURE.md`                     |
-| 실행 계획                     | `50_execution/IMPLEMENTATION_PLAN.md`                 |
+## 원본 산출물 보관 규칙
 
-## 2. 콘텐츠 운영 원칙
+- ChatGPT 대화 export 같은 원본 전략 자료는 `00_overview/source-notes/`에 둔다.
+- Superpowers 계획/스펙처럼 구현을 도운 원본 산출물은 다음처럼 나눈다.
+  - 실행 계획: `50_execution/**/source-plans/`
+  - 디자인/결정 근거: `60_decisions/design-notes/`
+- 운영자가 읽는 문서는 원본 산출물을 직접 읽지 않아도 이해되도록 요약 문서를 별도로 둔다.
 
-- `articles/`는 초안 작업장이다.
-- public site는 `apps/web/content/posts/**/index.mdx`만 읽는다.
-- 이미지는 최적화본만 Git에 넣는다.
-- 긴 영상은 Git에 넣지 않고 외부 저장소/동영상 플랫폼을 사용한다.
-- commit/push가 발행 트리거다.
-- AdSense는 도메인, 색인, 충분한 글이 준비된 뒤 신청한다.
+## LLM 작업 순서
 
-## 3. LLM 작업 순서
-
-LLM은 아래 순서로 문서를 읽고 작업한다.
-
-1. `CLAUDE.md`
-2. `docs/README.md`
-3. `docs/60_decisions/ADR-003-github-mdx-content-workflow.md`
-4. `docs/10_content/ARTICLE_WORKFLOW.md`
-5. `docs/10_content/CONTENT_MODEL.md`
-6. `docs/40_architecture/ARCHITECTURE.md`
-7. `docs/70_ops/DEPLOYMENT.md`
-8. `docs/30_seo_monetization/SEO_ADSENSE_CHECKLIST.md`
-9. `docs/60_decisions/ADR-004-github-backed-admin-editor.md` only when browser authoring is requested
-10. `docs/50_execution/IMPLEMENTATION_PLAN.md`
-
-Deferred/historical references only: `ADR-002-nextjs-supabase-admin-cms.md`, `AUTH_AND_PERMISSIONS.md`, `20_features/admin-cms.md`, and `20_features/media-library.md`. Do not read these as active implementation inputs unless a new ADR reactivates that path.
-
-## 4. 변경 관리 규칙
-
-### 글/metadata가 바뀌면
-
-- `10_content/CONTENT_MODEL.md`
-- `10_content/ARTICLE_WORKFLOW.md`
-- 필요 시 `apps/web/content/README.md`
-
-### 이미지/영상 정책이 바뀌면
-
-- `10_content/CONTENT_MODEL.md`
-- `10_content/ARTICLE_WORKFLOW.md`
-- 필요 시 `70_ops/DEPLOYMENT.md`
-
-### 배포/도메인/AdSense가 바뀌면
-
-- `70_ops/DEPLOYMENT.md`
-- `30_seo_monetization/SEO_ADSENSE_CHECKLIST.md`
-
-### 사이트 로그인 글쓰기를 구현하려면
-
-- 먼저 `ADR-004-github-backed-admin-editor.md`를 확정한다.
-- 이후 구현 계획을 별도로 만든다.
-- Supabase CMS를 되살리려면 새 ADR이 필요하다.
+1. `docs/README.md`로 문서 위치를 확인한다.
+2. 관련 source of truth 문서를 읽는다.
+3. 코드 변경 전, 필요한 ADR 또는 execution note가 있는지 확인한다.
+4. 코드 변경 후, 문서의 완료 상태와 링크를 갱신한다.
+5. 오래된 root-level 임시 문서는 `source-notes/`, `source-plans/`, `design-notes/` 중 하나로 이동한다.

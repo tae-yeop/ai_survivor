@@ -1,7 +1,7 @@
 # Visual Redesign — AI 시대 생존기
 
-**Date:** 2026-05-08  
-**Status:** Draft — awaiting user review  
+**Date:** 2026-05-08
+**Status:** Draft — awaiting user review
 **Scope:** Homepage, Post Detail, Navigation, Design System
 
 ---
