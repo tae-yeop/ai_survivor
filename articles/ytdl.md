@@ -1,19 +1,41 @@
-# Windows에서 yt-dlp 설치하고 첫 영상 내려받기
-
+# yt-dlp 설치부터 첫 다운로드까지: Windows에서 내가 막힌 지점들
 
 ## 결론 먼저
 
-이 글은 Windows에서 `yt-dlp`를 처음 쓰기 위한 설치 메모다. 목표는 세 가지다.
+`yt-dlp`는 설치 자체보다 “설치한 뒤 왜 영상이 안 받아지지?”에서 더 많이 막히는 도구다. 나도 처음에는 exe 하나 받고 명령어 한 줄 치면 끝날 줄 알았다. 그런데 막상 해보면 `ffmpeg`가 없다고 하고, PowerShell에서 명령을 못 찾고, 포맷 번호는 영상마다 달라서 헷갈린다.
 
-1. `yt-dlp`를 설치한다.
-2. `ffmpeg`와 `ffprobe`가 같이 잡히는지 확인한다.
-3. 내가 권리를 가진 영상이나 다운로드가 허용된 자료를 한 번 내려받아 본다.
+그래서 이 글은 설명서를 다시 쓰는 글이 아니라, 내가 Windows에서 다시 설치할 때 그대로 따라 하려고 적어두는 작업 메모다.
 
-`yt-dlp`는 강력하지만, 유료 콘텐츠나 접근 제한 영상, 서비스가 다운로드를 막아 둔 영상을 우회하기 위한 도구로 쓰면 안 된다. 이 글의 전제는 내가 만든 영상, 내가 업로드한 파일, 라이선스상 다운로드가 허용된 자료만 받는 것이다.
+이번 목표는 딱 여기까지다.
 
-## 0. 먼저 확인할 것
+1. Windows에 `yt-dlp`를 설치한다.
+2. 영상/오디오 병합에 필요한 `ffmpeg`도 같이 잡는다.
+3. 바로 다운로드하지 말고 포맷을 먼저 확인한다.
+4. 문제가 생겼을 때 어디부터 보면 되는지 남겨 둔다.
 
-PowerShell을 열고 아래 세 가지를 확인한다.
+그리고 먼저 선을 하나 긋고 시작한다. `yt-dlp`는 내가 만든 영상, 내가 올린 파일, 다운로드가 허용된 자료를 저장할 때만 쓴다. 유료 콘텐츠나 접근 제한 영상을 우회하려는 용도로는 쓰지 않는다.
+
+## 왜 설치 글부터 다시 쓰나
+
+원래 내 메모는 거의 이런 수준이었다.
+
+```powershell
+.\yt-dlp.exe -f 96 --fragment-retries 10 --retries 3 "<영상 URL>"
+```
+
+그런데 이건 이미 설치가 끝난 사람에게나 의미가 있다. 처음 쓰는 사람은 여기서 바로 막힌다.
+
+- `yt-dlp.exe`는 어디서 받지?
+- PowerShell에서 왜 명령을 못 찾지?
+- `ffmpeg`는 또 왜 필요하지?
+- `-f 96`은 아무 영상에나 쓰면 되나?
+- 받은 파일은 어디에 저장되지?
+
+그래서 이번 글은 명령어 한 줄보다 앞단을 더 자세히 적는다.
+
+## 0. 내 PC에 뭐가 있는지 먼저 확인하기
+
+PowerShell을 열고 아래 세 가지부터 확인한다.
 
 ```powershell
 winget --version
@@ -21,45 +43,52 @@ python --version
 ffmpeg -version
 ```
 
-- `winget`이 있으면 설치가 제일 쉽다.
-- `python`은 필수는 아니지만 pip 설치나 다른 도구와 같이 쓸 때 도움이 된다.
-- `ffmpeg`가 없으면 영상+오디오 병합이나 mp3 추출에서 막힐 수 있다.
+여기서 전부 성공해야 한다는 뜻은 아니다. 그냥 현재 상태를 보는 것이다.
 
-`yt-dlp` 공식 README도 Windows에서는 standalone `yt-dlp.exe`를 추천하고, 별도 영상/오디오 병합과 후처리에는 `ffmpeg`와 `ffprobe`가 필요하다고 설명한다.
+- `winget`이 있으면 설치가 편하다.
+- `python`은 필수는 아니지만, 나중에 pip 방식이 필요할 때 도움이 된다.
+- `ffmpeg`가 이미 잡혀 있으면 영상/오디오 병합에서 덜 막힌다.
 
-## 1. 가장 쉬운 설치: winget으로 설치
+처음 설치라면 `ffmpeg`는 안 잡혀 있을 가능성이 높다. 괜찮다. 뒤에서 같이 설치하면 된다.
 
-Windows 10/11에서 `winget`이 된다면 우선 이 방법으로 설치한다.
+## 1. 제일 쉬운 방법: winget으로 yt-dlp 설치하기
+
+Windows 10/11에서 `winget`이 된다면 먼저 이 방법을 시도한다.
 
 ```powershell
 winget install yt-dlp
 ```
 
-설치 후 새 PowerShell을 열고 확인한다.
+설치가 끝나면 PowerShell을 완전히 닫았다가 새로 연다. 그 다음 확인한다.
 
 ```powershell
 yt-dlp --version
+```
+
+버전 숫자가 나오면 설치는 된 것이다. 도움말도 한 번 열어 본다.
+
+```powershell
 yt-dlp --help
 ```
 
-업데이트는 아래처럼 한다.
+업데이트는 나중에 이렇게 하면 된다.
 
 ```powershell
 winget upgrade yt-dlp
 ```
 
-만약 `yt-dlp` 명령을 찾지 못한다면 PowerShell을 완전히 닫았다가 다시 열어 본다. 그래도 안 되면 PATH가 갱신되지 않았거나 설치 위치가 잡히지 않은 것이다. 이 경우 아래의 portable 설치 방식이 더 확실하다.
+나는 보통 여기서 끝나면 가장 편하다. 다만 회사 PC이거나 PATH가 꼬인 환경에서는 `winget` 설치 후에도 `yt-dlp` 명령을 못 찾는 경우가 있다. 그럴 때는 아래 portable 방식이 더 마음 편하다.
 
-## 2. 확실한 방법: portable 폴더에 직접 설치
+## 2. 내가 더 선호하는 방법: portable 폴더에 직접 두기
 
-나는 작업용 도구를 한 폴더에 모아두는 편이 관리하기 쉽다. 예를 들어 `C:\Tools\yt-dlp`를 만든다.
+도구를 한 폴더에 모아두면 나중에 다시 찾기가 쉽다. 예를 들어 `C:\Tools\yt-dlp`를 만든다.
 
 ```powershell
 New-Item -ItemType Directory -Force C:\Tools\yt-dlp
 cd C:\Tools\yt-dlp
 ```
 
-공식 release의 Windows 실행 파일을 내려받는다.
+그리고 공식 release에서 Windows 실행 파일을 받는다.
 
 ```powershell
 Invoke-WebRequest `
@@ -73,7 +102,7 @@ Invoke-WebRequest `
 C:\Tools\yt-dlp\yt-dlp.exe --version
 ```
 
-매번 전체 경로를 치기 싫다면 사용자 PATH에 추가한다.
+이게 되면 실행 파일 자체는 정상이다. 이제 매번 전체 경로를 치기 싫으니 사용자 PATH에 추가한다.
 
 ```powershell
 [Environment]::SetEnvironmentVariable(
@@ -83,26 +112,30 @@ C:\Tools\yt-dlp\yt-dlp.exe --version
 )
 ```
 
-그 다음 PowerShell을 새로 열고 확인한다.
+PowerShell을 새로 열고 다시 확인한다.
 
 ```powershell
 yt-dlp --version
 ```
 
-portable 방식으로 설치했다면 같은 폴더에 `yt-dlp.conf`를 둘 수 있어서 설정을 관리하기 편하다.
+여기까지 되면 이제 `yt-dlp`는 어디서든 실행할 수 있다.
 
-## 3. ffmpeg 설치 확인
+## 3. ffmpeg도 같이 챙기기
 
-`yt-dlp`만 있어도 단일 파일 다운로드는 되는 경우가 있지만, YouTube처럼 영상과 오디오가 분리된 포맷을 받을 때는 `ffmpeg`가 필요하다. 먼저 현재 잡히는지 확인한다.
+처음에는 `yt-dlp`만 있으면 될 줄 알았는데, 실제로는 `ffmpeg` 때문에 한 번 더 막히는 경우가 많다. 특히 YouTube처럼 영상과 오디오가 따로 내려오는 경우에는 마지막에 합쳐야 하는데, 그때 `ffmpeg`가 필요하다.
+
+먼저 확인한다.
 
 ```powershell
 ffmpeg -version
 ffprobe -version
 ```
 
-둘 중 하나라도 안 잡히면 `ffmpeg`를 설치해야 한다. 방법은 여러 가지지만, 나는 둘 중 하나를 쓴다.
+둘 다 버전이 나오면 넘어가도 된다. 안 나오면 설치한다.
 
 ### 방법 A: winget으로 설치
+
+가장 간단한 방법은 이것이다.
 
 ```powershell
 winget search ffmpeg
@@ -116,9 +149,9 @@ ffmpeg -version
 ffprobe -version
 ```
 
-### 방법 B: yt-dlp 폴더에 같이 둔다
+### 방법 B: yt-dlp 폴더에 같이 두기
 
-PATH가 자주 꼬이면 `ffmpeg.exe`와 `ffprobe.exe`를 `yt-dlp.exe`와 같은 폴더에 두는 방식이 제일 단순하다.
+PATH가 자꾸 꼬이면 그냥 한 폴더에 같이 두는 방식도 편하다.
 
 ```text
 C:\Tools\yt-dlp\
@@ -127,21 +160,27 @@ C:\Tools\yt-dlp\
   ffprobe.exe
 ```
 
-이렇게 두면 `yt-dlp`가 같은 폴더의 `ffmpeg`를 찾기 쉽다. 공개 글에서는 특정 비공식 배포 파일을 고정하기보다, 공식 FFmpeg 또는 yt-dlp가 안내하는 FFmpeg builds를 확인해서 받는 쪽으로 남겨 둔다.
+이렇게 두면 나중에 문제를 찾을 때도 단순하다. “yt-dlp는 있는데 ffmpeg가 어디 있지?”를 다시 겪지 않아도 된다.
 
-## 4. 첫 다운로드 전에 포맷 목록부터 보기
+## 4. 바로 받지 말고 포맷부터 보기
 
-URL을 바로 받기 전에 먼저 포맷을 확인한다.
+처음에는 URL을 바로 넣고 다운로드하고 싶다. 그런데 나는 이제 먼저 포맷 목록부터 본다.
 
 ```powershell
 yt-dlp -F "<영상 URL>"
 ```
 
-여기서 봐야 할 것은 `format id`, 확장자, 해상도, 오디오 포함 여부다. 포맷 id는 영상마다 달라질 수 있으므로 `96` 같은 숫자를 정답처럼 외우면 안 된다.
+여기서 확인할 것은 세 가지다.
 
-## 5. 기본 다운로드 명령어
+- 어떤 `format id`가 있는지
+- 영상만 있는지, 오디오도 포함되어 있는지
+- 원하는 해상도가 있는지
 
-대부분의 경우에는 최고 품질의 영상과 오디오를 받고 mp4로 병합하는 식으로 시작한다.
+중요한 점은 `format id`가 영상마다 달라질 수 있다는 것이다. 예전에 어떤 영상에서 `96`이 잘 됐다고 해서 모든 영상에 `-f 96`을 쓰면 안 된다. 먼저 `-F`로 보고 고르는 습관을 들이는 편이 안전하다.
+
+## 5. 내가 기본으로 쓰는 다운로드 명령어
+
+대부분은 최고 품질의 영상과 오디오를 받아서 mp4로 합치면 된다.
 
 ```powershell
 yt-dlp `
@@ -154,14 +193,14 @@ yt-dlp `
   "<영상 URL>"
 ```
 
-옵션 의미는 이렇다.
+처음 보면 길어 보이지만, 의미는 단순하다.
 
-- `-f "bv*+ba/b"`: 가능한 경우 best video와 best audio를 합치고, 안 되면 best 단일 포맷을 받는다.
-- `--merge-output-format mp4`: 병합 결과를 mp4로 맞춘다.
-- `--fragment-retries 10`: HLS/DASH 조각 다운로드 실패 시 조각별 재시도 횟수다.
-- `--retries 3`: 일반 다운로드 재시도 횟수다.
-- `--retry-sleep fragment:exp=1:20`: 조각 재시도 사이에 점진적으로 쉰다.
-- `-o`: 저장 파일명을 일정하게 만든다.
+- `-f "bv*+ba/b"`: 가능하면 좋은 영상과 좋은 오디오를 받아서 합친다.
+- `--merge-output-format mp4`: 결과 파일을 mp4로 맞춘다.
+- `--fragment-retries 10`: 조각 다운로드가 실패하면 몇 번 더 시도한다.
+- `--retries 3`: 전체 다운로드도 몇 번 더 시도한다.
+- `--retry-sleep fragment:exp=1:20`: 실패했을 때 바로 달려들지 말고 잠깐 쉬었다 재시도한다.
+- `-o`: 파일명을 일정한 규칙으로 저장한다.
 
 `downloads` 폴더가 없다면 먼저 만든다.
 
@@ -169,37 +208,45 @@ yt-dlp `
 New-Item -ItemType Directory -Force downloads
 ```
 
-## 6. 특정 format id를 바로 받을 때
+나는 파일명이 뒤죽박죽 되는 걸 싫어해서 `upload_date`와 `title`을 같이 넣어 둔다. 나중에 어떤 영상이 언제 올라온 것인지 찾기 쉽다.
 
-포맷 목록에서 원하는 id를 확인했다면 아래처럼 받을 수 있다.
+## 6. 특정 포맷 번호로 받고 싶을 때
+
+`yt-dlp -F`를 보고 원하는 포맷 번호를 골랐다면 이렇게 받을 수 있다.
 
 ```powershell
 yt-dlp -f 96 --fragment-retries 10 --retries 3 "<영상 URL>"
 ```
 
-이 방식은 빠르지만 포맷 id가 영상마다 달라질 수 있다. 그래서 항상 `yt-dlp -F`로 먼저 확인한다.
+다만 이건 “방금 확인한 그 영상에서 96번 포맷을 받겠다”는 의미다. 모든 영상에서 96이 정답이라는 뜻은 아니다.
 
-## 7. 업데이트 방법
+## 7. 업데이트도 가끔 해주기
 
-portable 실행 파일을 직접 받은 경우에는 아래 명령으로 업데이트할 수 있다.
+`yt-dlp`는 사이트 변경에 영향을 많이 받는다. 어제 되던 다운로드가 오늘 안 될 수도 있다. 그래서 이상하게 실패하면 먼저 업데이트부터 해본다.
+
+portable 실행 파일로 설치했다면:
 
 ```powershell
 yt-dlp -U
 ```
 
-winget으로 설치했다면 winget 업데이트를 우선한다.
+winget으로 설치했다면:
 
 ```powershell
 winget upgrade yt-dlp
 ```
 
-공식 README 기준으로 release binary는 `yt-dlp -U` 업데이트가 가능하고, pip로 설치한 경우에는 처음 설치에 사용한 pip 명령을 다시 실행하는 방식이다.
+업데이트 후에는 다시 버전을 확인한다.
 
-## 8. 자주 나는 문제
+```powershell
+yt-dlp --version
+```
 
-### `yt-dlp`를 찾을 수 없다고 나옴
+## 8. 내가 자주 겪은 문제들
 
-새 PowerShell을 열어 본다. 그래도 안 되면 아래처럼 전체 경로로 실행한다.
+### `yt-dlp`를 찾을 수 없다고 나올 때
+
+먼저 PowerShell을 새로 연다. 그래도 안 되면 전체 경로로 실행해 본다.
 
 ```powershell
 C:\Tools\yt-dlp\yt-dlp.exe --version
@@ -207,7 +254,7 @@ C:\Tools\yt-dlp\yt-dlp.exe --version
 
 전체 경로는 되는데 `yt-dlp`만 안 되면 PATH 문제다.
 
-### `ffmpeg`나 `ffprobe`를 찾을 수 없다고 나옴
+### `ffmpeg`가 없다고 나올 때
 
 아래 명령이 되는지 확인한다.
 
@@ -216,29 +263,41 @@ ffmpeg -version
 ffprobe -version
 ```
 
-안 되면 PATH에 없거나 설치가 안 된 것이다. 가장 단순한 해결은 `yt-dlp.exe`와 같은 폴더에 `ffmpeg.exe`, `ffprobe.exe`를 두는 것이다.
+안 되면 설치가 안 되었거나 PATH에 없는 것이다. 가장 쉬운 해결은 `yt-dlp.exe`와 같은 폴더에 `ffmpeg.exe`, `ffprobe.exe`를 두는 것이다.
 
-### 다운로드가 중간에 자꾸 끊김
+### 다운로드가 중간에 끊길 때
 
-네트워크가 불안정하거나 조각 다운로드가 실패하는 경우가 있다. 이때는 재시도 옵션을 늘린다.
+네트워크가 불안정하거나 조각 다운로드가 실패하는 경우가 있다. 이때는 재시도 횟수를 늘려 본다.
 
 ```powershell
 yt-dlp --fragment-retries 20 --retries 10 "<영상 URL>"
 ```
 
-### 브라우저에서 본 blob URL을 받을 수 없음
+그래도 계속 실패하면 `yt-dlp -U`로 업데이트한 뒤 다시 시도한다.
 
-브라우저 개발자 도구에서 보이는 `blob:` 주소는 브라우저 내부의 임시 참조에 가깝다. 그 문자열을 그대로 넣는다고 안정적으로 다운로드되는 것이 아니다. 공개적으로 허용된 원본 URL, 공유 링크, 또는 서비스가 제공하는 다운로드 버튼을 사용한다.
+### 브라우저에서 본 blob URL을 넣고 싶을 때
 
-## 9. 내가 쓰는 최소 루틴
+개발자 도구에서 이런 주소를 볼 때가 있다.
 
-1. 다운로드 권한이 있는 URL인지 확인한다.
-2. `yt-dlp --version`으로 설치를 확인한다.
-3. `ffmpeg -version`, `ffprobe -version`을 확인한다.
+```text
+blob:https://example.com/...
+```
+
+이건 보통 브라우저 내부에서 만들어진 임시 주소라서, 그 문자열을 그대로 넣는다고 잘 받아지는 것이 아니다. 공개적으로 허용된 원본 URL이나 서비스가 제공하는 다운로드 버튼을 쓰는 쪽이 맞다.
+
+## 9. 다음에 내가 다시 볼 체크리스트
+
+다음에 또 설치하거나 새 PC에서 세팅할 때는 이 순서대로 하면 된다.
+
+1. `yt-dlp --version`이 되는지 확인한다.
+2. `ffmpeg -version`, `ffprobe -version`이 되는지 확인한다.
+3. 다운로드할 권한이 있는 URL인지 먼저 확인한다.
 4. `yt-dlp -F "<영상 URL>"`로 포맷을 본다.
-5. 짧은 테스트 다운로드를 먼저 한다.
+5. 기본 명령어로 짧게 테스트 다운로드를 한다.
 6. 결과 파일의 영상/오디오 싱크를 확인한다.
-7. 문제가 없으면 같은 명령을 스크립트로 저장한다.
+7. 잘 되면 같은 명령을 스크립트로 저장한다.
+
+결국 핵심은 이거다. `yt-dlp`는 명령어 하나만 외우면 되는 도구가 아니라, `yt-dlp + ffmpeg + 포맷 확인` 세트로 생각해야 덜 막힌다.
 
 ## 참고 링크
 
