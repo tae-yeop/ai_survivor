@@ -30,6 +30,8 @@ export function PostCoverImage({ src, alt, categorySlug, className }: Props) {
         <img
           src={src}
           alt={alt}
+          loading="lazy"
+          referrerPolicy="no-referrer"
           className={cn("h-full w-full rounded-lg object-cover", className)}
         />
       );
@@ -41,6 +43,7 @@ export function PostCoverImage({ src, alt, categorySlug, className }: Props) {
           alt={alt}
           width={760}
           height={428}
+          sizes="(max-width: 768px) 100vw, 760px"
           className="h-full w-full object-cover"
         />
       </div>
