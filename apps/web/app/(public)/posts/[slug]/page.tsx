@@ -133,7 +133,7 @@ export default async function PostDetailPage({
             {post.tags.map((tag) => (
               <Link
                 key={tag}
-                href={`/tags/${tag}`}
+                href={`/tags/${slugifyTaxonomy(tag)}`}
                 className="rounded border border-line bg-bg-surface px-2.5 py-1 font-mono text-[11px] text-ink-400 transition-colors hover:border-ink-400 hover:text-ink-700"
               >
                 #{tag}
