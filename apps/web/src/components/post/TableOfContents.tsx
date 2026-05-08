@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type Heading = { id: string; text: string; level: 2 | 3 };
@@ -20,7 +20,6 @@ type Props = { className?: string };
 export function TableOfContents({ className }: Props) {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>("");
-  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     const hs = extractHeadings();
@@ -43,8 +42,6 @@ export function TableOfContents({ className }: Props) {
       },
       { rootMargin: "-80px 0px -60% 0px", threshold: 0 },
     );
-    observerRef.current = observer;
-
     for (const h of hs) {
       const el = document.getElementById(h.id);
       if (el) observer.observe(el);
