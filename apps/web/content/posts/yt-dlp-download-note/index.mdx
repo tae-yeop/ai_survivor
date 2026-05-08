@@ -5,7 +5,7 @@ slug: "yt-dlp-download-note"
 publishedAt: 2026-05-08
 updatedAt: 2026-05-08
 status: published
-category: "도구 메모"
+category: "vibe-coding-lab"
 tags:
   - "yt-dlp"
   - "ffmpeg"
@@ -22,21 +22,32 @@ tools:
   - "PowerShell"
 coverImage: null
 coverAlt: null
-featured: false
 ---
 
 ## 결론 먼저
 
-`yt-dlp`는 설치 자체보다 “설치한 뒤 왜 영상이 안 받아지지?”에서 더 많이 막히는 도구다. 나도 처음에는 exe 하나 받고 명령어 한 줄 치면 끝날 줄 알았다. 그런데 막상 해보면 `ffmpeg`가 없다고 하고, PowerShell에서 명령을 못 찾고, 포맷 번호는 영상마다 달라서 헷갈린다.
+영상 소스가 필요하면 유튜브와 같은 동영상 플랫폼에서 영상을 받게 됩니다. 이때는 `yt-dlp`가 정말 좋다고 생각합니다. 웹에서 다양한 유튜브 영상 받게 해주는 것들이 있지만 사실 이들도 내부적으론 `yt-dlp`를 사용하는걸로 보입니다.
 
-그래서 이 글은 설명서를 다시 쓰는 글이 아니라, 내가 Windows에서 다시 설치할 때 그대로 따라 하려고 적어두는 작업 메모다.
+다음과 같은 명령어를 입력하면 대부분 동영상 플랫폼을 지원하는 것을 알 수 있습니다. 
 
-이번 목표는 딱 여기까지다.
+```
+./yt-dlp --list-extractors
+```
 
-1. Windows에 `yt-dlp`를 설치한다.
-2. 영상/오디오 병합에 필요한 `ffmpeg`도 같이 잡는다.
-3. 바로 다운로드하지 말고 포맷을 먼저 확인한다.
-4. 문제가 생겼을 때 어디부터 보면 되는지 남겨 둔다.
+## 설치
+
+설치는 <https://github.com/yt-dlp/yt-dlp> 에 들어갑니다. 
+
+<Figure src="https://raw.githubusercontent.com/tae-yeop/ai_survivor/master/apps/web/content/posts/yt-dlp-download-note/assets/1778252522414-image.png" alt="image.png" />
+
+오른쪽에 Release 섹션 (<https://github.com/yt-dlp/yt-dlp/releases>)에 가면 다양한 소스별 다운로드가 가능합니다. 저는 윈도우즈 OS라서 yt-dlp.exe 파일 간단히 받아서 사용합니다.
+
+<Figure src="https://raw.githubusercontent.com/tae-yeop/ai_survivor/master/apps/web/content/posts/yt-dlp-download-note/assets/1778252599345-image.png" alt="image.png" />
+
+이후 추가로 설치하면 좋은건 `ffmpeg` 입니다. 이는 영상/오디오 병합에 필요한 `ffmpeg`도 같이 잡는다.
+
+1. 바로 다운로드하지 말고 포맷을 먼저 확인한다.
+2. 문제가 생겼을 때 어디부터 보면 되는지 남겨 둔다.
 
 그리고 먼저 선을 하나 긋고 시작한다. `yt-dlp`는 내가 만든 영상, 내가 올린 파일, 다운로드가 허용된 자료를 저장할 때만 쓴다. 유료 콘텐츠나 접근 제한 영상을 우회하려는 용도로는 쓰지 않는다.
 
