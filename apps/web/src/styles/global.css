@@ -4,7 +4,7 @@
 
 /* ============================================================
    AI 시대 생존기 — Design Tokens (Light)
-   Cool slate paper · pure ink · cinnabar accent (editorial signature)
+   Warm white paper · warm ink · cinnabar accent (editorial signature)
    ============================================================ */
 :root {
   /* Paper — warm white (Clean White system) */
@@ -495,7 +495,7 @@
   .callout p {
     margin: 0;
     font-size: 14px;
-    color: #555;
+    color: var(--ink-600);
     line-height: 1.7;
   }
 }
