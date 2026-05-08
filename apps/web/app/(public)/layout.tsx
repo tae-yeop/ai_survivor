@@ -11,7 +11,7 @@ export default function PublicLayout({ children }: Readonly<{ children: React.Re
         본문으로 건너뛰기
       </a>
       <Header />
-      <main id="main" className="flex-1">
+      <main id="main" className="flex-1 pt-16">
         {children}
       </main>
       <AdminQuickActions />
