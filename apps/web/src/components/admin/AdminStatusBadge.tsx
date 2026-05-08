@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type State = "loading" | "anon" | { login: string };
 
 export function AdminStatusBadge() {
   const [state, setState] = useState<State>("loading");
+  const pathname = usePathname();
+  const isPostPage = /^\/posts\/[^/]+\/?$/.test(pathname);
 
   useEffect(() => {
     let cancelled = false;
@@ -52,6 +55,20 @@ export function AdminStatusBadge() {
 
   return (
     <span className="flex items-center gap-2 font-mono text-[0.65rem] uppercase tracking-[0.12em]">
+      {isPostPage && (
+        <>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent("start-post-edit"))}
+            className="text-ink-500 hover:text-accent"
+          >
+            편집
+          </button>
+          <span aria-hidden="true" className="text-ink-300">
+            ·
+          </span>
+        </>
+      )}
       <Link href="/write" className="text-accent hover:text-ink-800">
         Write
       </Link>

@@ -24,24 +24,23 @@ const RichEditor = dynamic(
 type Mode = "view" | "loading" | "editing";
 
 export function EditOverlay({ slug, children }: { slug: string; children: React.ReactNode }) {
-  const [isAdmin, setIsAdmin] = useState(false);
   const [mode, setMode] = useState<Mode>("view");
   const [draft, setDraft] = useState<AdminPostDraft | null>(null);
   const [sha, setSha] = useState("");
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [conflict, setConflict] = useState(false);
+  const [lastCommitUrl, setLastCommitUrl] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
 
   useEffect(() => {
-    fetch("/api/admin/me", { cache: "no-store", credentials: "same-origin" })
-      .then(async (response) => {
-        if (!response.ok) return;
-        const data = (await response.json()) as { admin?: boolean };
-        if (data.admin) setIsAdmin(true);
-      })
-      .catch(() => {});
+    const handler = () => void startEditing();
+    window.addEventListener("start-post-edit", handler);
+    return () => window.removeEventListener("start-post-edit", handler);
+    // startEditing only calls stable setState functions — empty deps is intentional
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -73,6 +72,8 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
   async function startEditing() {
     setMode("loading");
     setError(null);
+    setConflict(false);
+    setLastCommitUrl(null);
     const result = await loadInPlace(slug);
     if (!result.ok) {
       setError(result.error);
@@ -91,6 +92,8 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
     setMode("view");
     setDraft(null);
     setError(null);
+    setConflict(false);
+    setLastCommitUrl(null);
     setDirty(false);
   }
 
@@ -99,6 +102,7 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
     if (!formRef.current) return;
     setSaving(true);
     setError(null);
+    setConflict(false);
     const formData = new FormData(formRef.current);
     formData.set("body", body);
     formData.set("_baseSha", sha);
@@ -106,9 +110,11 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
     setSaving(false);
     if (result.ok) {
       setDirty(false);
-      window.location.reload();
+      setLastCommitUrl(result.commitUrl ?? null);
+      setTimeout(() => window.location.reload(), 1500);
       return;
     }
+    if (result.conflict) setConflict(true);
     setError(result.error);
   }
 
@@ -116,17 +122,6 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
     return (
       <>
         {children}
-        {isAdmin && (
-          <button
-            type="button"
-            onClick={mode === "view" ? startEditing : undefined}
-            disabled={mode === "loading"}
-            aria-label="이 페이지 직접 편집"
-            className="fixed right-4 top-[3.75rem] z-30 border border-border bg-bg-surface px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-500 shadow-sm transition-colors hover:border-accent hover:text-accent disabled:opacity-50"
-          >
-            {mode === "loading" ? "로딩 중…" : "편집"}
-          </button>
-        )}
         {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
       </>
     );
@@ -141,10 +136,30 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
           Direct editing this page
         </span>
         <div className="flex items-center gap-2">
-          {error ? (
+          {conflict ? (
+            <span role="alert" className="flex max-w-xs items-center gap-2 text-xs text-amber-700">
+              {error}
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="font-medium underline"
+              >
+                새로고침
+              </button>
+            </span>
+          ) : error ? (
             <span role="alert" className="max-w-xs text-xs text-red-600">
               {error}
             </span>
+          ) : lastCommitUrl ? (
+            <a
+              href={lastCommitUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-green-700"
+            >
+              저장됨 ✓
+            </a>
           ) : null}
           <button
             type="submit"

@@ -40,7 +40,7 @@ export default function ContactPage() {
           </div>
 
           <Button asChild>
-            <Link href="mailto:hello@example.com">이메일 보내기</Link>
+            <Link href="mailto:deertangs@gmail.com">이메일 보내기</Link>
           </Button>
         </div>
       </section>
