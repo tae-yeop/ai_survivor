@@ -121,10 +121,10 @@ export function EditOverlay({ slug, children }: { slug: string; children: React.
             type="button"
             onClick={mode === "view" ? startEditing : undefined}
             disabled={mode === "loading"}
-            aria-label="Edit this page directly"
-            className="fixed bottom-6 right-6 z-30 rounded-full border border-paper-rule bg-paper px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-700 shadow-lg hover:border-accent hover:text-accent disabled:opacity-50"
+            aria-label="이 페이지 직접 편집"
+            className="fixed right-4 top-[3.75rem] z-30 border border-border bg-bg-surface px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-500 shadow-sm transition-colors hover:border-accent hover:text-accent disabled:opacity-50"
           >
-            {mode === "loading" ? "Loading..." : "Edit page"}
+            {mode === "loading" ? "로딩 중…" : "편집"}
           </button>
         )}
         {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}

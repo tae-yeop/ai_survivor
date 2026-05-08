@@ -1,40 +1,33 @@
-import { PageHeader } from "@/components/layout/page-header";
 import { pageMetadata } from "@/lib/seo/metadata";
 
 export const metadata = pageMetadata({
   title: "About",
-  description:
-    "AI 시대를 살아남기 위해 직접 따라 해본 튜토리얼, 막힌 부분, 비용, 결과물까지 정리합니다.",
+  description: "AI 도구를 직접 써보고 기록하는 1인 블로그입니다.",
   path: "/about",
 });
 
 export default function AboutPage() {
   return (
-    <>
-      <PageHeader
-        kicker="about"
-        title="AI 시대 생존기"
-        description="AI 시대를 살아남기 위해 직접 따라 해본 튜토리얼, 막힌 부분, 비용, 결과물까지 정리합니다."
-      />
-      <section className="container-prose prose py-12">
-        <h2>이 사이트가 하는 일</h2>
+    <section className="container-prose py-16">
+      <h1 className="font-display text-3xl font-bold tracking-[-0.025em] text-ink-900">
+        About
+      </h1>
+
+      <div className="prose prose-post mt-8 max-w-none">
         <p>
-          AI 시대 생존기는 AI 뉴스 요약 블로그가 아닙니다. 개발자이자 메이커가 직접 AI 튜토리얼을
-          따라 해보고, 설치부터 에러, 비용, 결과물까지 정리합니다. 잘 된 것뿐 아니라 막힌 부분과
-          비용 누수, 약관상 조심해야 할 부분까지 기록합니다.
+          AI 도구를 직접 써보고, 설치부터 에러·비용·결과물까지 있는 그대로 기록하는 블로그입니다.
+          실제로 써보지 않은 것은 쓰지 않습니다.
         </p>
 
-        <h2>이 사이트가 하지 않는 일</h2>
         <p>
-          새 도구 출시 알림, 추측성 트렌드 분석, 실험해보지 않은 AI 사용법은 다루지 않습니다.
+          운영자: ty-kim
+          <br />
+          이메일:{" "}
+          <a href="mailto:deertangs@gmail.com" className="text-accent hover:underline">
+            deertangs@gmail.com
+          </a>
         </p>
-
-        <h2>기록 기준</h2>
-        <p>
-          이 글을 읽은 사람이 시간·돈·시행착오 중 하나를 줄일 수 있는가 — 이 질문을 통과하지
-          못하면 글로 발행되지 않습니다.
-        </p>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

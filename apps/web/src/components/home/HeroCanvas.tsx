@@ -3,10 +3,10 @@
 
 import { useEffect, useRef } from "react";
 
-const HEADLINE_1 = "AI 튜토리얼,";
-const HEADLINE_2 = "제가 먼저 끝까지 해봅니다.";
-const SUBLINE = "설치부터 에러, 비용, 결과물까지 — 살아남은 것만 정리합니다.";
-const ACCENT_WORD = "끝까지";
+const HEADLINE_1 = "AI 도구,";
+const HEADLINE_2 = "직접 써보고 기록합니다.";
+const SUBLINE = "설치, 에러, 비용, 결과물 — 직접 겪은 것만 씁니다.";
+const ACCENT_WORD = "기록합니다";
 const MAX_DOTS = 90;
 const CANVAS_BG = "#ffffff";
 
@@ -408,7 +408,7 @@ export function HeroCanvas() {
         className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center"
         style={{ color: "transparent", userSelect: "none", zIndex: 10 }}
       >
-        <h1
+        <h2
           style={{
             fontFamily:
               "Pretendard Variable, Pretendard, system-ui, sans-serif",
@@ -421,7 +421,7 @@ export function HeroCanvas() {
           {HEADLINE_1}
           <br />
           {HEADLINE_2}
-        </h1>
+        </h2>
         <p
           style={{
             fontFamily: "monospace",

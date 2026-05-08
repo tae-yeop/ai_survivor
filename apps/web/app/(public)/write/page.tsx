@@ -15,7 +15,7 @@ export default async function WritePage() {
   await requireAdminSession();
 
   return (
-    <div className="container-prose py-12 sm:py-16">
+    <div className="container-wide py-12 sm:py-16">
       <div className="mb-8">
         <p className="kicker kicker-accent">Write</p>
         <h1 className="mt-3 font-display text-4xl font-semibold text-ink-900 md:text-6xl">
