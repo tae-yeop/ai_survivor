@@ -1,0 +1,74 @@
+---
+title: "Claude Code 다른 프로바이더 적용하기"
+description: "Claude Code를 Anthropic 호환 프로바이더와 함께 쓰기 위한 설정 메모."
+slug: "deepseek"
+publishedAt: 2026-05-08
+updatedAt: 2026-05-08
+status: draft
+category: "AI 도구 사용기"
+tags:
+  - "Claude Code"
+  - "Kimi K2"
+  - "Anthropic API"
+  - "프록시"
+series: null
+seriesOrder: null
+author: owner
+difficulty: intermediate
+tools:
+  - "Claude Code"
+  - "Kimi K2"
+  - "Moonshot AI"
+coverImage: null
+coverAlt: null
+featured: false
+---
+클로드코드 성능이 좋으나 비용이 매우 비싸고(환율도 너무 높다)
+토큰 소모도 앤트로픽측에서 업데이트를 하면 엄청 빨리 소모되버린다.
+
+윈도우 기준으로 
+
+다음과 같이
+
+
+notepad $PROFILE
+PS C:\Users\tyk&gt; New-Item -ItemType File -Path $PROFILE -Force
+
+
+
+
+맥이나 리눅스
+
+```
+export ANTHROPIC_BASE_URL="https://api.moonshot.ai/anthropic"
+export ANTHROPIC_AUTH_TOKEN="<YOUR_MOONSHOT_API_KEY>"
+
+export ANTHROPIC_MODEL="kimi-k2.6"
+export ANTHROPIC_DEFAULT_OPUS_MODEL="kimi-k2.6"
+export ANTHROPIC_DEFAULT_SONNET_MODEL="kimi-k2.6"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL="kimi-k2.6"
+export CLAUDE_CODE_SUBAGENT_MODEL="kimi-k2.6"
+
+export ENABLE_TOOL_SEARCH=false
+
+cd /path/to/your-project
+claude
+```
+
+윈도우
+
+```
+$env:ANTHROPIC_BASE_URL="https://api.moonshot.ai/anthropic"
+$env:ANTHROPIC_AUTH_TOKEN="<YOUR_MOONSHOT_API_KEY>"
+
+$env:ANTHROPIC_MODEL="kimi-k2.6"
+$env:ANTHROPIC_DEFAULT_OPUS_MODEL="kimi-k2.6"
+$env:ANTHROPIC_DEFAULT_SONNET_MODEL="kimi-k2.6"
+$env:ANTHROPIC_DEFAULT_HAIKU_MODEL="kimi-k2.6"
+$env:CLAUDE_CODE_SUBAGENT_MODEL="kimi-k2.6"
+
+$env:ENABLE_TOOL_SEARCH="false"
+
+cd C:\path\to\your-project
+claude
+```
