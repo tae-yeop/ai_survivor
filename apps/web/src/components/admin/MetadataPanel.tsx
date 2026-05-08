@@ -54,8 +54,9 @@ export function MetadataPanel({
           </span>
         </button>
       )}
-      {open && (
-        <div className={`grid gap-4 md:grid-cols-2 ${collapsible ? "mt-4" : ""}`}>
+      <div
+        className={`grid gap-4 md:grid-cols-2 ${collapsible ? "mt-4" : ""} ${open ? "" : "hidden"}`}
+      >
           {showPrimaryFields && (
             <>
               <Field label="Title">
@@ -182,8 +183,7 @@ export function MetadataPanel({
           <Field label="Cover alt text">
             <input className={adminInputClass} name="coverAlt" defaultValue={post.coverAlt ?? ""} />
           </Field>
-        </div>
-      )}
+      </div>
     </section>
   );
 }
