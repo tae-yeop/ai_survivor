@@ -1,23 +1,92 @@
-앤트트로픽 클로드코드 
-다른 프로바이더 적용하기
-
-클로드코드 성능이 좋으나 비용이 매우 비싸고(환율도 너무 높다)
-토큰 소모도 앤트로픽측에서 업데이트를 하면 엄청 빨리 소모되버린다.
-
-윈도우 기준으로 
-
-다음과 같이
+# Claude Code를 Kimi로 돌려 비용 줄이기
 
 
-notepad $PROFILE
-PS C:\Users\tyk> New-Item -ItemType File -Path $PROFILE -Force
+## 결론 먼저
 
+Claude Code는 성능이 좋지만 토큰 소모와 비용 부담이 크다. 그래서 Anthropic 호환 엔드포인트를 제공하는 다른 프로바이더로 라우팅하는 방법을 메모해 둔다. 지금 초안은 Moonshot AI의 Kimi 계열 모델을 기준으로 정리했다.
 
+핵심은 단순하다.
 
+- `ANTHROPIC_BASE_URL`로 요청을 보낼 주소를 바꾼다.
+- `ANTHROPIC_AUTH_TOKEN`에 해당 프로바이더의 API 키를 넣는다.
+- `ANTHROPIC_MODEL`과 기본 모델 환경변수를 같은 모델명으로 맞춘다.
+- 정상 연결 여부는 Claude Code 안에서 `/status`로 확인한다.
 
-맥이나 리눅스
+다만 이 방식은 공식 Anthropic 모델을 쓰는 것과 완전히 같지 않다. 도구 호출, 서브에이전트, 긴 작업에서 결과가 달라질 수 있으니 “비용 절감용 실험 설정”으로 보는 것이 맞다.
 
+## 왜 바꾸려고 했나
+
+Claude Code는 실제 개발 작업에서 매우 편하다. 하지만 오래 실행되는 작업, 대규모 리팩터링, 여러 번의 실패-수정 루프를 돌리면 토큰이 빠르게 소모된다. 환율까지 생각하면 개인 프로젝트에서는 부담이 커진다.
+
+그래서 다음 조건일 때 대체 프로바이더를 써볼 만하다.
+
+- 아주 정밀한 품질보다 초안 작성, 코드 탐색, 반복 수정이 더 중요한 작업
+- 실패해도 다시 돌릴 수 있는 로컬 개발 작업
+- 비용 한도를 걸어두고 여러 번 실험해야 하는 작업
+- 특정 모델의 긴 컨텍스트나 코딩 성능을 비교하고 싶은 경우
+
+반대로 배포 직전 보안 수정, 결제/권한 로직, 손실이 큰 마이그레이션은 검증된 기본 환경에서 처리하는 편이 낫다.
+
+## 사전 준비
+
+먼저 해당 프로바이더의 API 키를 만든다. Kimi/Moonshot 기준으로는 Kimi API Platform에서 API Key를 발급하고, 가능하면 프로젝트 일일 예산도 걸어 둔다. 코딩 에이전트는 자동 재시도와 긴 루프 때문에 예상보다 빨리 토큰을 쓸 수 있다.
+
+그리고 API 키는 절대 repository에 커밋하지 않는다. `.env`, 스크립트, 블로그 글 예제에는 항상 placeholder만 남긴다.
+
+## Windows PowerShell에서 한 번만 테스트하기
+
+현재 터미널 세션에서만 테스트하려면 아래처럼 실행한다.
+
+```powershell
+$env:ANTHROPIC_BASE_URL="https://api.moonshot.ai/anthropic"
+$env:ANTHROPIC_AUTH_TOKEN="<YOUR_MOONSHOT_API_KEY>"
+
+$env:ANTHROPIC_MODEL="kimi-k2.6"
+$env:ANTHROPIC_DEFAULT_OPUS_MODEL="kimi-k2.6"
+$env:ANTHROPIC_DEFAULT_SONNET_MODEL="kimi-k2.6"
+$env:ANTHROPIC_DEFAULT_HAIKU_MODEL="kimi-k2.6"
+$env:CLAUDE_CODE_SUBAGENT_MODEL="kimi-k2.6"
+
+$env:ENABLE_TOOL_SEARCH="false"
+
+cd C:\path\to\your-project
+claude
 ```
+
+테스트가 끝나면 새 PowerShell을 열었을 때 이 값들은 사라진다. 그래서 처음에는 이 방식이 안전하다.
+
+## PowerShell 프로필에 저장하기
+
+매번 입력하기 귀찮다면 PowerShell 프로필에 저장할 수 있다. 먼저 프로필 파일을 만든다.
+
+```powershell
+New-Item -ItemType File -Path $PROFILE -Force
+notepad $PROFILE
+```
+
+그 다음 아래 내용을 넣는다.
+
+```powershell
+function Use-KimiClaude {
+  $env:ANTHROPIC_BASE_URL="https://api.moonshot.ai/anthropic"
+  $env:ANTHROPIC_AUTH_TOKEN="<YOUR_MOONSHOT_API_KEY>"
+  $env:ANTHROPIC_MODEL="kimi-k2.6"
+  $env:ANTHROPIC_DEFAULT_OPUS_MODEL="kimi-k2.6"
+  $env:ANTHROPIC_DEFAULT_SONNET_MODEL="kimi-k2.6"
+  $env:ANTHROPIC_DEFAULT_HAIKU_MODEL="kimi-k2.6"
+  $env:CLAUDE_CODE_SUBAGENT_MODEL="kimi-k2.6"
+  $env:ENABLE_TOOL_SEARCH="false"
+  claude
+}
+```
+
+이렇게 해두면 일반 `claude`는 기존 방식으로 쓰고, 대체 프로바이더가 필요할 때만 `Use-KimiClaude`를 실행할 수 있다.
+
+## macOS / Linux 예시
+
+셸에서 일회성으로 테스트하려면 다음처럼 실행한다.
+
+```bash
 export ANTHROPIC_BASE_URL="https://api.moonshot.ai/anthropic"
 export ANTHROPIC_AUTH_TOKEN="<YOUR_MOONSHOT_API_KEY>"
 
@@ -33,20 +102,29 @@ cd /path/to/your-project
 claude
 ```
 
-윈도우
+영구 설정이 필요하면 `~/.zshrc`나 `~/.bashrc`에 함수 형태로 넣는 편이 좋다. 기본 Claude Code 사용과 섞이지 않게 하기 위해서다.
 
-```
-$env:ANTHROPIC_BASE_URL="https://api.moonshot.ai/anthropic"
-$env:ANTHROPIC_AUTH_TOKEN="<YOUR_MOONSHOT_API_KEY>"
+## 확인 방법
 
-$env:ANTHROPIC_MODEL="kimi-k2.6"
-$env:ANTHROPIC_DEFAULT_OPUS_MODEL="kimi-k2.6"
-$env:ANTHROPIC_DEFAULT_SONNET_MODEL="kimi-k2.6"
-$env:ANTHROPIC_DEFAULT_HAIKU_MODEL="kimi-k2.6"
-$env:CLAUDE_CODE_SUBAGENT_MODEL="kimi-k2.6"
+Claude Code가 열리면 `/status`를 입력해 현재 모델과 연결 상태를 확인한다. 문제가 생기면 아래 순서로 본다.
 
-$env:ENABLE_TOOL_SEARCH="false"
+- 401/403: API 키가 틀렸거나 해당 프로젝트에 권한/잔액이 없다.
+- 404: base URL 또는 모델명이 현재 프로바이더 문서와 맞지 않는다.
+- 서브에이전트만 다른 모델로 호출됨: `ANTHROPIC_DEFAULT_*_MODEL`과 `CLAUDE_CODE_SUBAGENT_MODEL`을 확인한다.
+- 도구 검색이 이상함: 비공식 엔드포인트에서는 MCP tool search가 제한될 수 있으니 `ENABLE_TOOL_SEARCH`를 끄고 시작한다.
+- 비용이 계속 증가함: 프로바이더 콘솔에서 일일 예산과 잔액 알림을 먼저 켠다.
 
-cd C:\path\to\your-project
-claude
-```
+## 내가 지키려는 운영 규칙
+
+이 설정은 편하지만, 프로젝트 기본값으로 박아두지는 않을 생각이다. 대신 작업 성격에 따라 켜고 끈다.
+
+- 아이디어 정리, 초안 작성, 단순 리팩터링: 대체 프로바이더 테스트 가능
+- 보안/권한/결제/데이터 삭제 로직: 기본 검증 환경 우선
+- 장시간 자동화: 예산 한도 설정 후 실행
+- 결과 품질이 애매하면 같은 작업을 기본 모델에서도 한 번 검증
+
+## 참고 링크
+
+- [Claude Code 환경변수 공식 문서](https://code.claude.com/docs/en/env-vars)
+- [Kimi K2.6 Quickstart](https://platform.kimi.ai/docs/guide/kimi-k2-6-quickstart)
+- [Kimi Agent 설정 문서](https://platform.kimi.ai/docs/guide/use-kimi-k2-to-setup-agent)
