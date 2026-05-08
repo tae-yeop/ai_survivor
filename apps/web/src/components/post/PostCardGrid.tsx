@@ -5,6 +5,7 @@ import { categoryLabel } from "@/lib/labels";
 import { slugifyTaxonomy } from "@/lib/content/slugify";
 import { cn } from "@/lib/utils";
 import { Reveal } from "@/components/ui/Reveal";
+import { AUTHOR_DISPLAY_NAME } from "@/lib/brand-copy";
 
 type Props = {
   posts: Post[];
@@ -59,7 +60,7 @@ function PostGridCard({ post }: { post: Post }) {
           {post.description}
         </p>
         <div className="mt-2 font-mono text-[10px] text-ink-300">
-          ty-kim · {post.readingTimeMinutes}분 읽기
+          {AUTHOR_DISPLAY_NAME} · {post.readingTimeMinutes}분 읽기
         </div>
       </div>
     </Link>

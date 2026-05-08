@@ -2,11 +2,17 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import {
+  HERO_ACCENT_WORD,
+  HERO_HEADLINE_LINE_1,
+  HERO_HEADLINE_LINE_2,
+  HERO_LEDE,
+} from "@/lib/brand-copy";
 
-const HEADLINE_1 = "AI 도구,";
-const HEADLINE_2 = "직접 써보고 기록합니다.";
-const SUBLINE = "설치, 에러, 비용, 결과물 — 직접 겪은 것만 씁니다.";
-const ACCENT_WORD = "기록합니다";
+const HEADLINE_1 = HERO_HEADLINE_LINE_1;
+const HEADLINE_2 = HERO_HEADLINE_LINE_2;
+const SUBLINE = HERO_LEDE;
+const ACCENT_WORD = HERO_ACCENT_WORD;
 const MAX_DOTS = 90;
 
 type CanvasPalette = {

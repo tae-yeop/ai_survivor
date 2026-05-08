@@ -1,8 +1,9 @@
 import { pageMetadata } from "@/lib/seo/metadata";
+import { AUTHOR_DISPLAY_NAME } from "@/lib/brand-copy";
 
 export const metadata = pageMetadata({
   title: "About",
-  description: "AI 도구를 직접 써보고 기록하는 1인 블로그입니다.",
+  description: "AI 시대를 살아남기 위한 발버둥을 남기는 1인 생존 기록장입니다.",
   path: "/about",
 });
 
@@ -15,12 +16,12 @@ export default function AboutPage() {
 
       <div className="prose prose-post mt-8 max-w-none">
         <p>
-          AI 도구를 직접 써보고, 설치부터 에러·비용·결과물까지 있는 그대로 기록하는 블로그입니다.
-          실제로 써보지 않은 것은 쓰지 않습니다.
+          AI 시대를 살아남기 위해 부딪힌 도구, 에러, 비용, 결과물을 남기는 생존 기록장입니다.
+          성공담보다 막혔던 지점과 다시 볼 단서를 우선합니다.
         </p>
 
         <p>
-          운영자: ty-kim
+          운영자: {AUTHOR_DISPLAY_NAME}
           <br />
           이메일:{" "}
           <a href="mailto:deertangs@gmail.com" className="text-accent hover:underline">

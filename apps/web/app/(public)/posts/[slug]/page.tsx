@@ -11,6 +11,7 @@ import { getPostBySlug, publishedPosts } from "@/lib/content/posts";
 import { categoryLabel } from "@/lib/labels";
 import { slugifyTaxonomy } from "@/lib/content/slugify";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { AUTHOR_DISPLAY_NAME } from "@/lib/brand-copy";
 
 export function generateStaticParams() {
   return publishedPosts.map((post) => ({ slug: post.slug }));
@@ -86,9 +87,11 @@ export default async function PostDetailPage({
           >
             <div className="flex items-center gap-2">
               <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-ink-900 font-mono text-[11px] font-bold text-bg-surface">
-                T
+                AI
               </div>
-              <span className="text-[13px] font-semibold text-ink-700">ty-kim</span>
+              <span className="text-[13px] font-semibold text-ink-700">
+                {AUTHOR_DISPLAY_NAME}
+              </span>
             </div>
             <span className="h-[3px] w-[3px] rounded-full bg-ink-200" aria-hidden="true" />
             <time dateTime={post.publishedAt} className="font-mono text-[11px] text-ink-300">
