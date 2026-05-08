@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import type { Post } from "@/lib/content/posts";
 import { categoryLabel } from "@/lib/labels";
+import { ScrambleText } from "@/components/ui/ScrambleText";
 
 type PostCardVariant = "list" | "feature";
 
@@ -29,14 +30,26 @@ export function PostCard({
       <div className="relative z-10 flex items-baseline gap-3 text-ink-500 sm:flex-col sm:items-start sm:gap-1">
         {typeof index === "number" && (
           <span className="font-mono text-[0.7rem] tracking-[0.08em] text-accent tabular-nums">
-            № {String(index + 1).padStart(2, "0")}
+            <ScrambleText
+              text={`№ ${String(index + 1).padStart(2, "0")}`}
+              trigger="inView"
+              once={true}
+              revealDelay={30}
+              revealDuration={250}
+            />
           </span>
         )}
         <time
           dateTime={post.publishedAt}
           className="font-mono text-[0.72rem] tracking-[0.04em] tabular-nums"
         >
-          {post.publishedAt}
+          <ScrambleText
+            text={post.publishedAt}
+            trigger="inView"
+            once={true}
+            revealDelay={30}
+            revealDuration={260}
+          />
         </time>
         <span className="hidden font-mono text-[0.7rem] text-ink-400 tabular-nums sm:block">
           {post.readingTimeMinutes}분 읽기
@@ -66,7 +79,7 @@ export function PostCard({
             href={`/posts/${post.slug}`}
             className="relative bg-[length:0_1.5px] bg-bottom bg-no-repeat transition-[background-size] duration-300 [background-image:linear-gradient(theme(colors.accent.DEFAULT),theme(colors.accent.DEFAULT))] after:absolute after:inset-0 after:-top-7 after:bottom-[-1.75rem] after:left-0 after:right-0 after:content-[''] hover:bg-[length:100%_1.5px] xl:after:left-[-100vw] xl:after:right-[-100vw]"
           >
-            {post.title}
+            <ScrambleText text={post.title} trigger="both" />
           </Link>
         </h2>
 

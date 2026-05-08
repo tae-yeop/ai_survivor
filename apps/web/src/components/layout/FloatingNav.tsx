@@ -7,6 +7,7 @@ import type { Bucket } from "@/lib/content/posts";
 import { NAV_PRIMARY } from "@/lib/site";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import { PostsNavDropdown } from "@/components/layout/PostsNavDropdown";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 const SCROLL_THRESHOLD = 8;
 
@@ -64,8 +65,9 @@ export function FloatingNav({ categories }: { categories: Bucket[] }) {
         </ul>
       </nav>
 
-      {/* Right: admin */}
-      <div className="flex-shrink-0">
+      {/* Right: theme toggle + admin */}
+      <div className="flex flex-shrink-0 items-center gap-1">
+        <ThemeToggle />
         <AdminStatusBadge />
       </div>
     </header>
