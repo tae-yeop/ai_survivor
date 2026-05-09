@@ -1,15 +1,9 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import {
-  Command,
-  EditorContent,
-  EditorRoot,
-  type EditorInstance,
-  renderItems,
-} from "novel";
+import { Command, EditorContent, EditorRoot, type EditorInstance, renderItems } from "novel";
 import { buildCoreExtensions } from "./extensions";
-import { htmlFigureToMdx } from "./serialize";
+import { htmlFigureToMdx, mdxFigureToEditorHtml } from "./serialize";
 import {
   buildCoreSlashItems,
   buildImageSlashItems,
@@ -54,8 +48,7 @@ export function RichEditor({
     const core = buildCoreExtensions({ slug, onMediaError });
     const slash = Command.configure({
       suggestion: {
-        items: ({ query }: { query: string }) =>
-          filterSlashItems(slashItems, query),
+        items: ({ query }: { query: string }) => filterSlashItems(slashItems, query),
         render: renderItems,
       },
     });
@@ -73,7 +66,7 @@ export function RichEditor({
   const handleCreate = useCallback(
     ({ editor: e }: { editor: EditorInstance }) => {
       setEditor(e);
-      if (initialContent) e.commands.setContent(initialContent);
+      if (initialContent) e.commands.setContent(mdxFigureToEditorHtml(initialContent));
     },
     [initialContent],
   );
