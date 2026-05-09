@@ -1,4 +1,5 @@
 import { type FigureAlign, getFigureStyle, normalizeFigureAlign } from "./figure-layout";
+import { FigureLightboxImage } from "./FigureLightboxImage";
 
 export type FigureProps = {
   src: string;
@@ -26,12 +27,11 @@ export function Figure({ src, alt, width, align, caption }: FigureProps) {
 
   return (
     <figure className={figureClass} style={getFigureStyle(width, safeAlign)}>
-      <img
+      <FigureLightboxImage
         src={src}
         alt={safeAlt}
-        loading="lazy"
+        caption={caption}
         referrerPolicy={isExternal ? "no-referrer" : undefined}
-        className="block w-full rounded-md border border-paper-rule"
       />
       {caption ? (
         <figcaption className="mt-2 text-center text-sm text-ink-500">{caption}</figcaption>
