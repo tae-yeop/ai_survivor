@@ -16,32 +16,32 @@ Last Updated: 2026-05-09
 
 ## 2. 현재 한 줄 상태
 
-**공개 블로그 + Git-backed 관리자 글쓰기 + 기본 SEO/광고 인프라는 로컬 구현 완료이고, Vercel app 출판까지는 진행된 상태(사용자 보고 기준)다.**
+**Public blog, Git-backed admin writing, baseline SEO/monetization infrastructure, and live Vercel smoke verification are complete for the Vercel production URL.**
 
-아직 남은 핵심은 **운영 도메인 연결, production env/canonical 최종화, 검색 콘솔/AdSense 신청, 운영 루프, 고급 미디어/임베드, 수익화 컴포넌트**다.
+Remaining core work: custom domain, search console/AdSense application, operating loop, advanced media/embed work, and optional desktop performance optimization.
 
 ## 3. Phase 현황
 
-| Phase                    | 상태                       | 현재 완료                                                                                                   | 남은 작업                                                    | 비고                                  |
-| ------------------------ | -------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------- |
-| 0. Foundations           | Done                       | 브랜드/문서/ADR 골격                                                                                        | 없음                                                         | 완료                                  |
-| 1. Next.js skeleton      | Done                       | App Router 공개 사이트 뼈대                                                                                 | 외부 visual parity 재검증 선택                               | 로컬 구현 완료                        |
-| 2. Public read           | Done                       | MDX, post rendering, taxonomy, RSS/sitemap                                                                  | Search Console 제출은 Phase 8                                | 완료                                  |
-| 3. Admin auth            | Done via ADR-004           | GitHub OAuth, owner session, allowlist 성격의 owner 검증                                                    | production env 입력                                          | 예전 Supabase Auth slice는 historical |
-| 4. Admin CRUD            | Done via ADR-004           | admin list, new/edit form, GitHub Contents save                                                             | UX polish 선택                                               | 예전 DB CRUD slice는 historical       |
-| 5. Editor/media          | Partial                    | Rich editor, GitHub image upload, in-place edit 일부                                                        | R2 video, embed pack, callout, toast/a11y polish             | 세부 slice 체크박스는 backlog 성격    |
-| 6. Content ops           | Partial/backlog            | Git commit history, status/date public filtering, metadata form 일부, editor boundary 문서, 수익화 컴포넌트 | autosave, schedule automation, taxonomy UI, SEO panel polish | GitHub-backed 운영 모델로 재정의 필요 |
-| 7. SEO/AdSense readiness | Locally ready              | 정책 페이지, ads.txt, AdSlot, sitemap/RSS/robots, baseline security headers                                 | Lighthouse/a11y 외부 검증                                    | AdSense 신청은 Phase 8                |
-| 8. Launch                | Partial / credential-gated | Vercel app 출판(owner report), 로컬 준비 문서                                                               | custom domain, production env/canonical, GSC, Naver, AdSense | 외부 계정/도메인 권한 필요            |
-| 9. Operating             | Not started                | 운영 루프 문서 초안                                                                                         | 발행 루틴, analytics loop, 업데이트 정책                     | production deploy 후 활성             |
-| 10. Brand redesign       | Done                       | AI 시대 생존기 rebrand, clean white UI                                                                      | 선택적 visual QA                                             | 완료                                  |
+| Phase                    | 상태                       | 현재 완료                                                                                                           | 남은 작업                                                    | 비고                                     |
+| ------------------------ | -------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------- |
+| 0. Foundations           | Done                       | 브랜드/문서/ADR 골격                                                                                                | 없음                                                         | 완료                                     |
+| 1. Next.js skeleton      | Done                       | App Router 공개 사이트 뼈대                                                                                         | 외부 visual parity 재검증 선택                               | 로컬 구현 완료                           |
+| 2. Public read           | Done                       | MDX, post rendering, taxonomy, RSS/sitemap                                                                          | Search Console 제출은 Phase 8                                | 완료                                     |
+| 3. Admin auth            | Done via ADR-004           | GitHub OAuth, owner session, allowlist 성격의 owner 검증                                                            | production env 입력                                          | 예전 Supabase Auth slice는 historical    |
+| 4. Admin CRUD            | Done via ADR-004           | admin list, new/edit form, GitHub Contents save                                                                     | UX polish 선택                                               | 예전 DB CRUD slice는 historical          |
+| 5. Editor/media          | Partial                    | Rich editor, GitHub image upload, in-place edit 일부                                                                | R2 video, embed pack, callout, toast/a11y polish             | 세부 slice 체크박스는 backlog 성격       |
+| 6. Content ops           | Partial/backlog            | Git commit history, status/date public filtering, metadata form 일부, editor boundary 문서, 수익화 컴포넌트         | autosave, schedule automation, taxonomy UI, SEO panel polish | GitHub-backed 운영 모델로 재정의 필요    |
+| 7. SEO/AdSense readiness | Live verified              | Policy pages, ads.txt, AdSlot, sitemap/RSS/robots, baseline security headers, PageSpeed a11y/SEO/Best Practices 100 | Optional desktop performance 90+ optimization                | AdSense application is Phase 8           |
+| 8. Launch                | Partial / credential-gated | Vercel app published, production smoke, Vercel URL canonical/sitemap/RSS verified                                   | custom domain, GSC, Naver, AdSense                           | External account/domain authority needed |
+| 9. Operating             | Not started                | 운영 루프 문서 초안                                                                                                 | 발행 루틴, analytics loop, 업데이트 정책                     | production deploy 후 활성                |
+| 10. Brand redesign       | Done                       | AI 시대 생존기 rebrand, clean white UI                                                                              | 선택적 visual QA                                             | 완료                                     |
 
 ## 4. 진행률 해석
 
 `ROADMAP.md`는 2026-05-09에 phase 폴더 기준으로 재정렬했다.
 
 - 단순 체크박스 진행률보다 “phase 상태”를 우선한다.
-- Launch 관련 체크박스는 Vercel app 출판만 완료이고, 도메인/DNS/검색/광고 신청은 외부 권한 대기다.
+- Launch checkboxes now include live Vercel smoke and PageSpeed verification, but domain/DNS/search/ad application still requires external authority.
 - `source-plans/`, `_archive-*`, Supabase 기반 old slices는 진행률 계산에서 제외한다.
 
 단, `slice-*.md` 전체 체크박스를 기계적으로 세면 오래된 source plan, archived slice, 이미 대체된 Supabase 경로가 섞여 실제 진행률보다 낮게 보인다. 따라서 진행률은 다음처럼 해석한다.
@@ -58,10 +58,9 @@ Last Updated: 2026-05-09
 
 외부 계정 권한 없이 지금 진행 가능한 작업:
 
-1. production 전 `NEXT_PUBLIC_SITE_URL`이 실제 Vercel URL 또는 운영 도메인을 가리키는지 확인
-2. 실제 Vercel production URL에서 smoke test
-3. Lighthouse 실행 전/후 a11y/metadata 점검
-4. R2 없이 가능한 embed/callout/UX polish 일부 구현
+1. Phase 5 embed/callout/UX polish that does not require R2
+2. Optional Desktop Performance 90+ work if desired
+3. After domain purchase, switch `NEXT_PUBLIC_SITE_URL` to the operating domain and re-run smoke/PageSpeed
 
 ## 6. 외부 권한이 필요한 작업
 
@@ -87,7 +86,8 @@ Last Updated: 2026-05-09
 6. ~~`AffiliateLink`/`ProductCard`/`DisclosureBox` 구현~~
 7. ~~editor 경계 문서화~~
 8. ~~security headers 사전 적용~~
-9. 다음 후보: 실제 Vercel URL smoke/Lighthouse 또는 Phase 5 embed/callout polish
+9. ~~Live Vercel smoke/PageSpeed verification~~
+10. Next candidate: Phase 5 embed/callout polish or optional Desktop Performance 90+ optimization
 
 ## 2026-05-09 Launch QA update
 
@@ -98,4 +98,28 @@ Shared PageSpeed report findings addressed in code:
 - Added regression tests for anonymous admin identity and contrast token safety.
 - Local production smoke passed for `/`, `/api/admin/me`, `/resources`, sitemap `/resources`, and baseline security headers.
 
-Deployment note: the live `https://aisurvivor.vercel.app` deployment still needs a production redeploy before these fixes appear in PageSpeed.
+Deployment note: redeploy completed and the live `https://aisurvivor.vercel.app` deployment now reflects these fixes.
+
+## 2026-05-09 Live smoke + PageSpeed verification
+
+Live target: `https://aisurvivor.vercel.app`
+PageSpeed report timestamp: 2026-05-09 15:48:29 KST
+
+Smoke test results:
+
+- Public routes returned 200: `/`, `/posts`, `/resources`, `/about`, `/privacy`, `/contact`, `/categories`, `/tags`, `/series`, `/tools`.
+- SEO/policy routes returned 200: `/sitemap.xml`, `/rss.xml`, `/robots.txt`, `/ads.txt`.
+- Admin routes checked: `/admin/login` 200, `/api/admin/me` 200 with `{ "admin": false }`.
+- Security headers present on live responses: `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Permissions-Policy`.
+- Sitemap includes `/resources`, excludes `/admin` and `/write`, and contains 55 URLs.
+- RSS uses `https://aisurvivor.vercel.app` and no longer contains `aivibelab.com`.
+- `ads.txt` is intentionally still a placeholder until an AdSense publisher id exists.
+
+PageSpeed results:
+
+| Form factor | Performance | Accessibility | Best Practices | SEO | Notes                                                                 |
+| ----------- | ----------: | ------------: | -------------: | --: | --------------------------------------------------------------------- |
+| Desktop     |          84 |           100 |            100 | 100 | Remaining perf cost is main-thread/TBT/unused JS/render-blocking CSS. |
+| Mobile      |          96 |           100 |            100 | 100 | Launch-ready for the current mobile threshold.                        |
+
+Conclusion: live smoke, a11y, best-practices, and SEO are launch-ready for the Vercel URL. Remaining production blockers are external-account/domain work, not local code correctness.

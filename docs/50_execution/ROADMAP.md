@@ -101,7 +101,7 @@ Last Updated: 2026-05-09
 
 ## Phase 7. SEO & AdSense Readiness
 
-상태: Locally ready, external verification pending
+Status: Live verified, AdSense external approval pending
 문서: [`phase-7-seo-adsense`](./phase-7-seo-adsense/README.md)
 
 - [x] About 본문 보강
@@ -110,15 +110,15 @@ Last Updated: 2026-05-09
 - [x] 카테고리 빈 페이지 제거/얇은 글 정리
 - [x] 광고 슬롯 컴포넌트 준비
 - [x] `ads.txt` route 준비
-- [ ] 실제 Vercel URL 기준 Lighthouse/a11y 점검
-- [ ] production canonical/sitemap/RSS URL 확인
+- [x] 실제 Vercel URL 기준 Lighthouse/a11y 점검
+- [x] production canonical/sitemap/RSS URL 확인
 
 ## Phase 8. Production Launch
 
-상태: Partial / credential-gated
+Status: Partial / live Vercel verified / credential-gated
 문서: [`phase-8-launch`](./phase-8-launch/README.md)
 
-- [x] Vercel app 출판 — owner report 기준
+- [x] Vercel app published and live smoke passed
 - [ ] Preview/Production 환경변수 최종 분리
 - [ ] 운영 도메인 구매/연결
 - [ ] apex vs www 정책 결정 및 redirect
@@ -159,5 +159,5 @@ Last Updated: 2026-05-09
 
 1. [`PRE_LAUNCH_DEV_CHECKLIST.md`](./PRE_LAUNCH_DEV_CHECKLIST.md)를 기준으로 환경변수/canonical/metadata/보안 헤더 점검
 2. Phase 6의 editor 경계 문서와 수익화 컴포넌트 정책 적용
-3. Phase 7의 Lighthouse/a11y 사전 점검
+3. ~~Phase 7 Lighthouse/a11y pre-check~~
 4. Phase 8에서 domain 연결 후 `NEXT_PUBLIC_SITE_URL` 교체와 search console 제출
