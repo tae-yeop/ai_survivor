@@ -1,35 +1,17 @@
-import type { CSSProperties } from "react";
+import { type FigureAlign, getFigureStyle, normalizeFigureAlign } from "./figure-layout";
 
 export type FigureProps = {
   src: string;
   alt: string;
   width?: string;
-  align?: "left" | "center" | "right" | "full";
+  align?: FigureAlign;
   caption?: string;
 };
-
-const PCT = /^(\d{1,3})%$/;
-
-function isPercent(value: string | undefined): value is string {
-  if (!value) return false;
-  const match = PCT.exec(value);
-  if (!match) return false;
-  const n = Number(match[1]);
-  return Number.isFinite(n) && n > 0 && n <= 100;
-}
-
-function normalizeAlign(
-  value: FigureProps["align"],
-): NonNullable<FigureProps["align"]> {
-  if (value === "left" || value === "right" || value === "full") return value;
-  return "center";
-}
 
 export function Figure({ src, alt, width, align, caption }: FigureProps) {
   if (!src) return null;
   const safeAlt = alt ?? "";
-  const safeAlign = normalizeAlign(align);
-  const safeWidth = isPercent(width) ? width : "100%";
+  const safeAlign = normalizeFigureAlign(align);
 
   const figureClass =
     safeAlign === "left"
@@ -37,17 +19,13 @@ export function Figure({ src, alt, width, align, caption }: FigureProps) {
       : safeAlign === "right"
         ? "my-6 float-right ml-6 mb-3 max-w-full"
         : safeAlign === "full"
-          ? "my-8 w-full"
-          : "my-8 mx-auto max-w-full";
+          ? "my-10 max-w-none"
+          : "my-10 max-w-none";
 
-  const wrapperStyle: CSSProperties =
-    safeAlign === "full" ? {} : { width: safeWidth };
-
-  const isExternal =
-    !src.startsWith("/") && !src.includes("raw.githubusercontent.com");
+  const isExternal = !src.startsWith("/") && !src.includes("raw.githubusercontent.com");
 
   return (
-    <figure className={figureClass} style={wrapperStyle}>
+    <figure className={figureClass} style={getFigureStyle(width, safeAlign)}>
       <img
         src={src}
         alt={safeAlt}
@@ -56,9 +34,7 @@ export function Figure({ src, alt, width, align, caption }: FigureProps) {
         className="block w-full rounded-md border border-paper-rule"
       />
       {caption ? (
-        <figcaption className="mt-2 text-center text-sm text-ink-500">
-          {caption}
-        </figcaption>
+        <figcaption className="mt-2 text-center text-sm text-ink-500">{caption}</figcaption>
       ) : null}
     </figure>
   );
