@@ -2,21 +2,21 @@
 
 이 폴더는 블로그의 제품 방향, 콘텐츠 운영, 사이트 구조, 실행 계획, 의사결정, 배포 운영 문서를 보관한다.
 
-현재 표시 브랜드는 **AI 시대 생존기 / AI Survivor**다. 운영 도메인은 코드 기본값 기준 `aivibelab.com`이며, 브랜드와 도메인은 분리해서 관리한다.
+현재 표시 브랜드는 **AI 시대 생존기 / AI Survivor**다. 운영 도메인은 아직 launch phase에서 확정/구매해야 하며, production에서는 `NEXT_PUBLIC_SITE_URL`을 실제 Vercel URL 또는 운영 도메인으로 명시한다.
 
 ## 문서 지도
 
-| 폴더 | 역할 | 대표 문서 |
-| --- | --- | --- |
-| `00_overview/` | 제품 목적, 브랜드, 열려 있는 질문 | `PRODUCT_BRIEF.md`, `BRAND_OVERVIEW.md`, `OPEN_QUESTIONS.md` |
-| `10_content/` | 글 저장 방식, 글쓰기 흐름, 콘텐츠 전략 | `CONTENT_MODEL.md`, `CONTENT_STRATEGY.md`, `ARTICLE_TEMPLATE.md`, `ARTICLE_WORKFLOW.md` |
-| `20_features/` | 기능별 사용자/운영 설명 | admin CMS, GitHub backed editor, media library |
-| `20_site/` | 화면 목록과 정보 구조 | `SCREEN_INVENTORY.md`, `SERVICE_IA.md` |
-| `30_seo_monetization/` | 검색/광고 준비 | `SEO_ADSENSE_CHECKLIST.md` |
-| `40_architecture/` | 시스템 구조와 권한 모델 | `ARCHITECTURE.md`, `AUTH_AND_PERMISSIONS.md` |
-| `50_execution/` | 구현 단계, 로드맵, 실행 산출물 | `IMPLEMENTATION_PLAN.md`, `ROADMAP.md`, phase folders |
-| `60_decisions/` | ADR과 디자인 결정 기록 | `ADR-*.md`, `design-notes/` |
-| `70_ops/` | 배포와 운영 절차 | `DEPLOYMENT.md` |
+| 폴더                   | 역할                                   | 대표 문서                                                                                                   |
+| ---------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `00_overview/`         | 제품 목적, 브랜드, 열려 있는 질문      | `PRODUCT_BRIEF.md`, `BRAND_OVERVIEW.md`, `OPEN_QUESTIONS.md`                                                |
+| `10_content/`          | 글 저장 방식, 글쓰기 흐름, 콘텐츠 전략 | `CONTENT_MODEL.md`, `CONTENT_STRATEGY.md`, `ARTICLE_TEMPLATE.md`, `ARTICLE_WORKFLOW.md`                     |
+| `20_features/`         | 기능별 사용자/운영 설명                | admin CMS, GitHub backed editor, media library                                                              |
+| `20_site/`             | 화면 목록과 정보 구조                  | `SCREEN_INVENTORY.md`, `SERVICE_IA.md`                                                                      |
+| `30_seo_monetization/` | 검색/광고/제휴 수익화 준비             | `SEO_ADSENSE_CHECKLIST.md`, `MONETIZATION_STRATEGY.md`                                                      |
+| `40_architecture/`     | 시스템 구조와 권한 모델                | `ARCHITECTURE.md`, `AUTH_AND_PERMISSIONS.md`, `EDITOR_BOUNDARIES.md`                                        |
+| `50_execution/`        | 구현 단계, 로드맵, 실행 산출물         | `EXECUTION_STATUS.md`, `PRE_LAUNCH_DEV_CHECKLIST.md`, `IMPLEMENTATION_PLAN.md`, `ROADMAP.md`, phase folders |
+| `60_decisions/`        | ADR과 디자인 결정 기록                 | `ADR-*.md`, `design-notes/`                                                                                 |
+| `70_ops/`              | 배포와 운영 절차                       | `DEPLOYMENT.md`                                                                                             |
 
 ## 현재 기준 문서
 
@@ -42,3 +42,12 @@
 3. 코드 변경 전, 필요한 ADR 또는 execution note가 있는지 확인한다.
 4. 코드 변경 후, 문서의 완료 상태와 링크를 갱신한다.
 5. 오래된 root-level 임시 문서는 `source-notes/`, `source-plans/`, `design-notes/` 중 하나로 이동한다.
+
+## Current implementation quick links
+
+- `40_architecture/HOW_IT_WORKS.md` — 현재 코드 기준 공개 사이트, 관리자, GitHub 저장, 배포 흐름.
+- `50_execution/EXECUTION_STATUS.md` — `docs/50_execution`의 최신 완료/미완료 현황판.
+- `50_execution/SIMILAR_SERVICE_STARTER.md` — 비슷한 Git-backed 콘텐츠 서비스를 빠르게 시작하기 위한 실행 순서.
+- `50_execution/IMPLEMENTATION_STATUS_2026-05-09.md` — 2026-05-09 기준 구현 상태와 남은 후속 작업.
+
+- [50_execution/PRE_LAUNCH_DEV_CHECKLIST.md](50_execution/PRE_LAUNCH_DEV_CHECKLIST.md) — Vercel 출판 후 도메인 전 개발 체크리스트

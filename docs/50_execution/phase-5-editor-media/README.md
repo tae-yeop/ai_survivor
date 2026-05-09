@@ -1,9 +1,22 @@
 # Phase 5 — MDX Components & Rich Editor
 
-Status: Active (reactivated by ADR-004)
+Status: Partially Implemented (reactivated by ADR-004)
 Goal: 사이트 안에서 게시판급 글쓰기 경험을 갖춘다 — 이미지 paste/D&D + 정렬/크기, YouTube/X/Spotify/Notion/CodePen/Gist/GitHubRepo/Vimeo/일반 OG 카드 자동 임베드, mp4 비디오 업로드(R2), 공개 페이지에서 바로 편집(in-place).
 
 > **재가동 근거**: ADR-004 GitHub-backed Admin Editor의 Phase C/D 실행. 본 Phase 의 설계는 [_design/2026-05-07-rich-editor-overhaul.md](./_design/2026-05-07-rich-editor-overhaul.md) 에 정리되어 있다. ADR-002 기반 historical slice (Tiptap + Supabase Storage) 는 `_archive-adr-002/` 에 보관 — 본 Phase 는 GitHub + R2 경로로 다시 작성됐다.
+
+## Current status
+
+| 영역 | 상태 | 근거 / 남은 일 |
+| --- | --- | --- |
+| Rich editor core | Implemented | `apps/web/src/components/admin/RichEditor/*` |
+| Image upload | Implemented for small images via GitHub | `apps/web/app/api/admin/upload/[slug]/route.ts` |
+| In-place edit | Implemented | `apps/web/src/components/admin/EditOverlay.tsx`, `posts/[slug]/save-action.ts` |
+| R2 video upload | Not active | `R2_*` env placeholder만 있음 |
+| Embed pack | Backlog | YouTube/Vimeo/X/CodePen/Gist/Spotify/Notion/GitHubRepo/OG 카드 남음 |
+| Callout / toast / shortcut modal / a11y polish | Backlog | 5.6에서 처리 |
+
+> Note: 아래 slice 체크박스는 원래 구현 계획 단위라 현재 코드와 1:1로 맞지 않을 수 있다. 완료/미완료 판단은 `../EXECUTION_STATUS.md`와 `../IMPLEMENTATION_STATUS_2026-05-09.md`를 우선한다.
 
 ## Slices
 

@@ -1,9 +1,11 @@
 # GitHub-backed Admin Editor
 
-Status: Proposed
+Status: Implemented
 Owner: 개인 운영자
 Last Updated: 2026-05-06
 Related ADR: `docs/60_decisions/ADR-004-github-backed-admin-editor.md`
+
+> 2026-05-09 implementation note: the Phase B GitHub-backed editor is now active in code. See `../40_architecture/HOW_IT_WORKS.md` for the current end-to-end flow.
 
 ## Goal
 

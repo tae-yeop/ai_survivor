@@ -1,6 +1,40 @@
 import { FOOTER_SIGNATURE, HERO_LEDE, SITE_HERO_COPY } from "./brand-copy.ts";
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://aivibelab.com";
+type SiteUrlEnv = Record<string, string | undefined> & {
+  NEXT_PUBLIC_SITE_URL?: string;
+  VERCEL_PROJECT_PRODUCTION_URL?: string;
+  VERCEL_URL?: string;
+};
+
+function normalizeSiteUrl(url: string) {
+  return url.replace(/\/+$/, "");
+}
+
+function withHttps(hostOrUrl: string) {
+  if (/^https?:\/\//.test(hostOrUrl)) {
+    return hostOrUrl;
+  }
+
+  return `https://${hostOrUrl}`;
+}
+
+export function resolveSiteUrl(env: SiteUrlEnv = process.env) {
+  if (env.NEXT_PUBLIC_SITE_URL) {
+    return normalizeSiteUrl(env.NEXT_PUBLIC_SITE_URL);
+  }
+
+  if (env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return normalizeSiteUrl(withHttps(env.VERCEL_PROJECT_PRODUCTION_URL));
+  }
+
+  if (env.VERCEL_URL) {
+    return normalizeSiteUrl(withHttps(env.VERCEL_URL));
+  }
+
+  return "http://localhost:3000";
+}
+
+export const SITE_URL = resolveSiteUrl();
 export const SITE_NAME = "AI 시대 생존기";
 export const SITE_NAME_EN = "aisurvivor";
 export const SITE_SUBTITLE = "컴퓨터쟁이의 기록소";
@@ -19,10 +53,12 @@ export const RSS_DESCRIPTION = SITE_DESCRIPTION;
 export const NAV_PRIMARY = [
   { href: "/", label: "Home" },
   { href: "/posts", label: "Posts" },
+  { href: "/resources", label: "Resources" },
   { href: "/about", label: "About" },
 ] as const;
 
 export const NAV_FOOTER = [
+  { href: "/resources", label: "Resources" },
   { href: "/privacy", label: "Privacy" },
   { href: "/contact", label: "Contact" },
   { href: "/rss.xml", label: "RSS" },

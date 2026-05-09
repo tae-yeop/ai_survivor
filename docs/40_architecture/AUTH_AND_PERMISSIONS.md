@@ -7,6 +7,8 @@ Source of Truth: 보류된 로그인, 관리자 권한, Supabase RLS 정책
 
 > 2026-05-06 update: ADR-003에서 Supabase/Auth/Admin CMS를 MVP 범위 밖으로 보류했다. 현재 공개 블로그는 별도 앱 로그인 없이 GitHub repository 권한과 PR 리뷰로 작성 권한을 관리한다. 이 문서는 ADR-002 경로를 재개할 때 참고하는 보관 문서다.
 
+> 2026-05-09 implementation note: this file contains earlier Supabase-oriented planning material. The active implementation uses GitHub OAuth, a signed `aiv_admin_session` cookie, and GitHub Contents API writes. See `HOW_IT_WORKS.md` for the current auth/write flow.
+
 ## 1. Goal
 
 공개 블로그는 누구나 읽을 수 있다. 관리자 CMS는 Google OAuth 로그인과 이메일 allowlist를 모두 통과한 계정만 접근할 수 있다.

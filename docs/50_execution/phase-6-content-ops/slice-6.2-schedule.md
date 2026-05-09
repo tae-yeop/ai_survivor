@@ -1,9 +1,9 @@
 ﻿# Slice 6.2 — 예약 발행
 
 Phase: 6 — Content Ops
-Status: Needs Rewrite for ADR-003
+Status: Partial — public filtering implemented, automation backlog
 
-> This slice was written for the ADR-002 admin CMS path. Rework it into GitHub/MDX checklist, lint, or GitHub Actions workflow before implementation.
+> Current public read path already excludes draft/scheduled/archived and future-dated posts from public outputs. Automatic publish/deploy scheduling is not implemented.
 
 ## Goal
 
@@ -11,8 +11,10 @@ Status: Needs Rewrite for ADR-003
 
 ## Tasks
 
-- [ ] `scheduled` 상태 + `scheduled_at` 필드 활용
-- [ ] Vercel Cron (`/api/cron/publish-scheduled`) — 분 단위 폴링하여 published 전환 + revalidate 호출
+- [x] `status: scheduled` 글은 public list/detail/sitemap/RSS에서 제외
+- [x] future `publishedAt` 글은 public list/detail/sitemap/RSS에서 제외
+- [ ] 예약 발행이 실제 운영 병목인지 확인
+- [ ] 필요 시 GitHub Actions 또는 Vercel Cron으로 scheduled → published 전환 + deploy 트리거 설계
 
 ## Acceptance
 

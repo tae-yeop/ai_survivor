@@ -13,7 +13,7 @@ Accepted
 ## Decision
 
 - 표시 브랜드는 **AI 시대 생존기 / AI Survivor**로 둔다.
-- 도메인 기본값은 당장 코드 기준 `aivibelab.com`을 유지한다.
+- 2026-05-09 update: 도메인은 아직 구매 전이므로 코드 기본값으로 특정 운영 도메인을 하드코딩하지 않는다. Vercel에서는 `NEXT_PUBLIC_SITE_URL` 또는 Vercel-provided URL을 사용하고, 도메인 구매 후 운영 도메인으로 교체한다.
 - category와 tag는 frontmatter의 free-form 문자열로 받는다.
 - route path에는 raw label을 쓰지 않고 `slugifyTaxonomy()` 결과를 쓴다.
 - category/tag bucket은 같은 slug로 충돌하는 raw value를 감지해야 한다.

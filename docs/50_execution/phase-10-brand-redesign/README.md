@@ -1,14 +1,13 @@
-# Phase 10. Brand Redesign
+# Phase 10 — Brand Redesign
 
-## 상태
-
-완료. 이 phase는 Superpowers 계획 문서로 시작했고, 구현 후 운영 문서와 ADR로 정리했다.
+Status: Done
+Goal: 표시 브랜드와 핵심 공개 화면을 “AI 시대 생존기 / AI Survivor” 방향으로 재정렬한다.
 
 ## 목표
 
-- 표시 브랜드를 AI 시대 생존기 / AI Survivor로 정리한다.
-- AI Vibe Lab 중심의 초기 문서와 UI 카피를 새 포지셔닝으로 갱신한다.
-- 카테고리/태그를 free-form frontmatter 값으로 다루되 route는 안정적인 slug를 사용한다.
+- 표시 브랜드를 `AI 시대 생존기 / AI Survivor`로 정리한다.
+- 기존 AI Vibe Lab 중심 문서와 UI 카피를 개인 생존 기록소 톤으로 갱신한다.
+- 카테고리/태그를 free-form frontmatter 값으로 다루고 route에는 안정적인 slug를 사용한다.
 - 홈과 글 상세 화면을 clean white editorial UI로 바꾼다.
 
 ## 구현된 결과
@@ -19,12 +18,12 @@
 - homepage category filter와 card grid
 - popular posts와 tag cloud
 - post detail cover image, centered prose, floating TOC
-- browser writing workflow와 in-place edit 흐름 유지
+- browser writing workflow와 in-place edit 진입 유지
 
 ## 검증 기준
 
-- category/tag static params와 rendered href가 같은 slug contract를 써야 한다.
-- `npm.cmd test`, `npm.cmd run typecheck`, `npm.cmd run lint`가 통과해야 한다.
+- category/tag static params와 rendered href가 같은 slug contract를 따라야 한다.
+- `npm run test`, `npm run typecheck`, `npm run lint`, `npm run build`가 통과해야 한다.
 - published가 아닌 draft/scheduled 글은 RSS/sitemap에 노출되지 않아야 한다.
 
 ## 관련 문서

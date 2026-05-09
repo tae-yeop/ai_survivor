@@ -2,29 +2,31 @@
 
 Status: Active
 Owner: Solo operator
-Last Updated: 2026-05-06
-Decision Source: `docs/60_decisions/ADR-003-github-mdx-content-workflow.md`
+Last Updated: 2026-05-09
+Decision Source: `docs/60_decisions/ADR-003-github-mdx-content-workflow.md`, `docs/60_decisions/ADR-004-github-backed-admin-editor.md`
 
 ## 1. Architecture Summary
 
-AI Vibe Lab is a public blog built with **Next.js App Router + Git-backed MDX**.
+AI 시대 생존기는 **Next.js App Router + Git-backed MDX**로 만든 공개 블로그다.
 
-The current source of truth for post content is repository files under `apps/web/content/posts/<slug>/index.mdx`. The operator writes, reviews, and publishes posts through Git commits or pull requests. The deployed site reads those files at build time and serves static, SEO-friendly public pages.
+The source of truth for post content is repository files under `apps/web/content/posts/<slug>/index.mdx`. Public pages read those files at build time and serve SEO-friendly pages. Owner writing/editing is available through a GitHub-backed admin editor that saves content with the GitHub Contents API.
 
-Supabase Auth, Supabase Postgres, Supabase Storage, Tiptap, and a browser `/admin` CMS are deferred ADR-002 material. Do not implement them, add required environment variables for them, or expose admin routes without a new ADR.
+Supabase Auth, Supabase Postgres, Supabase Storage, and a DB-backed CMS are deferred ADR-002 material. Do not make them required for the active launch path without a new ADR.
 
 ## 2. Locked Values
 
-| Area                  | Decision                                  |
-| --------------------- | ----------------------------------------- |
-| Product name          | `AI Vibe Lab`                             |
-| Production domain     | `aivibelab.com`                           |
-| Active app            | `apps/web/`                               |
-| Content source        | Git-tracked MDX files                     |
-| Post location         | `apps/web/content/posts/<slug>/index.mdx` |
-| Deployment            | Vercel project rooted at `apps/web`       |
-| Database/Auth/Storage | None for the active MVP                   |
-| Active CMS            | GitHub pull request workflow              |
+| Area              | Decision                                                                              |
+| ----------------- | ------------------------------------------------------------------------------------- |
+| Product name      | `AI 시대 생존기 / AI Survivor`                                                        |
+| Production domain | Not purchased yet; use actual Vercel production URL until custom domain               |
+| Active app        | `apps/web/`                                                                           |
+| Content source    | Git-tracked MDX files                                                                 |
+| Post location     | `apps/web/content/posts/<slug>/index.mdx`                                             |
+| Deployment        | Vercel project rooted at `apps/web`                                                   |
+| Database          | None for the active MVP                                                               |
+| Admin auth        | GitHub OAuth + signed owner session                                                   |
+| Admin writes      | GitHub Contents API                                                                   |
+| Media             | small images in GitHub/public assets; large media deferred to R2/Vercel Blob decision |
 
 ## 3. Design Principles
 
@@ -34,7 +36,7 @@ Supabase Auth, Supabase Postgres, Supabase Storage, Tiptap, and a browser `/admi
 - Metadata for SEO, Open Graph, RSS, JSON-LD, and taxonomy pages comes from frontmatter.
 - The build should fail loudly for malformed content rather than silently publishing bad pages.
 - AdSense infrastructure must be safe before approval: disabled by default, policy pages present, and `ads.txt` valid only when a publisher id exists.
-- Deferred CMS work must stay isolated from the public route surface.
+- Admin/editor code must stay behind owner session checks. See `EDITOR_BOUNDARIES.md`.
 
 ## 4. Repository Shape
 
@@ -49,27 +51,38 @@ apps/
         tags/
         series/
         tools/
+        resources/
         about/
         contact/
         privacy/
+        write/
+      (admin)/
+        admin/
+      api/admin/
       rss.xml/route.ts
       ads.txt/route.ts
       robots.ts
       sitemap.ts
     content/
-      README.md
       posts/<slug>/index.mdx
     public/images/og/default.svg
     src/
       components/
-      lib/content/posts.ts
+        admin/
+        ads/
+        mdx/
+        monetization/
+      lib/
+        admin/
+        content/
+        seo/
     next.config.ts
     package.json
 src/                      # legacy Astro app, retained as transition/reference material
 docs/
 ```
 
-The active deploy target is `apps/web`. The root Astro app can still build, but it is not the ADR-003 production target.
+The active deploy target is `apps/web`. The root Astro app can still build, but it is not the active production target.
 
 ## 5. Content Model
 
@@ -79,119 +92,31 @@ Each post lives at:
 apps/web/content/posts/<slug>/index.mdx
 ```
 
-Required frontmatter fields:
+Public rendering uses frontmatter fields such as title, description, status, publishedAt, updatedAt, category, tags, series, tools, and cover image. Only published posts whose date is not in the future should appear in public indexes, RSS, and sitemap.
 
-- `title`
-- `description`
-- `publishedAt`
-- `updatedAt`
-- `status`
-- `category`
-- `tags`
-- `readingTime`
-- `author`
+## 6. Admin Model
 
-Recommended frontmatter fields:
+Admin writing has two entry points:
 
-- `slug`
-- `series`
-- `seriesOrder`
-- `tools`
-- `heroImage`
-- `heroAlt`
-- `seoTitle`
-- `seoDescription`
-- `canonicalUrl`
+- `/admin` and `/admin/posts/*`: protected admin shell.
+- `/write`: protected quick writing route.
+- public post in-place edit: public page entry point that still loads/saves through protected server actions.
 
-Valid public status is `published`. Non-public statuses include `draft`, `scheduled`, and `archived`.
+Required server-only env:
 
-The content loader validates frontmatter, renders a safe Markdown/HTML subset, creates excerpts and table-of-contents entries, sorts posts by date, and builds category, tag, series, and tool buckets.
+- `ADMIN_GITHUB_LOGIN`
+- `ADMIN_GITHUB_ID` optional
+- `GITHUB_CLIENT_ID`
+- `GITHUB_CLIENT_SECRET`
+- `ADMIN_SESSION_SECRET`
+- `GITHUB_CONTENT_TOKEN`
+- `GITHUB_REPO`
+- `GITHUB_BRANCH`
 
-## 6. Runtime Boundaries
+## 7. SEO / Monetization Model
 
-| Route                    | Purpose                       | Rendering                      |
-| ------------------------ | ----------------------------- | ------------------------------ |
-| `/`                      | Home and latest posts         | Static/server HTML             |
-| `/posts`                 | Published post index          | Static/server HTML             |
-| `/posts/[slug]`          | Published post detail         | SSG via `generateStaticParams` |
-| `/categories/[category]` | Category archive              | SSG                            |
-| `/tags/[tag]`            | Tag archive                   | SSG                            |
-| `/series/[series]`       | Series archive                | SSG                            |
-| `/tools/[tool]`          | Tool archive                  | SSG                            |
-| `/about`                 | Site identity                 | Static                         |
-| `/contact`               | Contact guidance              | Static                         |
-| `/privacy`               | Privacy and ads policy        | Static                         |
-| `/rss.xml`               | Published-post RSS            | Dynamic route output           |
-| `/sitemap.xml`           | Published-post sitemap        | Next sitemap output            |
-| `/robots.txt`            | Crawl policy                  | Next robots output             |
-| `/ads.txt`               | AdSense publisher declaration | Dynamic route output           |
-
-No active public route should depend on Supabase, an admin session, a database, or a browser editor.
-
-## 7. SEO and Structured Data
-
-Public pages provide:
-
-- canonical URLs based on `NEXT_PUBLIC_SITE_URL`
-- metadata titles and descriptions
-- Open Graph and Twitter card fields
-- Article JSON-LD for post pages
-- sitemap entries for public pages and published posts only
-- RSS entries for published posts only
-- taxonomy routes for categories, tags, series, and tools
-
-The default Open Graph image is `apps/web/public/images/og/default.svg`.
-
-## 8. Ads and Policy Boundaries
-
-AdSense is optional and disabled by default.
-
-- `ADS_ENABLED=false` keeps ad slots inert.
-- `ADSENSE_CLIENT` is required before `ads.txt` emits a Google publisher line.
-- Policy pages `/about`, `/contact`, and `/privacy` must remain reachable.
-- New ad slots should be added only where they do not interrupt article readability.
-
-## 9. Security and Privacy
-
-The active MVP has no user accounts, no private database, no private media bucket, and no server-side secrets beyond deployment configuration. The main security boundary is build-time content validation and avoiding accidental publication of non-public posts.
-
-The content renderer allows only a small, explicit HTML subset and rejects unsafe tags, scripts, event handlers, JavaScript URLs, and iframes.
-
-## 10. Deferred Surfaces
-
-The following surfaces are deferred and non-active:
-
-- Supabase Auth
-- Supabase Postgres
-- Supabase Storage
-- Tiptap editor
-- `/admin` browser CMS
-- admin CRUD, preview, and media library workflows
-
-Existing ADR-002 documents may remain as historical references. They are not active implementation instructions unless a new ADR reactivates that path.
-
-## 11. Quality Gates
-
-Before claiming an implementation complete for `apps/web`, run the relevant subset of:
-
-```bash
-npm run test
-npm run format
-npm run lint
-npm run typecheck
-npm run build
-```
-
-For release readiness, also smoke-test representative public URLs:
-
-- `/`
-- `/posts`
-- one published post
-- `/rss.xml`
-- `/sitemap.xml`
-- `/ads.txt`
-- `/about`
-- `/privacy`
-- `/contact`
-
-The stop condition is: active public routes work, non-public content stays hidden, SEO files include only published content, no stale required Supabase setup remains, and the build/test gates pass.
+- `src/lib/site.ts` resolves canonical base URL from `NEXT_PUBLIC_SITE_URL`, Vercel env, or localhost fallback.
+- `app/sitemap.ts`, `app/robots.ts`, and `app/rss.xml/route.ts` derive public URLs from the same base.
+- `AdSlot` is disabled unless `ADS_ENABLED=true`, `ADSENSE_CLIENT` is present, and a slot id is provided.
+- `AffiliateLink`, `ProductCard`, and `DisclosureBox` centralize monetized link disclosure and rel policy.
+- Baseline security headers are configured in `next.config.ts`.

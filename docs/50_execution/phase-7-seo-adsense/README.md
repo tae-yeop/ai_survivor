@@ -1,7 +1,7 @@
 # Phase 7 — SEO & AdSense Readiness
 
-Status: Locally Ready (2026-05-06)
-Goal: AdSense 신청을 “탈락 사유 없는 사이트”로 통과시키는 마무리 단계.
+Status: Locally Ready (2026-05-09)
+Goal: AdSense 신청 전에 사이트가 readable, indexable, policy-compliant 상태가 되도록 마무리한다.
 
 ## Slices
 
@@ -11,10 +11,21 @@ Goal: AdSense 신청을 “탈락 사유 없는 사이트”로 통과시키는 
 | 7.2 | [slice-7.2-ads-txt-slot.md](./slice-7.2-ads-txt-slot.md) | `ads.txt` + AdSlot 컴포넌트         |
 | 7.3 | [slice-7.3-lighthouse.md](./slice-7.3-lighthouse.md)     | Lighthouse / 접근성 점검            |
 
+## Current local readiness
+
+- About/Privacy/Contact are implemented.
+- `/resources` is implemented and included in nav/sitemap.
+- `AdSlot` is disabled by default unless `ADS_ENABLED=true` and `ADSENSE_CLIENT` are set.
+- `/ads.txt` route exists.
+- Affiliate/sponsored link rel policy is centralized in `src/lib/monetization.ts`.
+- Baseline security headers are configured in `next.config.ts`.
+
 ## Phase Exit Criteria
 
-- 정책 페이지가 readable + indexable.
-- `ADS_ENABLED=true` 일 때만 실제 광고 코드가 로드된다.
-- Lighthouse Mobile Performance/SEO/Best Practices 90+, Accessibility 95+ (pending external Lighthouse run after deployment).
+- [x] 정책 페이지가 readable + indexable.
+- [x] `ADS_ENABLED=true`일 때만 실제 광고 코드가 로드된다.
+- [x] 수익화 링크 정책이 공통 helper/component로 고정되어 있다.
+- [x] 기본 보안 헤더가 설정되어 있다.
+- [ ] Lighthouse Mobile Performance/SEO/Best Practices 90+, Accessibility 95+.
 
-> Retro: About/Privacy/Contact, disabled-by-default AdSlot, and `/ads.txt` route are implemented locally. Actual AdSense activation waits for publisher id and approval.
+> External Lighthouse and AdSense activation wait for production deployment/domain and publisher approval.
