@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   getFigureLightboxAlt,
   getFigureOpenLabel,
+  getLightboxPortalContainer,
   isLightboxDismissKey,
   LIGHTBOX_DIALOG_LABEL,
 } from "./figure-lightbox";
@@ -24,6 +26,9 @@ export function FigureLightboxImage({
   const [open, setOpen] = useState(false);
   const titleId = useId();
   const safeAlt = getFigureLightboxAlt(alt, caption);
+  const portalContainer = open
+    ? getLightboxPortalContainer(typeof document === "undefined" ? undefined : document)
+    : null;
 
   useEffect(() => {
     if (!open) return;
@@ -63,48 +68,51 @@ export function FigureLightboxImage({
         </span>
       </button>
 
-      {open ? (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          className="fixed inset-0 z-[100] bg-black/88"
-        >
-          <button
-            type="button"
-            aria-label="이미지 닫기"
-            onClick={() => setOpen(false)}
-            className="absolute inset-0 cursor-zoom-out"
-          />
-          <div className="pointer-events-none relative z-10 flex min-h-dvh items-center justify-center p-4 sm:p-8">
-            <figure className="pointer-events-auto max-w-full">
-              <h2 id={titleId} className="sr-only">
-                {LIGHTBOX_DIALOG_LABEL}
-              </h2>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={src}
-                alt={safeAlt}
-                referrerPolicy={referrerPolicy}
-                className="max-h-[86vh] max-w-[calc(100vw-2rem)] rounded-md bg-paper object-contain shadow-2xl sm:max-w-[calc(100vw-4rem)]"
-              />
-              {caption ? (
-                <figcaption className="mx-auto mt-3 max-w-3xl text-center text-sm leading-relaxed text-white/80">
-                  {caption}
-                </figcaption>
-              ) : null}
-            </figure>
-            <button
-              type="button"
-              aria-label="이미지 닫기"
-              onClick={() => setOpen(false)}
-              className="pointer-events-auto absolute right-4 top-4 rounded-full border border-white/20 bg-white/10 px-3 py-2 font-mono text-xs text-white backdrop-blur transition-colors hover:bg-white/20 sm:right-6 sm:top-6"
+      {open && portalContainer
+        ? createPortal(
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={titleId}
+              className="fixed inset-0 z-[100] bg-black/88"
             >
-              닫기
-            </button>
-          </div>
-        </div>
-      ) : null}
+              <button
+                type="button"
+                aria-label="이미지 닫기"
+                onClick={() => setOpen(false)}
+                className="absolute inset-0 cursor-zoom-out"
+              />
+              <div className="pointer-events-none relative z-10 flex min-h-dvh items-center justify-center p-4 sm:p-8">
+                <figure className="pointer-events-auto max-w-full">
+                  <h2 id={titleId} className="sr-only">
+                    {LIGHTBOX_DIALOG_LABEL}
+                  </h2>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src}
+                    alt={safeAlt}
+                    referrerPolicy={referrerPolicy}
+                    className="max-h-[86vh] max-w-full rounded-md bg-paper object-contain shadow-2xl"
+                  />
+                  {caption ? (
+                    <figcaption className="mx-auto mt-3 max-w-3xl text-center text-sm leading-relaxed text-white/80">
+                      {caption}
+                    </figcaption>
+                  ) : null}
+                </figure>
+                <button
+                  type="button"
+                  aria-label="이미지 닫기"
+                  onClick={() => setOpen(false)}
+                  className="pointer-events-auto absolute right-4 top-4 rounded-full border border-white/20 bg-white/10 px-3 py-2 font-mono text-xs text-white backdrop-blur transition-colors hover:bg-white/20 sm:right-6 sm:top-6"
+                >
+                  닫기
+                </button>
+              </div>
+            </div>,
+            portalContainer,
+          )
+        : null}
     </>
   );
 }

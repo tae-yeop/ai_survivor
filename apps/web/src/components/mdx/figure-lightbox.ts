@@ -16,3 +16,7 @@ export function getFigureOpenLabel(alt: string | undefined, caption?: string): s
 export function isLightboxDismissKey(key: string): boolean {
   return key === "Escape";
 }
+
+export function getLightboxPortalContainer(doc: Document | undefined): HTMLElement | null {
+  return doc?.body ?? null;
+}

@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   getFigureLightboxAlt,
   getFigureOpenLabel,
+  getLightboxPortalContainer,
   isLightboxDismissKey,
 } from "./figure-lightbox.ts";
 
@@ -18,4 +19,11 @@ test("lightbox image alt falls back to caption and then generic copy", () => {
 test("lightbox only treats Escape as the dismiss keyboard shortcut", () => {
   assert.equal(isLightboxDismissKey("Escape"), true);
   assert.equal(isLightboxDismissKey("Enter"), false);
+});
+
+test("lightbox portals to document body so transformed figures cannot constrain fixed positioning", () => {
+  const body = { nodeName: "BODY" } as HTMLElement;
+
+  assert.equal(getLightboxPortalContainer({ body } as Document), body);
+  assert.equal(getLightboxPortalContainer(undefined), null);
 });
