@@ -6,6 +6,7 @@ import {
   getFigureLightboxAlt,
   getFigureOpenLabel,
   getLightboxPortalContainer,
+  isLightboxImageDismissClick,
   isLightboxDismissKey,
   LIGHTBOX_DIALOG_LABEL,
 } from "./figure-lightbox";
@@ -92,7 +93,12 @@ export function FigureLightboxImage({
                     src={src}
                     alt={safeAlt}
                     referrerPolicy={referrerPolicy}
-                    className="max-h-[86vh] max-w-full rounded-md bg-paper object-contain shadow-2xl"
+                    onClick={(event) => {
+                      if (isLightboxImageDismissClick(event.target, event.currentTarget)) {
+                        setOpen(false);
+                      }
+                    }}
+                    className="max-h-[86vh] max-w-full cursor-zoom-out rounded-md bg-paper object-contain shadow-2xl"
                   />
                   {caption ? (
                     <figcaption className="mx-auto mt-3 max-w-3xl text-center text-sm leading-relaxed text-white/80">

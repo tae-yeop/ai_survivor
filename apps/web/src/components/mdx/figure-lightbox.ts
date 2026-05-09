@@ -17,6 +17,13 @@ export function isLightboxDismissKey(key: string): boolean {
   return key === "Escape";
 }
 
+export function isLightboxImageDismissClick(
+  target: EventTarget | null,
+  image: HTMLElement | null,
+): boolean {
+  return target === image;
+}
+
 export function getLightboxPortalContainer(doc: Document | undefined): HTMLElement | null {
   return doc?.body ?? null;
 }
