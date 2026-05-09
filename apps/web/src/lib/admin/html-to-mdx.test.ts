@@ -46,3 +46,19 @@ test("htmlToMdx keeps unsafe script content out of generated MDX", () => {
   const mdx = htmlToMdx(`<p>안전한 문장</p><script>alert("x")</script>`);
   assert.equal(mdx, "안전한 문장");
 });
+
+test("htmlToMdx preserves editor audio and document embeds as MDX components", () => {
+  const mdx = htmlToMdx(`
+    <div data-audio-embed="true" data-src="/posts/demo/assets/intro.mp3" data-title="Intro"></div>
+    <div data-document-embed="true" data-src="/posts/demo/assets/guide.pdf" data-title="Guide" data-kind="pdf"></div>
+  `);
+
+  assert.equal(
+    mdx,
+    [
+      `<AudioEmbed src="/posts/demo/assets/intro.mp3" title="Intro" />`,
+      "",
+      `<DocumentEmbed src="/posts/demo/assets/guide.pdf" title="Guide" kind="pdf" />`,
+    ].join("\n"),
+  );
+});

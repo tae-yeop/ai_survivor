@@ -38,26 +38,26 @@ Owner browser
 
 ### Active Web App
 
-| 영역 | 선택 |
-| --- | --- |
-| App framework | Next.js App Router (`apps/web`) |
-| Language | TypeScript |
-| UI | React 19 + Tailwind CSS |
-| Content | Git-tracked MDX-like files under `content/posts` |
-| MDX render | `next-mdx-remote/rsc` + custom MDX components |
-| Editor | Novel/Tiptap-based rich editor |
-| Auth | GitHub OAuth owner login |
-| Write storage | GitHub Contents API commits |
-| Deploy | Vercel project rooted at `apps/web` |
-| Tests | Node test runner (`node --test`) |
+| 영역          | 선택                                             |
+| ------------- | ------------------------------------------------ |
+| App framework | Next.js App Router (`apps/web`)                  |
+| Language      | TypeScript                                       |
+| UI            | React 19 + Tailwind CSS                          |
+| Content       | Git-tracked MDX-like files under `content/posts` |
+| MDX render    | `next-mdx-remote/rsc` + custom MDX components    |
+| Editor        | Novel/Tiptap-based rich editor                   |
+| Auth          | GitHub OAuth owner login                         |
+| Write storage | GitHub Contents API commits                      |
+| Deploy        | Vercel project rooted at `apps/web`              |
+| Tests         | Node test runner (`node --test`)                 |
 
 ### Legacy / Reference Surface
 
-| 영역 | 선택 |
-| --- | --- |
-| Root app | Astro 5 + Astro content collections |
-| Location | root `src/`, root `package.json` |
-| Role | transition/reference material, not the current production target |
+| 영역     | 선택                                                             |
+| -------- | ---------------------------------------------------------------- |
+| Root app | Astro 5 + Astro content collections                              |
+| Location | root `src/`, root `package.json`                                 |
+| Role     | transition/reference material, not the current production target |
 
 ---
 
@@ -85,7 +85,7 @@ apps/web/
       github/callback/route.ts         # verifies OAuth state + owner
       logout/route.ts                  # clears admin session
       me/route.ts                      # session probe
-      upload/[slug]/route.ts           # image upload -> GitHub content asset
+      upload/[slug]/route.ts           # image/audio/document upload -> GitHub content asset
     rss.xml/route.ts                   # RSS from published posts
     ads.txt/route.ts                   # AdSense declaration/placeholder
     robots.ts                          # blocks admin/preview crawling
@@ -105,8 +105,8 @@ apps/web/
     lib/admin/github-content.ts        # GitHub Contents API read/write
     lib/admin/mdx.ts                   # admin draft <-> MDX serialization
     lib/seo/metadata.ts                # canonical, OG, Twitter metadata
-    components/admin/RichEditor/*      # rich editor, slash menu, figure serialization
-    components/mdx/*                   # Figure, YouTube, MDX component mapping
+    components/admin/RichEditor/*      # rich editor, slash menu, figure/audio/document serialization
+    components/mdx/*                   # Figure, AudioEmbed, DocumentEmbed, YouTube mapping
     components/home/*                  # home sections
     components/post/*                  # post cards/detail helpers
 
@@ -165,6 +165,8 @@ Next route component
 본문에서 지원하는 커스텀 컴포넌트:
 
 - `<Figure />`
+- `<AudioEmbed />`
+- `<DocumentEmbed />`
 - `<YouTube />`
 - 기본 `<img />` lazy image wrapper
 
@@ -248,20 +250,21 @@ GitHub 목록 조회가 실패하면 local bundled content로 fallback하여 관
 
 in-place edit는 `_baseSha`를 함께 보내 GitHub 파일이 로드 이후 바뀌었는지 확인한다. 충돌 시 저장하지 않고 새로고침을 요구한다.
 
-### 5-5. 이미지 업로드
+### 5-5. 파일 업로드
 
 ```text
-RichEditor image upload
+RichEditor image/audio/document upload
   -> POST /api/admin/upload/[slug] multipart/form-data
       -> require admin session
       -> validate slug
-      -> validate MIME/ext/size <= 4MB
+      -> validate kind-specific MIME/ext/size <= 4MB
+      -> image | audio | document
       -> putGitHubBinaryFile()
       -> apps/web/content/posts/<slug>/assets/<timestamp>-<safe-name>
       -> return raw.githubusercontent.com URL
 ```
 
-현재 업로드는 GitHub에 직접 asset을 커밋한다. 긴 영상이나 큰 원본 파일은 Git에 넣지 말고 R2/Vercel Blob/YouTube 같은 외부 저장소를 붙이는 것이 다음 확장 지점이다.
+현재 업로드는 4MB 이하 이미지, 오디오(`mp3`, `wav`, `m4a`, `ogg`, `webm`), 문서(`pdf`, Markdown/text, Word/PowerPoint/Excel 계열)를 GitHub에 직접 asset으로 커밋한다. 본문 저장 형식은 이미지 `<Figure />`, 오디오 `<AudioEmbed />`, 문서 `<DocumentEmbed />`이며 PDF는 public 렌더에서 브라우저 내장 iframe 뷰어로 열고 그 외 문서는 다운로드/새 탭 카드로 제공한다. 4MB를 넘는 오디오·문서·영상이나 큰 원본 파일은 Git에 넣지 말고 R2/Vercel Blob/YouTube 같은 외부 저장소를 붙이는 것이 다음 확장 지점이다.
 
 ---
 
@@ -301,20 +304,20 @@ AdSense는 기본적으로 비활성화한다.
 
 `apps/web/.env.example` 기준 현재 필요한 값:
 
-| Env | 공개 여부 | 용도 |
-| --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | public | canonical, sitemap, RSS, OG URL |
-| `ADS_ENABLED` | server/public config | 광고 슬롯 활성화 여부 |
-| `ADSENSE_CLIENT` | public after approval | ads.txt / AdSense client |
-| `ADMIN_GITHUB_LOGIN` | server | 허용할 GitHub login |
-| `ADMIN_GITHUB_ID` | server optional | login rename 보호용 numeric id |
-| `GITHUB_CLIENT_ID` | server | GitHub OAuth app client id |
-| `GITHUB_CLIENT_SECRET` | secret | GitHub OAuth app secret |
-| `ADMIN_SESSION_SECRET` | secret | 32자 이상 HMAC session secret |
-| `GITHUB_CONTENT_TOKEN` | secret | repo contents read/write token |
-| `GITHUB_REPO` | server | `owner/repo` 형식 |
-| `GITHUB_BRANCH` | server | content commit 대상 branch, 기본 `master` |
-| `R2_*` | secret/config | 향후 큰 media upload용 placeholder |
+| Env                    | 공개 여부             | 용도                                      |
+| ---------------------- | --------------------- | ----------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL` | public                | canonical, sitemap, RSS, OG URL           |
+| `ADS_ENABLED`          | server/public config  | 광고 슬롯 활성화 여부                     |
+| `ADSENSE_CLIENT`       | public after approval | ads.txt / AdSense client                  |
+| `ADMIN_GITHUB_LOGIN`   | server                | 허용할 GitHub login                       |
+| `ADMIN_GITHUB_ID`      | server optional       | login rename 보호용 numeric id            |
+| `GITHUB_CLIENT_ID`     | server                | GitHub OAuth app client id                |
+| `GITHUB_CLIENT_SECRET` | secret                | GitHub OAuth app secret                   |
+| `ADMIN_SESSION_SECRET` | secret                | 32자 이상 HMAC session secret             |
+| `GITHUB_CONTENT_TOKEN` | secret                | repo contents read/write token            |
+| `GITHUB_REPO`          | server                | `owner/repo` 형식                         |
+| `GITHUB_BRANCH`        | server                | content commit 대상 branch, 기본 `master` |
+| `R2_*`                 | secret/config         | 향후 큰 media upload용 placeholder        |
 
 GitHub content token은 가능한 fine-grained token으로 만들고, 대상 repo의 Contents read/write 권한만 준다.
 
@@ -400,13 +403,13 @@ Code/content commit to GitHub branch
 
 ## 11. 관련 문서
 
-| 문서 | 내용 |
-| --- | --- |
-| `ARCHITECTURE.md` | 상위 아키텍처 원칙과 경계 |
-| `AUTH_AND_PERMISSIONS.md` | 관리자 권한 모델 정리 |
-| `../10_content/CONTENT_MODEL.md` | post frontmatter/content 규칙 |
-| `../20_features/github-backed-admin-editor.md` | GitHub-backed editor 기능 설명 |
-| `../50_execution/SIMILAR_SERVICE_STARTER.md` | 유사 서비스 시작 체크리스트 |
-| `../50_execution/IMPLEMENTATION_STATUS_2026-05-09.md` | 현재 구현 상태 |
-| `../60_decisions/ADR-003-github-mdx-content-workflow.md` | Git + MDX content 결정 |
-| `../60_decisions/ADR-004-github-backed-admin-editor.md` | GitHub-backed admin 결정 |
+| 문서                                                     | 내용                           |
+| -------------------------------------------------------- | ------------------------------ |
+| `ARCHITECTURE.md`                                        | 상위 아키텍처 원칙과 경계      |
+| `AUTH_AND_PERMISSIONS.md`                                | 관리자 권한 모델 정리          |
+| `../10_content/CONTENT_MODEL.md`                         | post frontmatter/content 규칙  |
+| `../20_features/github-backed-admin-editor.md`           | GitHub-backed editor 기능 설명 |
+| `../50_execution/SIMILAR_SERVICE_STARTER.md`             | 유사 서비스 시작 체크리스트    |
+| `../50_execution/IMPLEMENTATION_STATUS_2026-05-09.md`    | 현재 구현 상태                 |
+| `../60_decisions/ADR-003-github-mdx-content-workflow.md` | Git + MDX content 결정         |
+| `../60_decisions/ADR-004-github-backed-admin-editor.md`  | GitHub-backed admin 결정       |

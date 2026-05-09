@@ -1,5 +1,6 @@
 import type { Editor, Range } from "@tiptap/core";
 import { uploadImageForSlug, validateImageFile } from "./plugins/upload-image";
+import { acceptForKind, uploadAssetForSlug, validateAssetFile } from "./plugins/upload-asset";
 
 export type SlashItem = {
   title: string;
@@ -132,6 +133,68 @@ export function buildImageSlashItems(
             .run();
         } catch (error) {
           onError(error instanceof Error ? error.message : "Image upload failed");
+        }
+      },
+    },
+  ];
+}
+
+export function buildAssetSlashItems(
+  slug: string,
+  onError: (message: string) => void,
+): SlashItem[] {
+  return [
+    {
+      title: "Audio",
+      description: "오디오 파일 업로드",
+      command: async ({ editor, range }) => {
+        editor.chain().focus().deleteRange(range).run();
+        const file = await pickFile(acceptForKind("audio"));
+        if (!file) return;
+        const issue = validateAssetFile(file, "audio");
+        if (issue) {
+          onError(issue);
+          return;
+        }
+        try {
+          const { url } = await uploadAssetForSlug(slug, file);
+          editor
+            .chain()
+            .focus()
+            .insertContent({
+              type: "audioEmbed",
+              attrs: { src: url, title: file.name },
+            })
+            .run();
+        } catch (error) {
+          onError(error instanceof Error ? error.message : "Audio upload failed");
+        }
+      },
+    },
+    {
+      title: "Document",
+      description: "문서 파일 업로드",
+      command: async ({ editor, range }) => {
+        editor.chain().focus().deleteRange(range).run();
+        const file = await pickFile(acceptForKind("document"));
+        if (!file) return;
+        const issue = validateAssetFile(file, "document");
+        if (issue) {
+          onError(issue);
+          return;
+        }
+        try {
+          const { url, documentKind } = await uploadAssetForSlug(slug, file);
+          editor
+            .chain()
+            .focus()
+            .insertContent({
+              type: "documentEmbed",
+              attrs: { src: url, title: file.name, kind: documentKind ?? "document" },
+            })
+            .run();
+        } catch (error) {
+          onError(error instanceof Error ? error.message : "Document upload failed");
         }
       },
     },

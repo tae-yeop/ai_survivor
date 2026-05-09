@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { htmlFigureToMdx, mdxFigureToEditorHtml } from "./serialize.ts";
+import {
+  htmlEmbedsToMdx,
+  htmlFigureToMdx,
+  mdxEmbedsToEditorHtml,
+  mdxFigureToEditorHtml,
+} from "./serialize.ts";
 
 test("Figure HTML → MDX shortcode (defaults omitted)", () => {
   const html = `<figure data-figure="true" data-width="100%" data-align="center" data-caption=""><img src="https://x/y.png" alt="hello" /></figure>`;
@@ -39,4 +44,34 @@ test("MDX Figure shortcode defaults editor figure layout attrs", () => {
   assert.match(html, /data-width="100%"/);
   assert.match(html, /data-align="center"/);
   assert.match(html, /<img src="https:\/\/x\/y.png" alt="hello" \/>/);
+});
+
+test("Audio and Document editor HTML become MDX embed components", () => {
+  const html = [
+    `<div data-audio-embed="true" data-src="/a.mp3" data-title="Intro"></div>`,
+    `<div data-document-embed="true" data-src="/guide.pdf" data-title="Guide" data-kind="pdf"></div>`,
+  ].join("\n");
+
+  assert.equal(
+    htmlEmbedsToMdx(html),
+    [
+      `<AudioEmbed src="/a.mp3" title="Intro" />`,
+      `<DocumentEmbed src="/guide.pdf" title="Guide" kind="pdf" />`,
+    ].join("\n"),
+  );
+});
+
+test("MDX AudioEmbed and DocumentEmbed become editor atom HTML", () => {
+  const mdx = [
+    `<AudioEmbed src="/a.mp3" title="Intro" />`,
+    `<DocumentEmbed src="/guide.docx" title="Guide" kind="document" />`,
+  ].join("\n");
+
+  assert.equal(
+    mdxEmbedsToEditorHtml(mdx),
+    [
+      `<div data-audio-embed="true" data-src="/a.mp3" data-title="Intro"></div>`,
+      `<div data-document-embed="true" data-src="/guide.docx" data-title="Guide" data-kind="document"></div>`,
+    ].join("\n"),
+  );
 });

@@ -22,6 +22,7 @@ import Underline from "@tiptap/extension-underline";
 import { Markdown } from "tiptap-markdown";
 import { common, createLowlight } from "lowlight";
 import { Figure } from "./nodes/figure-node";
+import { AudioEmbed, DocumentEmbed } from "./nodes/embed-node";
 import { MediaPaste } from "./plugins/media-paste";
 
 const lowlight = createLowlight(common);
@@ -68,6 +69,8 @@ export function buildCoreExtensions(options: CoreExtensionsOptions) {
       transformCopiedText: true,
     }),
     Figure,
+    AudioEmbed,
+    DocumentEmbed,
     MediaPaste.configure({
       slug: options.slug,
       onError: options.onMediaError,

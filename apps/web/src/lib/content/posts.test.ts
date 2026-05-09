@@ -107,6 +107,16 @@ test("body validator rejects unsafe script-like HTML", () => {
     () => assertSafeMdxBody("<p onclick=\"alert('xss')\">bad</p>"),
     /Unsafe post body/i,
   );
+  assert.throws(() => assertSafeMdxBody('<embed src="/bad.pdf">'), /Unsafe post body/i);
+  assert.throws(
+    () => assertSafeMdxBody('<AudioEmbed src="javascript:alert(1)" />'),
+    /Unsafe post body/i,
+  );
+  assert.doesNotThrow(() =>
+    assertSafeMdxBody(
+      '<AudioEmbed src="/posts/demo/assets/a.mp3" title="A" />\n<DocumentEmbed src="/posts/demo/assets/a.pdf" title="A" kind="pdf" />',
+    ),
+  );
 });
 
 test("default publishedPosts is backed by real content tree and excludes draft or scheduled slugs", () => {
@@ -194,11 +204,7 @@ test("featured field is parsed as true when set in frontmatter", () => {
 
 test("featured field defaults to false when absent from frontmatter", () => {
   withContentRoot((root) => {
-    writePost(
-      root,
-      "normal-post",
-      validBase.replace("slug: published-one", "slug: normal-post"),
-    );
+    writePost(root, "normal-post", validBase.replace("slug: published-one", "slug: normal-post"));
     const posts = loadPostsForTest({ root, now: NOW });
     assert.equal(posts[0]?.featured, false);
   });
@@ -213,9 +219,6 @@ test("featured field rejects non-boolean values", () => {
         .replace("slug: published-one", "slug: bad-featured")
         .replace("series: building-ai-blog", "series: building-ai-blog\nfeatured: banana"),
     );
-    assert.throws(
-      () => loadPostsForTest({ root, now: NOW }),
-      /featured must be true or false/i,
-    );
+    assert.throws(() => loadPostsForTest({ root, now: NOW }), /featured must be true or false/i);
   });
 });

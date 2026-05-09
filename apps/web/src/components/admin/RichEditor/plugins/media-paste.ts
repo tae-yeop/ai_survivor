@@ -1,22 +1,16 @@
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
-import {
-  uploadImageForSlug,
-  validateImageFile,
-} from "./upload-image";
+import { uploadImageForSlug, validateImageFile } from "./upload-image";
+import { uploadAssetForSlug, validateAssetFile } from "./upload-asset";
 
 export type MediaPasteOptions = {
   slug: string;
   onError?: (message: string) => void;
 };
 
-const IMAGE_URL_PATTERN =
-  /^https?:\/\/\S+\.(?:png|jpe?g|webp|gif|avif|svg)(?:\?\S*)?$/i;
+const IMAGE_URL_PATTERN = /^https?:\/\/\S+\.(?:png|jpe?g|webp|gif|avif|svg)(?:\?\S*)?$/i;
 
-function insertFigure(
-  editor: import("@tiptap/core").Editor,
-  attrs: Record<string, unknown>,
-) {
+function insertFigure(editor: import("@tiptap/core").Editor, attrs: Record<string, unknown>) {
   editor
     .chain()
     .focus()
@@ -58,10 +52,7 @@ async function handleImageFile(
     const { url } = await uploadImageForSlug(slug, file);
     const { state } = editor;
     state.doc.descendants((node, pos) => {
-      if (
-        node.type.name === "figure" &&
-        node.attrs.placeholderID === placeholderId
-      ) {
+      if (node.type.name === "figure" && node.attrs.placeholderID === placeholderId) {
         editor
           .chain()
           .setNodeSelection(pos)
@@ -76,11 +67,43 @@ async function handleImageFile(
       return true;
     });
   } catch (error) {
-    onError?.(
-      error instanceof Error ? error.message : "Image upload failed",
-    );
+    onError?.(error instanceof Error ? error.message : "Image upload failed");
   } finally {
     URL.revokeObjectURL(previewUrl);
+  }
+}
+
+async function handleAssetFile(
+  editor: import("@tiptap/core").Editor,
+  file: File,
+  slug: string,
+  onError?: (message: string) => void,
+) {
+  const issue = validateAssetFile(file);
+  if (issue) {
+    onError?.(issue);
+    return;
+  }
+  try {
+    const { url, kind, documentKind } = await uploadAssetForSlug(slug, file);
+    if (kind === "audio") {
+      editor
+        .chain()
+        .focus()
+        .insertContent({ type: "audioEmbed", attrs: { src: url, title: file.name } })
+        .run();
+    } else if (kind === "document") {
+      editor
+        .chain()
+        .focus()
+        .insertContent({
+          type: "documentEmbed",
+          attrs: { src: url, title: file.name, kind: documentKind ?? "document" },
+        })
+        .run();
+    }
+  } catch (error) {
+    onError?.(error instanceof Error ? error.message : "File upload failed");
   }
 }
 
@@ -109,10 +132,14 @@ export const MediaPaste = Extension.create<MediaPasteOptions>({
                   void handleImageFile(editor, file, slug, onError);
                   return true;
                 }
+                if (file && (file.type.startsWith("audio/") || validateAssetFile(file) === null)) {
+                  event.preventDefault();
+                  void handleAssetFile(editor, file, slug, onError);
+                  return true;
+                }
               }
             }
-            const text =
-              event.clipboardData?.getData("text/plain")?.trim() ?? "";
+            const text = event.clipboardData?.getData("text/plain")?.trim() ?? "";
             if (IMAGE_URL_PATTERN.test(text)) {
               event.preventDefault();
               insertFigure(editor, { src: text, alt: "" });
@@ -123,13 +150,17 @@ export const MediaPaste = Extension.create<MediaPasteOptions>({
           handleDrop(_view, event) {
             const files = event.dataTransfer?.files ?? null;
             if (!files || files.length === 0) return false;
-            const imageFiles = Array.from(files).filter((f) =>
-              f.type.startsWith("image/"),
+            const imageFiles = Array.from(files).filter((f) => f.type.startsWith("image/"));
+            const assetFiles = Array.from(files).filter(
+              (f) => !f.type.startsWith("image/") && validateAssetFile(f) === null,
             );
-            if (imageFiles.length === 0) return false;
+            if (imageFiles.length === 0 && assetFiles.length === 0) return false;
             event.preventDefault();
             for (const file of imageFiles) {
               void handleImageFile(editor, file, slug, onError);
+            }
+            for (const file of assetFiles) {
+              void handleAssetFile(editor, file, slug, onError);
             }
             return true;
           },

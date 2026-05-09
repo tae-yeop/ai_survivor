@@ -78,6 +78,30 @@ function figureToMdx(attrs: string, innerHtml: string) {
   return `<Figure ${parts.join(" ")} />`;
 }
 
+function audioEmbedToMdx(attrs: string) {
+  const src = readAttribute(attrs, "data-src");
+  if (!src) return "";
+  const title = readAttribute(attrs, "data-title");
+  const parts = [
+    `src="${escapeMdxAttribute(src)}"`,
+    title ? `title="${escapeMdxAttribute(title)}"` : "",
+  ].filter(Boolean);
+  return `<AudioEmbed ${parts.join(" ")} />`;
+}
+
+function documentEmbedToMdx(attrs: string) {
+  const src = readAttribute(attrs, "data-src");
+  if (!src) return "";
+  const title = readAttribute(attrs, "data-title");
+  const kind = readAttribute(attrs, "data-kind") === "pdf" ? "pdf" : "document";
+  const parts = [
+    `src="${escapeMdxAttribute(src)}"`,
+    title ? `title="${escapeMdxAttribute(title)}"` : "",
+    `kind="${kind}"`,
+  ].filter(Boolean);
+  return `<DocumentEmbed ${parts.join(" ")} />`;
+}
+
 function imageToMdx(attrs: string) {
   const src = readAttribute(attrs, "src");
   if (!src) return "";
@@ -112,10 +136,10 @@ function normalizeMarkdown(markdown: string) {
 }
 
 function stripResidualHtml(markdown: string) {
-  const figures: string[] = [];
-  let text = markdown.replace(/<Figure\b[^>]*\/>/g, (figure) => {
-    const token = `@@FIGURE_${figures.length}@@`;
-    figures.push(figure);
+  const components: string[] = [];
+  let text = markdown.replace(/<(?:Figure|AudioEmbed|DocumentEmbed)\b[^>]*\/>/g, (component) => {
+    const token = `@@MDX_COMPONENT_${components.length}@@`;
+    components.push(component);
     return token;
   });
 
@@ -140,8 +164,8 @@ function stripResidualHtml(markdown: string) {
     .replace(/<[^>]+>/g, "");
 
   text = decodeHtmlEntities(text);
-  figures.forEach((figure, index) => {
-    text = text.replace(`@@FIGURE_${index}@@`, figure);
+  components.forEach((component, index) => {
+    text = text.replace(`@@MDX_COMPONENT_${index}@@`, component);
   });
   return text;
 }
@@ -153,6 +177,20 @@ export function htmlToMdx(html: string): string {
     .replace(/<(script|style|iframe)\b[\s\S]*?<\/\1>/gi, "");
 
   mdx = mdx
+    .replace(
+      /<div\b([^>]*)data-audio-embed=(?:"true"|'true')([^>]*)><\/div>/gi,
+      (_m, before: string, after: string) => {
+        const embed = audioEmbedToMdx(`${before} ${after}`);
+        return embed ? `\n\n${embed}\n\n` : "";
+      },
+    )
+    .replace(
+      /<div\b([^>]*)data-document-embed=(?:"true"|'true')([^>]*)><\/div>/gi,
+      (_m, before: string, after: string) => {
+        const embed = documentEmbedToMdx(`${before} ${after}`);
+        return embed ? `\n\n${embed}\n\n` : "";
+      },
+    )
     .replace(/<figure\b([^>]*)>([\s\S]*?)<\/figure>/gi, (_m, attrs: string, body: string) => {
       const figure = figureToMdx(attrs, body);
       return figure ? `\n\n${figure}\n\n` : "";

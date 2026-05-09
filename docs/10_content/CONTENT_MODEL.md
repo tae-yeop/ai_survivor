@@ -2,7 +2,7 @@
 
 Status: Active
 Owner: 개인 운영자
-Last Updated: 2026-05-06
+Last Updated: 2026-05-09
 
 ## 1. 저장소 역할
 
@@ -13,6 +13,7 @@ AI 시대 생존기는 글을 두 단계로 관리한다.
 | `articles/`                               | 아이디어, 초안, 조사 메모를 자유롭게 쓰는 작업 공간 | 커밋 가능하지만 공개 페이지에 자동 노출되지 않음 |
 | `apps/web/content/posts/<slug>/index.mdx` | 사이트가 빌드 때 읽는 발행 후보 원본                | 공개/비공개 상태를 frontmatter로 제어            |
 | `apps/web/public/media/posts/<slug>/`     | Git에 넣을 수 있는 최종 이미지/짧은 영상 asset      | public URL로 제공                                |
+| `apps/web/content/posts/<slug>/assets/`   | CMS가 업로드한 4MB 이하 이미지/오디오/문서 asset    | GitHub raw URL로 본문에서 참조                   |
 
 원칙:
 
@@ -28,7 +29,7 @@ AI 시대 생존기는 글을 두 단계로 관리한다.
 ```text
 apps/web/content/posts/<slug>/
 ├─ index.mdx
-└─ assets/              # 글 전용 이미지/짧은 미디어 원본 또는 web-optimized 파일
+└─ assets/              # CMS 업로드 이미지/오디오/문서(4MB 이하)
 
 apps/web/public/media/posts/<slug>/
 ├─ cover.webp
@@ -36,10 +37,20 @@ apps/web/public/media/posts/<slug>/
 └─ demo-short.mp4       # 아주 짧고 최적화된 경우만
 ```
 
-본문에서는 public asset을 절대 경로로 참조한다.
+본문에서는 public asset을 절대 경로로 참조하거나, CMS 업로드 asset을 GitHub raw URL로 참조한다.
 
 ```mdx
 ![Cursor 설정 화면](/media/posts/cursor-astro-blog-build-review/screenshot-01.webp)
+
+<AudioEmbed
+  src="https://raw.githubusercontent.com/.../intro.mp3"
+  title="Intro"
+/>
+<DocumentEmbed
+  src="https://raw.githubusercontent.com/.../guide.pdf"
+  title="Guide"
+  kind="pdf"
+/>
 ```
 
 ## 3. Post Frontmatter
@@ -120,6 +131,14 @@ ogImage: "/images/og/default.svg"
 - 파일명은 영문 소문자/kebab-case를 사용한다.
 - 모든 본문 이미지는 alt text를 쓴다.
 - 이미지: 기본 `![alt](url)`. 정렬·크기·캡션이 필요하면 `<Figure src alt width align caption />` (Phase 5 도입).
+
+### 오디오/문서
+
+- CMS 직접 업로드는 4MB 이하 파일만 허용한다.
+- 오디오는 `mp3`, `wav`, `m4a`, `ogg`, `webm`을 `<AudioEmbed />`로 저장한다.
+- 문서는 `pdf`, Markdown/text, Word/PowerPoint/Excel 계열을 `<DocumentEmbed />`로 저장한다.
+- PDF는 브라우저 내장 iframe 뷰어로 렌더링하고, 그 외 문서는 다운로드/새 탭 카드로 제공한다.
+- 4MB를 넘는 파일은 외부 저장소 URL을 링크하거나 별도 embed 정책을 정한다.
 
 ### 영상
 

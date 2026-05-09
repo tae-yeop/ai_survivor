@@ -1,5 +1,7 @@
 import type { ComponentProps } from "react";
 import { AffiliateLink } from "@/components/monetization";
+import { AudioEmbed } from "./AudioEmbed";
+import { DocumentEmbed } from "./DocumentEmbed";
 import { Figure } from "./Figure";
 import { YouTube } from "./YouTube";
 
@@ -17,6 +19,8 @@ function MdxImage({ src, alt = "", ...rest }: ComponentProps<"img">) {
 
 export const mdxComponents = {
   AffiliateLink,
+  AudioEmbed,
+  DocumentEmbed,
   Figure,
   YouTube,
   img: MdxImage,

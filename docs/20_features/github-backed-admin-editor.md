@@ -67,4 +67,4 @@ Required Vercel env vars:
 - `GITHUB_REPO`
 - `GITHUB_BRANCH`
 
-For media, keep the current manual workflow first: place images under `apps/web/public/media/posts/<slug>/` and reference them from the body/frontmatter. Browser upload can be added later with Blob/R2 after writing frequency proves it is needed.
+For media, the browser editor can upload 4MB 이하 image/audio/document files to `apps/web/content/posts/<slug>/assets/*` through `/api/admin/upload/[slug]`. The route requires an owner session and validates MIME, extension, and size before committing the asset with GitHub Contents API. Editor storage uses `<Figure />`, `<AudioEmbed />`, and `<DocumentEmbed />`; larger files should stay on Blob/R2/YouTube or another external URL.

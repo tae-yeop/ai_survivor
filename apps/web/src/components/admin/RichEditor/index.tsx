@@ -3,9 +3,15 @@
 import { useCallback, useMemo, useState } from "react";
 import { Command, EditorContent, EditorRoot, type EditorInstance, renderItems } from "novel";
 import { buildCoreExtensions } from "./extensions";
-import { htmlFigureToMdx, mdxFigureToEditorHtml } from "./serialize";
+import {
+  htmlEmbedsToMdx,
+  htmlFigureToMdx,
+  mdxEmbedsToEditorHtml,
+  mdxFigureToEditorHtml,
+} from "./serialize";
 import {
   buildCoreSlashItems,
+  buildAssetSlashItems,
   buildImageSlashItems,
   filterSlashItems,
   type SlashItem,
@@ -39,6 +45,7 @@ export function RichEditor({
     () => [
       ...buildCoreSlashItems(),
       ...buildImageSlashItems(slug, onMediaError ?? (() => {})),
+      ...buildAssetSlashItems(slug, onMediaError ?? (() => {})),
       ...extraSlashItems,
     ],
     [slug, onMediaError, extraSlashItems],
@@ -58,7 +65,7 @@ export function RichEditor({
   const handleUpdate = useCallback(
     ({ editor: e }: { editor: EditorInstance }) => {
       const md = e.storage.markdown?.getMarkdown() as string | undefined;
-      if (md !== undefined) onChange(htmlFigureToMdx(md));
+      if (md !== undefined) onChange(htmlEmbedsToMdx(htmlFigureToMdx(md)));
     },
     [onChange],
   );
@@ -66,7 +73,8 @@ export function RichEditor({
   const handleCreate = useCallback(
     ({ editor: e }: { editor: EditorInstance }) => {
       setEditor(e);
-      if (initialContent) e.commands.setContent(mdxFigureToEditorHtml(initialContent));
+      if (initialContent)
+        e.commands.setContent(mdxEmbedsToEditorHtml(mdxFigureToEditorHtml(initialContent)));
     },
     [initialContent],
   );
