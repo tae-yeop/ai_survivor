@@ -1,4 +1,5 @@
 export const LIGHTBOX_DIALOG_LABEL = "이미지 크게 보기";
+export const LIGHTBOX_EXIT_MS = 220;
 const FALLBACK_IMAGE_ALT = "게시글 이미지";
 
 function cleanText(value: string | undefined): string {
@@ -15,6 +16,10 @@ export function getFigureOpenLabel(alt: string | undefined, caption?: string): s
 
 export function isLightboxDismissKey(key: string): boolean {
   return key === "Escape";
+}
+
+export function getFigureLightboxState(closing: boolean): "open" | "closing" {
+  return closing ? "closing" : "open";
 }
 
 export function isLightboxImageDismissClick(

@@ -1,11 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  getFigureLightboxState,
   getFigureLightboxAlt,
   getFigureOpenLabel,
   getLightboxPortalContainer,
   isLightboxImageDismissClick,
   isLightboxDismissKey,
+  LIGHTBOX_EXIT_MS,
 } from "./figure-lightbox.ts";
 
 test("lightbox trigger labels describe opening the image larger", () => {
@@ -20,6 +22,12 @@ test("lightbox image alt falls back to caption and then generic copy", () => {
 test("lightbox only treats Escape as the dismiss keyboard shortcut", () => {
   assert.equal(isLightboxDismissKey("Escape"), true);
   assert.equal(isLightboxDismissKey("Enter"), false);
+});
+
+test("lightbox keeps a closing state long enough for the zoom-out animation", () => {
+  assert.equal(getFigureLightboxState(false), "open");
+  assert.equal(getFigureLightboxState(true), "closing");
+  assert.equal(LIGHTBOX_EXIT_MS >= 150, true);
 });
 
 test("lightbox treats clicking the enlarged image as a dismiss action", () => {
