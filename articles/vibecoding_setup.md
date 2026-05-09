@@ -1,5 +1,44 @@
-# 바이브코딩으로 블로그 글쓰기 시작하기 전 세팅한 것들
+# AI 개발을 위한 셋업
 
+워크플로우를 어떻게 하지?
+
+유튜브 시작하면서 같이 동시에 돌리는게 좋을듯
+
+그러기 위해선 영상을 만들어야하는데 보이스부터 해보자
+보이스 컨버전
+보이스 TTS
+
+바이브 코딩이나 AI 개발을 위해 제가 한 셋팅을 공유해봅니다.
+
+보이스 컨버전하면 어색한
+
+로컬 실험 결과
+
+Male tech creator voice prompt
+
+```
+Native Korean. Male, early 30s. Studio-quality narration.
+Persona: knowledgeable tech content creator and developer. Emotion: calm, friendly, confident.
+A clear, warm male voice with a modern and professional tone. Speaks with natural enthusiasm, precise technical pronunciation, and approachable confidence. The delivery is steady, conversational, and engaging, suitable for developer tutorials, tech blog videos, AI explanations, product reviews, and coding walkthroughs.
+```
+
+Female tech creator voice prompt
+
+```
+Native Korean. Female, late 20s to early 30s. Studio-quality narration.
+Persona: sharp tech content creator and developer. Emotion: bright, composed, trustworthy.
+A clean, articulate female voice with a smart and friendly tone. Speaks with crisp pronunciation, natural energy, and confident pacing. The delivery is clear, conversational, and polished, suitable for developer tutorials, tech blog videos, AI explanations, product reviews, and coding walkthroughs.
+
+```
+
+합성할 예시 문장
+
+```
+안녕하세요. 오늘은 파이토치에서 자주 사용하는 텐서 연산과 모델 학습 흐름을, 실제 코드 예제와 함께 차근차근 살펴보겠습니다.
+
+```
+
+---
 
 ## 결론 먼저
 
