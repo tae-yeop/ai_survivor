@@ -1,7 +1,7 @@
 ﻿import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAdminContentConfigStatus } from "@/lib/admin/env";
-import { getPostSourceFromGitHub } from "@/lib/admin/github-content";
+import { getEditablePostSource } from "@/lib/admin/github-content";
 import { parseAdminPostSource } from "@/lib/admin/mdx";
 import { assertValidPostSlug } from "@/lib/admin/slug";
 import { requireAdminSession } from "@/lib/admin/session";
@@ -45,7 +45,7 @@ export default async function EditAdminPostPage({
 
   let source: string | null = null;
   try {
-    const file = await getPostSourceFromGitHub(contentStatus.config, slug);
+    const file = await getEditablePostSource(contentStatus.config, slug);
     source = file?.source ?? null;
   } catch (readError) {
     return (

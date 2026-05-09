@@ -1,4 +1,6 @@
-﻿import type { AdminContentConfig } from "./env.ts";
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
+import type { AdminContentConfig } from "./env.ts";
 import { parseAdminPostSource, toAdminPostSummary, type AdminPostSummary } from "./mdx.ts";
 import { assertValidPostSlug, postContentPath } from "./slug.ts";
 
@@ -33,6 +35,10 @@ export type GitHubContentFile = {
   path: string;
   sha: string;
   source: string;
+};
+
+export type EditablePostSource = GitHubContentFile & {
+  origin: "github" | "deployed";
 };
 
 export type GitHubCommitResult = {
@@ -166,6 +172,46 @@ export function putGitHubBinaryFile(
 
 export async function getPostSourceFromGitHub(config: AdminContentConfig, slug: string) {
   return getGitHubContentFile(config, postContentPath(slug));
+}
+
+function comparableSource(source: string) {
+  return source.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n");
+}
+
+export function chooseEditablePostSource(
+  remote: GitHubContentFile | null,
+  deployedSource: string | null,
+  slug: string,
+): EditablePostSource | null {
+  const path = postContentPath(slug);
+  if (!remote && !deployedSource) return null;
+  if (
+    deployedSource &&
+    (!remote || comparableSource(deployedSource) !== comparableSource(remote.source))
+  ) {
+    return {
+      path,
+      sha: remote?.sha ?? "",
+      source: deployedSource,
+      origin: "deployed",
+    };
+  }
+  if (!remote) return null;
+  return { ...remote, origin: "github" };
+}
+
+export function readDeployedPostSource(slug: string, root = process.cwd()) {
+  const safeSlug = assertValidPostSlug(slug);
+  const filePath = path.join(root, "content", "posts", safeSlug, "index.mdx");
+  if (!existsSync(filePath)) return null;
+  return readFileSync(filePath, "utf8");
+}
+
+export async function getEditablePostSource(config: AdminContentConfig, slug: string) {
+  const safeSlug = assertValidPostSlug(slug);
+  const remote = await getPostSourceFromGitHub(config, safeSlug);
+  const deployedSource = readDeployedPostSource(safeSlug);
+  return chooseEditablePostSource(remote, deployedSource, safeSlug);
 }
 
 export class GitHubShaConflictError extends Error {

@@ -3,8 +3,7 @@
 import { revalidatePath } from "next/cache";
 import {
   GitHubShaConflictError,
-  getGitHubContentFile,
-  postContentPath,
+  getEditablePostSource,
   savePostSourceWithBaseShaGuard,
 } from "@/lib/admin/github-content";
 import { getAdminContentConfigStatus, missingEnvMessage } from "@/lib/admin/env";
@@ -30,7 +29,7 @@ export async function loadInPlace(slug: string): Promise<LoadResult> {
   if (!status.configured) {
     return { ok: false, error: `Missing GitHub config: ${missingEnvMessage(status.missing)}` };
   }
-  const file = await getGitHubContentFile(status.config, postContentPath(safeSlug));
+  const file = await getEditablePostSource(status.config, safeSlug);
   if (!file) return { ok: false, error: "Post not found in GitHub" };
   const draft = parseAdminPostSource(file.source, safeSlug);
   return { ok: true, draft, sha: file.sha };
