@@ -8,18 +8,20 @@
 
 **Tech Stack:** Next.js 16 (App Router), TypeScript, Tailwind, node:test (no Jest/Vitest), Pretendard / Fraunces / JetBrains Mono. No new dependencies.
 
-**Spec source:** [docs/superpowers/specs/2026-05-07-rebrand-survivor-design.md](../specs/2026-05-07-rebrand-survivor-design.md)
+**Spec source:** [docs/60_decisions/design-notes/2026-05-07-rebrand-survivor-design.md](../../../60_decisions/design-notes/2026-05-07-rebrand-survivor-design.md)
 
 ---
 
 ## File Structure
 
 **Created (3):**
+
 - `apps/web/src/lib/content/slugify.ts` — `slugifyTaxonomy(value: string)` pure util.
 - `apps/web/src/lib/content/slugify.test.ts` — node:test cases for the util.
 - `apps/web/src/components/layout/PostsNavDropdown.tsx` — client component (hover popover + mobile inline expansion).
 
 **Modified (within `apps/web/`):**
+
 - `src/lib/site.ts` — brand strings (`SITE_NAME`, `SITE_TAGLINE`, etc.) + new constants + reduced `NAV_PRIMARY`.
 - `src/lib/labels.ts` — keep `CATEGORY_LABELS` legacy table; `categoryLabel` keeps fallback to raw string.
 - `src/lib/content/posts.ts` — `categoryBuckets`, `getPostsByCategory`, `tagBuckets`, `getPostsByTag` route through `slugifyTaxonomy`. Build-time slug-collision policy added.
@@ -32,6 +34,7 @@
 - `app/(public)/about/page.tsx` — body copy retuned for the survival-journal positioning.
 
 **Modified (project root docs):**
+
 - `DESIGN.md`, `docs/10_content/CONTENT_MODEL.md`, `docs/20_site/SERVICE_IA.md`, `docs/20_site/SCREEN_INVENTORY.md`, `docs/30_seo_monetization/SEO_ADSENSE_CHECKLIST.md`.
 
 ---
@@ -55,6 +58,7 @@ Each task is one atomic commit. Task N must build and pass tests before commit. 
 ### Task 1: `slugifyTaxonomy` utility
 
 **Files:**
+
 - Create: `apps/web/src/lib/content/slugify.ts`
 - Create: `apps/web/src/lib/content/slugify.test.ts`
 
@@ -109,9 +113,11 @@ test("is idempotent on already-slug values", () => {
 - [ ] **Step 2: Verify tests fail**
 
 Run from `apps/web/`:
+
 ```
 node --test src/lib/content/slugify.test.ts
 ```
+
 Expected: all 8 cases fail with "Cannot find module './slugify.ts'".
 
 - [ ] **Step 3: Implement the util**
@@ -149,17 +155,21 @@ export function slugifyTaxonomy(value: string): string {
 - [ ] **Step 4: Verify tests pass**
 
 Run from `apps/web/`:
+
 ```
 node --test src/lib/content/slugify.test.ts
 ```
+
 Expected: 8/8 PASS.
 
 - [ ] **Step 5: Typecheck**
 
 Run from `apps/web/`:
+
 ```
 npm run typecheck
 ```
+
 Expected: exit 0.
 
 - [ ] **Step 6: Commit**
@@ -174,6 +184,7 @@ git commit -m "feat(content): add slugifyTaxonomy util for free-form categories/
 ### Task 2: Update `lib/site.ts` brand strings + reduced primary nav
 
 **Files:**
+
 - Modify: `apps/web/src/lib/site.ts`
 
 - [ ] **Step 1: Replace site identity strings**
@@ -181,7 +192,8 @@ git commit -m "feat(content): add slugifyTaxonomy util for free-form categories/
 Open `apps/web/src/lib/site.ts`. Replace the current `SITE_NAME`, `SITE_TAGLINE`, `SITE_DESCRIPTION` block AND the `NAV_PRIMARY` constant. Final file:
 
 ```ts
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://aivibelab.com";
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://aivibelab.com";
 export const SITE_NAME = "AI 시대 생존기";
 export const SITE_NAME_EN = "aisurvivor";
 export const SITE_SUBTITLE = "컴퓨터쟁이의 기록소";
@@ -189,7 +201,8 @@ export const SITE_TAGLINE = "AI 시대 살아남기 위한 컴퓨터쟁이의 �
 export const SITE_DESCRIPTION =
   "AI 시대를 살아남기 위해 직접 따라 해본 튜토리얼, 막힌 부분, 비용, 결과물까지 정리하는 1인 기록소.";
 export const SITE_HERO_HEADLINE = "AI 튜토리얼, 제가 먼저 끝까지 해봅니다.";
-export const SITE_HERO_LEDE = "설치부터 에러, 비용, 결과물까지 — 살아남은 것만 정리합니다.";
+export const SITE_HERO_LEDE =
+  "설치부터 에러, 비용, 결과물까지 — 살아남은 것만 정리합니다.";
 export const SITE_FOOTER_SIGNATURE = "안 해본 튜토리얼은 검증되지 않는다";
 export const SITE_LOCALE = "ko_KR";
 export const SITE_LANG = "ko";
@@ -220,9 +233,11 @@ export function absoluteUrl(path = "/") {
 - [ ] **Step 2: Typecheck**
 
 Run from `apps/web/`:
+
 ```
 npm run typecheck
 ```
+
 Expected: exit 0. (Some files that imported the old `Series`/`Tools` nav links will not be affected — they use `NAV_PRIMARY` as an array; the iteration just becomes shorter.)
 
 - [ ] **Step 3: Commit**
@@ -237,6 +252,7 @@ git commit -m "feat(site): rebrand to AI 시대 생존기, trim primary nav to H
 ### Task 3: Confirm `lib/labels.ts` legacy table stays as fallback
 
 **Files:**
+
 - Modify (potentially no-op): `apps/web/src/lib/labels.ts`
 
 The existing `categoryLabel(slug)` returns `CATEGORY_LABELS[slug] ?? slug`. With free-form categories, the fallback returns the raw frontmatter string, which is exactly what we want for new categories. No code change is needed unless the implementer wants to add new entries for upcoming categories.
@@ -256,6 +272,7 @@ If yes, no edit. If the file has drifted, restore the fallback.
 ```
 npm run typecheck
 ```
+
 Expected: exit 0.
 
 - [ ] **Step 3: Commit only if a change was made**
@@ -271,6 +288,7 @@ git diff --quiet apps/web/src/lib/labels.ts || (git add apps/web/src/lib/labels.
 ### Task 4: Route `categoryBuckets` and `getPostsByCategory` through `slugifyTaxonomy`
 
 **Files:**
+
 - Modify: `apps/web/src/lib/content/posts.ts`
 - Modify: `apps/web/src/lib/content/posts.test.ts` (add cases for free-form categories)
 
@@ -296,9 +314,11 @@ test("free-form category resolves via slugifyTaxonomy on both bucket and lookup"
 ```
 
 Run:
+
 ```
 node --test src/lib/content/posts.test.ts
 ```
+
 Expected: existing tests PASS, new test PASS (it only exercises the parser, which already accepts any string).
 
 - [ ] **Step 2: Update `categoryBuckets` and `getPostsByCategory`**
@@ -306,18 +326,23 @@ Expected: existing tests PASS, new test PASS (it only exercises the parser, whic
 In `apps/web/src/lib/content/posts.ts`, replace the existing `categoryBuckets` function with the slugified version and update `getPostsByCategory`. Add an import line at the top.
 
 Add at the top of the file (next to the labels import):
+
 ```ts
 import { slugifyTaxonomy } from "./slugify.ts";
 ```
 
 Replace `getPostsByCategory`:
+
 ```ts
 export function getPostsByCategory(slug: string) {
-  return publishedPosts.filter((post) => slugifyTaxonomy(post.category) === slug);
+  return publishedPosts.filter(
+    (post) => slugifyTaxonomy(post.category) === slug,
+  );
 }
 ```
 
 Replace `categoryBuckets`:
+
 ```ts
 export function categoryBuckets(): Bucket[] {
   type Group = { rawValues: Set<string>; count: number };
@@ -326,7 +351,10 @@ export function categoryBuckets(): Bucket[] {
   for (const post of publishedPosts) {
     const slug = slugifyTaxonomy(post.category);
     if (!slug) continue; // defensive — slugify-empty values don't get a bucket
-    const group = bySlug.get(slug) ?? { rawValues: new Set<string>(), count: 0 };
+    const group = bySlug.get(slug) ?? {
+      rawValues: new Set<string>(),
+      count: 0,
+    };
     group.rawValues.add(post.category);
     group.count += 1;
     bySlug.set(slug, group);
@@ -355,6 +383,7 @@ export function categoryBuckets(): Bucket[] {
 ```
 npm run test
 ```
+
 Expected: every test in the existing suite passes (the change is backward-compatible — old kebab-case slugs slugify to themselves).
 
 - [ ] **Step 4: Add a slug-collision regression test**
@@ -401,9 +430,11 @@ test("categoryBuckets warns (dev) on two distinct categories that slugify to the
 Note: this regression test asserts that two distinct `category` values can co-exist on disk; the actual collision warning path runs at build time when `categoryBuckets()` is called. The dedicated build-time check is exercised in Task 16's `npm run build` smoke.
 
 Run:
+
 ```
 node --test src/lib/content/posts.test.ts
 ```
+
 Expected: PASS.
 
 - [ ] **Step 5: Typecheck**
@@ -411,6 +442,7 @@ Expected: PASS.
 ```
 npm run typecheck
 ```
+
 Expected: exit 0.
 
 - [ ] **Step 6: Commit**
@@ -425,6 +457,7 @@ git commit -m "feat(content): route categoryBuckets through slugifyTaxonomy with
 ### Task 5: Mirror Task 4 for tags
 
 **Files:**
+
 - Modify: `apps/web/src/lib/content/posts.ts`
 - Modify: `apps/web/src/lib/content/posts.test.ts`
 
@@ -450,14 +483,17 @@ test("free-form tag resolves via slugifyTaxonomy on bucket and lookup", () => {
 ```
 
 Run:
+
 ```
 node --test src/lib/content/posts.test.ts
 ```
+
 Expected: PASS (parser accepts any string).
 
 - [ ] **Step 2: Update `tagBuckets` and `getPostsByTag`**
 
 Replace `getPostsByTag`:
+
 ```ts
 export function getPostsByTag(slug: string) {
   return publishedPosts.filter((post) =>
@@ -467,6 +503,7 @@ export function getPostsByTag(slug: string) {
 ```
 
 Replace `tagBuckets`:
+
 ```ts
 export function tagBuckets(): Bucket[] {
   type Group = { rawValues: Set<string>; count: number };
@@ -476,7 +513,10 @@ export function tagBuckets(): Bucket[] {
     for (const tag of post.tags) {
       const slug = slugifyTaxonomy(tag);
       if (!slug) continue;
-      const group = bySlug.get(slug) ?? { rawValues: new Set<string>(), count: 0 };
+      const group = bySlug.get(slug) ?? {
+        rawValues: new Set<string>(),
+        count: 0,
+      };
       group.rawValues.add(tag);
       group.count += 1;
       bySlug.set(slug, group);
@@ -507,6 +547,7 @@ export function tagBuckets(): Bucket[] {
 ```
 npm run test
 ```
+
 Expected: all PASS.
 
 - [ ] **Step 4: Typecheck**
@@ -514,6 +555,7 @@ Expected: all PASS.
 ```
 npm run typecheck
 ```
+
 Expected: exit 0.
 
 - [ ] **Step 5: Commit**
@@ -528,6 +570,7 @@ git commit -m "feat(content): route tagBuckets through slugifyTaxonomy with coll
 ### Task 6: Cinnabar accent token swap in `global.css`
 
 **Files:**
+
 - Modify: `apps/web/src/styles/global.css`
 
 - [ ] **Step 1: Update the light-mode accent block (lines ~39-48)**
@@ -535,31 +578,31 @@ git commit -m "feat(content): route tagBuckets through slugifyTaxonomy with coll
 In `apps/web/src/styles/global.css`, replace this block:
 
 ```css
-  /* Accent — Electric Teal/Cyan (terminal-flavored, not generic blue) */
-  --accent: #0e7490; /* deep teal — main */
-  --accent-fg: #ffffff;
-  --accent-soft: #cffafe; /* cyan-100 */
-  --accent-muted: #67e8f9; /* cyan-300 */
-  --accent-deep: #155e75; /* cyan-800 */
+/* Accent — Electric Teal/Cyan (terminal-flavored, not generic blue) */
+--accent: #0e7490; /* deep teal — main */
+--accent-fg: #ffffff;
+--accent-soft: #cffafe; /* cyan-100 */
+--accent-muted: #67e8f9; /* cyan-300 */
+--accent-deep: #155e75; /* cyan-800 */
 
-  /* Markers */
-  --mark: rgba(14, 116, 144, 0.22);
-  --tick: #0e7490;
+/* Markers */
+--mark: rgba(14, 116, 144, 0.22);
+--tick: #0e7490;
 ```
 
 with:
 
 ```css
-  /* Accent — Cinnabar / vermilion (editorial signature mark, not decoration) */
-  --accent: #b8341c; /* cinnabar — main */
-  --accent-fg: #ffffff;
-  --accent-soft: #fee2e2; /* red-100 */
-  --accent-muted: #fca5a5; /* red-300 */
-  --accent-deep: #7f1d1d; /* red-900 */
+/* Accent — Cinnabar / vermilion (editorial signature mark, not decoration) */
+--accent: #b8341c; /* cinnabar — main */
+--accent-fg: #ffffff;
+--accent-soft: #fee2e2; /* red-100 */
+--accent-muted: #fca5a5; /* red-300 */
+--accent-deep: #7f1d1d; /* red-900 */
 
-  /* Markers */
-  --mark: rgba(184, 52, 28, 0.22);
-  --tick: #b8341c;
+/* Markers */
+--mark: rgba(184, 52, 28, 0.22);
+--tick: #b8341c;
 ```
 
 - [ ] **Step 2: Update the dark-mode accent block (lines ~108-115)**
@@ -567,34 +610,35 @@ with:
 Replace:
 
 ```css
-  /* Accent — Bright cyan, terminal-feel */
-  --accent: #22d3ee; /* cyan-400 */
-  --accent-fg: #0b0e13;
-  --accent-soft: #0e3a47;
-  --accent-muted: #155e75;
-  --accent-deep: #67e8f9;
+/* Accent — Bright cyan, terminal-feel */
+--accent: #22d3ee; /* cyan-400 */
+--accent-fg: #0b0e13;
+--accent-soft: #0e3a47;
+--accent-muted: #155e75;
+--accent-deep: #67e8f9;
 
-  --mark: rgba(34, 211, 238, 0.22);
-  --tick: #22d3ee;
+--mark: rgba(34, 211, 238, 0.22);
+--tick: #22d3ee;
 ```
 
 with:
 
 ```css
-  /* Accent — Cinnabar / vermilion (dark mode — readable on deep slate) */
-  --accent: #fca5a5; /* red-300 */
-  --accent-fg: #0b0e13;
-  --accent-soft: #4a1414;
-  --accent-muted: #7f1d1d;
-  --accent-deep: #fee2e2;
+/* Accent — Cinnabar / vermilion (dark mode — readable on deep slate) */
+--accent: #fca5a5; /* red-300 */
+--accent-fg: #0b0e13;
+--accent-soft: #4a1414;
+--accent-muted: #7f1d1d;
+--accent-deep: #fee2e2;
 
-  --mark: rgba(252, 165, 165, 0.22);
-  --tick: #fca5a5;
+--mark: rgba(252, 165, 165, 0.22);
+--tick: #fca5a5;
 ```
 
 - [ ] **Step 3: Update the design-tokens header comment (line ~5-7)**
 
 Replace:
+
 ```css
 /* ============================================================
    Lab Terminal Notebook — Design Tokens (Light)
@@ -603,6 +647,7 @@ Replace:
 ```
 
 with:
+
 ```css
 /* ============================================================
    AI 시대 생존기 — Design Tokens (Light)
@@ -611,6 +656,7 @@ with:
 ```
 
 And the dark header (line ~78-80):
+
 ```css
 /* ============================================================
    Lab Terminal Notebook — Design Tokens (Dark)
@@ -619,6 +665,7 @@ And the dark header (line ~78-80):
 ```
 
 with:
+
 ```css
 /* ============================================================
    AI 시대 생존기 — Design Tokens (Dark)
@@ -629,9 +676,11 @@ with:
 - [ ] **Step 4: Smoke check the dev server compiles CSS**
 
 Run from `apps/web/`:
+
 ```
 npm run dev
 ```
+
 Wait for `▲ Next.js ... ready`. Open `http://localhost:3000/` in a browser, confirm no CSS errors in the console. Stop the dev server (Ctrl+C).
 
 - [ ] **Step 5: Commit**
@@ -646,6 +695,7 @@ git commit -m "style(tokens): swap accent from teal to cinnabar (light + dark)"
 ### Task 7: Header rebuild — wordmark + drop currentIssue
 
 **Files:**
+
 - Modify: `apps/web/src/components/layout/header.tsx`
 
 This task removes `currentIssue()` and the mobile issue mirror, and updates the wordmark and subtitle. The Posts dropdown gets wired in Task 8.
@@ -669,7 +719,10 @@ export function Header() {
     <header id="site-header" className="relative z-30 bg-bg-primary">
       <div className="container-mast pt-6 pb-4 sm:pt-8">
         <div className="flex items-end justify-between gap-6">
-          <Link href="/" className="group flex items-baseline gap-3 leading-none">
+          <Link
+            href="/"
+            className="group flex items-baseline gap-3 leading-none"
+          >
             <span className="font-display text-2xl font-bold leading-none tracking-[-0.025em] text-ink-800 sm:text-[1.75rem]">
               AI 시대 <span className="text-accent">생존기</span>
             </span>
@@ -677,7 +730,9 @@ export function Header() {
               className="hidden h-1.5 w-1.5 translate-y-[-2px] rounded-full bg-accent sm:inline-block"
               aria-hidden="true"
             />
-            <span className="kicker hidden sm:inline-block">{SITE_SUBTITLE}</span>
+            <span className="kicker hidden sm:inline-block">
+              {SITE_SUBTITLE}
+            </span>
           </Link>
 
           <div className="flex items-center gap-4">
@@ -750,6 +805,7 @@ Move directly to Task 8. Do NOT commit yet.
 ### Task 8: `PostsNavDropdown` client component
 
 **Files:**
+
 - Create: `apps/web/src/components/layout/PostsNavDropdown.tsx`
 
 - [ ] **Step 1: Create the component**
@@ -903,6 +959,7 @@ export function PostsNavDropdown({ categories }: { categories: Bucket[] }) {
 ```
 npm run typecheck
 ```
+
 Expected: exit 0. (Both Header and PostsNavDropdown now resolve.)
 
 - [ ] **Step 3: Browser smoke**
@@ -910,7 +967,9 @@ Expected: exit 0. (Both Header and PostsNavDropdown now resolve.)
 ```
 npm run dev
 ```
+
 Open `http://localhost:3000/`. Verify:
+
 - Wordmark reads "AI 시대 생존기" with "생존기" in cinnabar.
 - "컴퓨터쟁이의 기록소" appears next to wordmark on desktop and on the row below the rule on mobile (resize to ~390px in DevTools).
 - "VOL · ISSUE" no longer appears.
@@ -933,6 +992,7 @@ git commit -m "feat(layout): rebrand header wordmark + add PostsNavDropdown with
 ### Task 9: Footer signature line
 
 **Files:**
+
 - Modify: `apps/web/src/components/layout/footer.tsx`
 
 - [ ] **Step 1: Replace the prominent display block**
@@ -960,13 +1020,20 @@ Replace the middle `<p>` (the `{SITE_NAME}` one) so the signature copy is the pr
 - [ ] **Step 2: Update the import line at the top**
 
 Change:
+
 ```ts
 import { NAV_FOOTER, SITE_NAME, SITE_TAGLINE } from "@/lib/site";
 ```
 
 to:
+
 ```ts
-import { NAV_FOOTER, SITE_FOOTER_SIGNATURE, SITE_NAME, SITE_TAGLINE } from "@/lib/site";
+import {
+  NAV_FOOTER,
+  SITE_FOOTER_SIGNATURE,
+  SITE_NAME,
+  SITE_TAGLINE,
+} from "@/lib/site";
 ```
 
 (`SITE_NAME` is still used in the `© {year} {SITE_NAME}` copyright line, so keep the import.)
@@ -976,23 +1043,23 @@ import { NAV_FOOTER, SITE_FOOTER_SIGNATURE, SITE_NAME, SITE_TAGLINE } from "@/li
 Locate the list under "§ 01 — 글" (around lines 38-66). Remove the two `<li>` items pointing at `/series` and `/tools`. Final list:
 
 ```tsx
-              <ul className="mt-4 space-y-2.5 text-[0.95rem] text-ink-600">
-                <li>
-                  <Link href="/posts" className="transition-colors hover:text-accent">
-                    전체 글
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/categories" className="transition-colors hover:text-accent">
-                    카테고리
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/tags" className="transition-colors hover:text-accent">
-                    태그
-                  </Link>
-                </li>
-              </ul>
+<ul className="mt-4 space-y-2.5 text-[0.95rem] text-ink-600">
+  <li>
+    <Link href="/posts" className="transition-colors hover:text-accent">
+      전체 글
+    </Link>
+  </li>
+  <li>
+    <Link href="/categories" className="transition-colors hover:text-accent">
+      카테고리
+    </Link>
+  </li>
+  <li>
+    <Link href="/tags" className="transition-colors hover:text-accent">
+      태그
+    </Link>
+  </li>
+</ul>
 ```
 
 - [ ] **Step 4: Typecheck**
@@ -1000,6 +1067,7 @@ Locate the list under "§ 01 — 글" (around lines 38-66). Remove the two `<li>
 ```
 npm run typecheck
 ```
+
 Expected: exit 0.
 
 - [ ] **Step 5: Browser smoke**
@@ -1007,6 +1075,7 @@ Expected: exit 0.
 ```
 npm run dev
 ```
+
 Scroll any page to the footer. Verify the prominent line reads "안 해본 튜토리얼은 검증되지 않는다" and the link list under "§ 01 — 글" has 3 items (전체 글 / 카테고리 / 태그). Stop dev server.
 
 - [ ] **Step 6: Commit**
@@ -1021,6 +1090,7 @@ git commit -m "feat(layout): footer signature line + drop unpromoted series/tool
 ### Task 10: Home — restore § 03/03 and retune § 02/03
 
 **Files:**
+
 - Modify: `apps/web/app/(public)/page.tsx`
 
 - [ ] **Step 1: Replace the file body**
@@ -1032,7 +1102,11 @@ import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
 import { PostCard } from "@/components/post/post-card";
 import { Button } from "@/components/ui/button";
-import { categoryBuckets, publishedPosts, tagBuckets } from "@/lib/content/posts";
+import {
+  categoryBuckets,
+  publishedPosts,
+  tagBuckets,
+} from "@/lib/content/posts";
 import {
   SITE_DESCRIPTION,
   SITE_HERO_HEADLINE,
@@ -1078,7 +1152,11 @@ export default function HomePage() {
 
   return (
     <>
-      <PageHeader kicker="AI 시대 생존기" title={SITE_HERO_HEADLINE} description={SITE_HERO_LEDE} />
+      <PageHeader
+        kicker="AI 시대 생존기"
+        title={SITE_HERO_HEADLINE}
+        description={SITE_HERO_LEDE}
+      />
 
       <section className="container-hero py-10">
         <div className="flex flex-wrap gap-3">
@@ -1096,7 +1174,9 @@ export default function HomePage() {
           <p className="kicker tabular-nums">01 / 03</p>
           <div className="min-w-0">
             <p className="kicker">latest dispatches</p>
-            <h2 className="mt-2 font-display text-display text-ink-900">최신 기록</h2>
+            <h2 className="mt-2 font-display text-display text-ink-900">
+              최신 기록
+            </h2>
           </div>
           <Link
             href="/posts"
@@ -1135,7 +1215,9 @@ export default function HomePage() {
               <p className="kicker tabular-nums">02 / 03</p>
               <div>
                 <p className="kicker">index</p>
-                <h2 className="mt-2 font-display text-display text-ink-900">기록소 가는 길</h2>
+                <h2 className="mt-2 font-display text-display text-ink-900">
+                  기록소 가는 길
+                </h2>
               </div>
             </header>
 
@@ -1152,7 +1234,9 @@ export default function HomePage() {
                     </Link>
                   </div>
                   {column.items.length === 0 ? (
-                    <p className="font-mono text-xs text-ink-400">아직 없습니다.</p>
+                    <p className="font-mono text-xs text-ink-400">
+                      아직 없습니다.
+                    </p>
                   ) : (
                     <ol className="list-none divide-y divide-paper-rule">
                       {column.items.map((item, index) => (
@@ -1164,7 +1248,9 @@ export default function HomePage() {
                             <span className="font-mono text-[0.7rem] text-accent tabular-nums">
                               {String(index + 1).padStart(2, "0")}
                             </span>
-                            <span className="min-w-0 break-words">{item.label}</span>
+                            <span className="min-w-0 break-words">
+                              {item.label}
+                            </span>
                             <span className="font-mono text-[0.7rem] text-ink-400 tabular-nums">
                               {item.count}
                             </span>
@@ -1185,19 +1271,27 @@ export default function HomePage() {
           <p className="kicker tabular-nums">03 / 03</p>
           <div>
             <p className="kicker">why this site</p>
-            <h2 className="mt-2 font-display text-display text-ink-900">진짜 되는 것만 남긴다</h2>
+            <h2 className="mt-2 font-display text-display text-ink-900">
+              진짜 되는 것만 남긴다
+            </h2>
           </div>
         </header>
         <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
           <p className="max-w-prose text-ink-600 leading-relaxed">
-            인터넷에 떠도는 AI 튜토리얼을 직접 따라 해보고, 안 된 부분과 막힌 지점, 비용까지 기록합니다.
-            새로운 도구가 좋아 보이는 글이 아니라, 직접 끝까지 해본 사람의 기록만 남깁니다.
+            인터넷에 떠도는 AI 튜토리얼을 직접 따라 해보고, 안 된 부분과 막힌
+            지점, 비용까지 기록합니다. 새로운 도구가 좋아 보이는 글이 아니라,
+            직접 끝까지 해본 사람의 기록만 남깁니다.
           </p>
           <div className="grid gap-3 sm:grid-cols-3">
             {promiseChips.map((chip) => (
-              <div key={chip.label} className="border border-paper-rule bg-paper-elevated p-4">
+              <div
+                key={chip.label}
+                className="border border-paper-rule bg-paper-elevated p-4"
+              >
                 <p className="kicker kicker-accent">{chip.label}</p>
-                <p className="mt-3 text-sm leading-relaxed text-ink-600">{chip.body}</p>
+                <p className="mt-3 text-sm leading-relaxed text-ink-600">
+                  {chip.body}
+                </p>
               </div>
             ))}
           </div>
@@ -1213,6 +1307,7 @@ export default function HomePage() {
 ```
 npm run typecheck
 ```
+
 Expected: exit 0.
 
 - [ ] **Step 3: Browser smoke**
@@ -1220,7 +1315,9 @@ Expected: exit 0.
 ```
 npm run dev
 ```
+
 Visit `/`. Verify:
+
 - Hero kicker is "AI 시대 생존기", title is "AI 튜토리얼, 제가 먼저 끝까지 해봅니다.", lede matches.
 - Section markers read `01 / 03`, `02 / 03`, `03 / 03`.
 - § 02/03 has 2 columns: categories + tags.
@@ -1241,6 +1338,7 @@ git commit -m "feat(home): restore § 03/03 promise + retune § 02/03 to categor
 ### Task 11: Category and Tag pages — empty-state copy + don't 404 on draft-only
 
 **Files:**
+
 - Modify: `apps/web/app/(public)/categories/[category]/page.tsx`
 - Modify: `apps/web/app/(public)/tags/[tag]/page.tsx`
 
@@ -1270,7 +1368,8 @@ export async function generateMetadata({
   const label = categoryLabel(category);
   return pageMetadata({
     title: label,
-    description: CATEGORY_DESCRIPTIONS[category] ?? `${label} 카테고리 글 목록입니다.`,
+    description:
+      CATEGORY_DESCRIPTIONS[category] ?? `${label} 카테고리 글 목록입니다.`,
     path: `/categories/${category}`,
   });
 }
@@ -1292,7 +1391,9 @@ export default async function CategoryDetailPage({
       <PageHeader
         kicker={`category · ${posts.length} published`}
         title={bucket.label}
-        description={CATEGORY_DESCRIPTIONS[category] ?? "이 카테고리의 발행된 글입니다."}
+        description={
+          CATEGORY_DESCRIPTIONS[category] ?? "이 카테고리의 발행된 글입니다."
+        }
       />
       <PostList posts={posts} emptyText="아직 발행된 글이 없습니다." />
     </>
@@ -1332,7 +1433,11 @@ export async function generateMetadata({
   });
 }
 
-export default async function TagDetailPage({ params }: { params: Promise<{ tag: string }> }) {
+export default async function TagDetailPage({
+  params,
+}: {
+  params: Promise<{ tag: string }>;
+}) {
   const { tag } = await params;
   const buckets = tagBuckets();
   const bucket = buckets.find((b) => b.slug === tag);
@@ -1358,6 +1463,7 @@ export default async function TagDetailPage({ params }: { params: Promise<{ tag:
 ```
 npm run typecheck
 ```
+
 Expected: exit 0.
 
 - [ ] **Step 4: Browser smoke**
@@ -1365,6 +1471,7 @@ Expected: exit 0.
 ```
 npm run dev
 ```
+
 Visit `/categories/<any-existing-slug>` and `/tags/<any-existing-slug>`. Verify the kicker reads `category · N published` (or `tag · N published`) and the page renders. Hit a non-existent slug like `/categories/does-not-exist` — confirm 404. Stop dev server.
 
 - [ ] **Step 5: Commit**
@@ -1379,6 +1486,7 @@ git commit -m "feat(archive): preserve display labels on category/tag pages, ret
 ### Task 12: About page copy retune
 
 **Files:**
+
 - Modify: `apps/web/app/(public)/about/page.tsx`
 
 - [ ] **Step 1: Read the current file**
@@ -1410,6 +1518,7 @@ Adapt the existing layout to surface these three sections. Keep any existing foo
 ```
 npm run typecheck
 ```
+
 Expected: exit 0.
 
 - [ ] **Step 4: Browser smoke**
@@ -1417,6 +1526,7 @@ Expected: exit 0.
 ```
 npm run dev
 ```
+
 Visit `/about`. Verify the three sections render. Stop dev server.
 
 - [ ] **Step 5: Commit**
@@ -1431,6 +1541,7 @@ git commit -m "feat(about): retune copy for survival-journal positioning"
 ### Task 13: Update `DESIGN.md`
 
 **Files:**
+
 - Modify: `DESIGN.md`
 
 - [ ] **Step 1: Apply the four edits from spec §8.5**
@@ -1438,29 +1549,37 @@ git commit -m "feat(about): retune copy for survival-journal positioning"
 Open `DESIGN.md` (project root, not under `apps/`).
 
 Edit 1 — replace this line:
+
 ```
 - Accent: teal/cyan as a lab marker, not a decorative gradient.
 ```
+
 with:
+
 ```
 - Accent: cinnabar / vermilion as an editorial signature mark, not a decorative gradient. Used only for the wordmark accent word, drop cap, kicker-accent, section §, focus ring, and the existing highlight band. Body links and buttons stay ink-on-paper.
 ```
 
 Edit 2 — replace the file's opening descriptive line:
+
 ```
 AI Vibe Lab is an editorial lab notebook, not a SaaS landing page.
 ```
+
 with:
+
 ```
 AI 시대 생존기 is a survival journal — tutorials taken end-to-end, with cost, errors, and what was left after they ran. Not a SaaS landing page.
 ```
 
 Edit 3 — under the section "### Home", add the following sentence at the end of that section (before "Avoid a generic three-card first impression."):
+
 ```
 Section markers are numbered `01 / 03`, `02 / 03`, `03 / 03` after the unnumbered hero. The third section is a restored editorial promise block with three left-aligned chip cards — never a centered icon-feature grid.
 ```
 
 Edit 4 — under "## Anti-slop blacklist", add this bullet at the end of the list:
+
 ```
 - colored left-border on cards as visual decoration
 ```
@@ -1477,6 +1596,7 @@ git commit -m "docs(design): cinnabar accent role, survival-journal positioning,
 ### Task 14: Update `CONTENT_MODEL.md`
 
 **Files:**
+
 - Modify: `docs/10_content/CONTENT_MODEL.md`
 
 - [ ] **Step 1: Replace the "Category Slug" enum section**
@@ -1526,6 +1646,7 @@ git commit -m "docs(content): document free-form taxonomy + slugifyTaxonomy + co
 ### Task 15: Update `SERVICE_IA.md`, `SCREEN_INVENTORY.md`, `SEO_ADSENSE_CHECKLIST.md`
 
 **Files:**
+
 - Modify: `docs/20_site/SERVICE_IA.md`
 - Modify: `docs/20_site/SCREEN_INVENTORY.md`
 - Modify: `docs/30_seo_monetization/SEO_ADSENSE_CHECKLIST.md`
@@ -1533,10 +1654,13 @@ git commit -m "docs(content): document free-form taxonomy + slugifyTaxonomy + co
 - [ ] **Step 1: Sync `SERVICE_IA.md` to the new nav**
 
 Update the primary navigation list in `SERVICE_IA.md` to read:
+
 ```
 HOME · POSTS▾ · ABOUT
 ```
+
 and replace any "POSTS / SERIES / TOOLS / ABOUT" line. Add a sentence describing the POSTS dropdown:
+
 > POSTS 트리거는 호버 시 카테고리 드롭다운을 열고, 클릭 시 `/posts`로 이동한다. 패널 항목: 전체 글 + 상위 8개 카테고리 + "카테고리 모두 보기" 링크.
 
 The `/series`, `/tools`, `/categories`, `/tags` routes remain valid in the IA tree but are not in the primary nav — adjust prose accordingly.
@@ -1565,9 +1689,11 @@ git commit -m "docs(ia/seo): sync IA, screen inventory, SEO checklist with rebra
 - [ ] **Step 1: Run unit tests**
 
 From `apps/web/`:
+
 ```
 npm run test
 ```
+
 Expected: every test PASS, exit 0.
 
 - [ ] **Step 2: Typecheck**
@@ -1575,6 +1701,7 @@ Expected: every test PASS, exit 0.
 ```
 npm run typecheck
 ```
+
 Expected: exit 0.
 
 - [ ] **Step 3: Lint**
@@ -1582,6 +1709,7 @@ Expected: exit 0.
 ```
 npm run lint
 ```
+
 Expected: exit 0 (or only warnings).
 
 - [ ] **Step 4: Production build (also exercises slug-collision hard-error path)**
@@ -1589,11 +1717,13 @@ Expected: exit 0 (or only warnings).
 ```
 npm run build
 ```
+
 Expected: build succeeds. If it fails with `slug-collision: …`, the failure is the spec's intended behavior — go fix the colliding `category` or `tag` value in MDX frontmatter, then rebuild. Do NOT silence the error.
 
 - [ ] **Step 5: Browser smoke against acceptance criteria (spec §10)**
 
 From `apps/web/`:
+
 ```
 npm run dev
 ```
@@ -1632,24 +1762,24 @@ git push -u origin <branch-name>
 
 **Spec coverage check:** Every spec section has a task.
 
-| Spec section | Task |
-|---|---|
-| §3 Brand & copy | T2 (site.ts), T7 (header), T9 (footer), T10 (home), T12 (about) |
-| §4 Content model | T1 (slugify), T4 (categoryBuckets), T5 (tagBuckets) |
-| §5 Visual system | T6 (cinnabar tokens) |
-| §6.0 IA tree | T7 (header), T8 (dropdown), T15 (docs) |
-| §6.0.1 Interaction states | T8 (dropdown states), T11 (category/tag empty) |
-| §6.1 Header | T7 |
-| §6.2 Home + §6.2.1 chip card | T10 |
-| §6.3 Post detail | (no change required — existing layout works as-is) |
-| §6.4 Category page | T11 |
-| §6.5 All-posts page | (no change required) |
-| §6.6 Footer | T9 |
-| §6.6.1 Responsive | T7 (header mobile), T8 (dropdown mobile inline) |
-| §6.6.2 A11y | T8 (ARIA + keyboard) |
-| §6.7 About | T12 |
-| §7 lib/site.ts | T2 |
-| §8.5 Doc updates | T13–T15 |
+| Spec section                 | Task                                                            |
+| ---------------------------- | --------------------------------------------------------------- |
+| §3 Brand & copy              | T2 (site.ts), T7 (header), T9 (footer), T10 (home), T12 (about) |
+| §4 Content model             | T1 (slugify), T4 (categoryBuckets), T5 (tagBuckets)             |
+| §5 Visual system             | T6 (cinnabar tokens)                                            |
+| §6.0 IA tree                 | T7 (header), T8 (dropdown), T15 (docs)                          |
+| §6.0.1 Interaction states    | T8 (dropdown states), T11 (category/tag empty)                  |
+| §6.1 Header                  | T7                                                              |
+| §6.2 Home + §6.2.1 chip card | T10                                                             |
+| §6.3 Post detail             | (no change required — existing layout works as-is)              |
+| §6.4 Category page           | T11                                                             |
+| §6.5 All-posts page          | (no change required)                                            |
+| §6.6 Footer                  | T9                                                              |
+| §6.6.1 Responsive            | T7 (header mobile), T8 (dropdown mobile inline)                 |
+| §6.6.2 A11y                  | T8 (ARIA + keyboard)                                            |
+| §6.7 About                   | T12                                                             |
+| §7 lib/site.ts               | T2                                                              |
+| §8.5 Doc updates             | T13–T15                                                         |
 
 **Placeholder scan:** The plan contains no "TBD", "TODO", or "implement appropriate X" markers. Every step contains either the actual code, the actual command, or the precise edit instruction. Task 12 leaves the layout structure to the implementer because the existing About layout was not read into the spec context — but the copy is exact.
 

@@ -250,6 +250,8 @@ GITHUB_BRANCH="master"
 ```text
 apps/web/src/components/admin/RichEditor/*
 apps/web/src/components/mdx/Figure.tsx
+apps/web/src/components/mdx/AudioEmbed.tsx
+apps/web/src/components/mdx/DocumentEmbed.tsx
 apps/web/src/components/mdx/YouTube.tsx
 apps/web/src/components/mdx/mdx-components.tsx
 apps/web/app/api/admin/upload/[slug]/route.ts
@@ -260,15 +262,16 @@ apps/web/app/api/admin/upload/[slug]/route.ts
 1. 처음에는 textarea/markdown editor로 시작해도 된다.
 2. 반복 작성이 필요해지면 Tiptap/Novel rich editor를 붙인다.
 3. editor output은 최종적으로 MDX string이어야 한다.
-4. `<Figure />` 같은 커스텀 컴포넌트를 MDX render와 editor serialize 양쪽에서 맞춘다.
-5. 이미지 업로드는 owner session, slug, MIME, 확장자, 용량을 모두 검증한다.
-6. 4MB 이하 작은 이미지만 GitHub에 커밋한다.
-7. 큰 media는 R2/Vercel Blob/YouTube로 분리한다.
+4. `<Figure />`, `<AudioEmbed />`, `<DocumentEmbed />` 같은 커스텀 컴포넌트를 MDX render와 editor serialize 양쪽에서 맞춘다.
+5. 이미지/오디오/문서 업로드는 owner session, slug, MIME, 확장자, 용량을 모두 검증한다.
+6. 4MB 이하 작은 이미지·오디오·문서만 GitHub에 커밋한다. PDF는 내장 iframe 뷰어, 그 외 문서는 다운로드/새 탭 카드로 렌더링한다.
+7. 큰 media는 R2/Vercel Blob/YouTube/외부 URL로 분리한다.
 
 검증:
 
 - [ ] 붙여넣은 이미지가 안전한 URL 또는 업로드 URL로 변환된다.
-- [ ] figure가 editor -> MDX -> public render 왕복에서 깨지지 않는다.
+- [ ] 오디오/문서 파일 업로드가 `<AudioEmbed />`/`<DocumentEmbed />`로 저장된다.
+- [ ] figure/audio/document가 editor -> MDX -> public render 왕복에서 깨지지 않는다.
 - [ ] 잘못된 MIME/확장자/큰 파일은 거부된다.
 
 ---

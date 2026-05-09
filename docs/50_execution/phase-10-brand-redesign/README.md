@@ -1,42 +1,25 @@
 # Phase 10 — Brand Redesign
 
 Status: Done
-Goal: 표시 브랜드와 핵심 공개 화면을 “AI 시대 생존기 / AI Survivor” 방향으로 재정렬한다.
+Last Updated: 2026-05-09
 
-## 목표
+Goal: AI Survivor 브랜드와 clean white UI로 공개 사이트를 정리한다.
 
-- 표시 브랜드를 `AI 시대 생존기 / AI Survivor`로 정리한다.
-- 기존 AI Vibe Lab 중심 문서와 UI 카피를 개인 생존 기록소 톤으로 갱신한다.
-- 카테고리/태그를 free-form frontmatter 값으로 다루고 route에는 안정적인 slug를 사용한다.
-- 홈과 글 상세 화면을 clean white editorial UI로 바꾼다.
+## Current summary
 
-## 구현된 결과
+완료/미완료 판단은 이 README와 상위 [`../EXECUTION_STATUS.md`](../EXECUTION_STATUS.md)를 우선한다.
 
-- `slugifyTaxonomy()` 기반 category/tag routing
-- header posts dropdown
-- `HeroCanvas` 기반 homepage hero
-- homepage category filter와 card grid
-- popular posts와 tag cloud
-- post detail cover image, centered prose, floating TOC
-- browser writing workflow와 in-place edit 진입 유지
+## Done
 
-## 검증 기준
+- AI 시대 생존기 rebrand
+- free-form taxonomy
+- clean white home/post UI
+- hero canvas/card grid/sidebar
 
-- category/tag static params와 rendered href가 같은 slug contract를 따라야 한다.
-- `npm run test`, `npm run typecheck`, `npm run lint`, `npm run build`가 통과해야 한다.
-- published가 아닌 draft/scheduled 글은 RSS/sitemap에 노출되지 않아야 한다.
+## Remaining / notes
 
-## 관련 문서
+- 선택: 추가 visual QA
 
-- Brand overview: `../../00_overview/BRAND_OVERVIEW.md`
-- Product brief: `../../00_overview/PRODUCT_BRIEF.md`
-- Content strategy: `../../10_content/CONTENT_STRATEGY.md`
-- ADR-005: `../../60_decisions/ADR-005-ai-survivor-brand-and-freeform-taxonomy.md`
-- ADR-006: `../../60_decisions/ADR-006-clean-white-home-and-post-redesign.md`
+## Slice files
 
-## 원본 계획 산출물
-
-- `source-plans/2026-05-07-rebrand-survivor-implementation.md`
-- `source-plans/2026-05-08-visual-redesign.md`
-
-디자인 원본은 `../../60_decisions/design-notes/`에 보관한다.
+세부 slice 문서는 작업 단위와 과거 계획을 보존한다. 현재 active implementation과 충돌하면 상위 상태 문서를 우선한다.

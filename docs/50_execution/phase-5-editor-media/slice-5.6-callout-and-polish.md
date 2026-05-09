@@ -17,6 +17,7 @@ Spec: [`_design/2026-05-07-rich-editor-overhaul.md`](./_design/2026-05-07-rich-e
 ## Files
 
 **Create:**
+
 - `apps/web/src/components/admin/RichEditor/nodes/callout-node.ts`
 - `apps/web/src/components/admin/RichEditor/nodes/callout-view.tsx`
 - `apps/web/src/components/admin/RichEditor/keyboard-help.tsx`
@@ -25,6 +26,7 @@ Spec: [`_design/2026-05-07-rich-editor-overhaul.md`](./_design/2026-05-07-rich-e
 - `apps/web/src/components/mdx/Callout.tsx`
 
 **Modify:**
+
 - `apps/web/src/components/admin/RichEditor/extensions.ts`
 - `apps/web/src/components/admin/RichEditor/commands.ts`
 - `apps/web/src/components/admin/RichEditor/serialize.ts`
@@ -38,6 +40,7 @@ Spec: [`_design/2026-05-07-rich-editor-overhaul.md`](./_design/2026-05-07-rich-e
 ### Task 1: `<Callout>` 공개 페이지 렌더 컴포넌트
 
 **Files:**
+
 - Create: `apps/web/src/components/mdx/Callout.tsx`
 
 - [ ] **Step 1: 컴포넌트**
@@ -68,10 +71,16 @@ export function Callout({
   type?: CalloutType;
   children: ReactNode;
 }) {
-  const safe = (["info", "warn", "tip", "danger"] as const).includes(type) ? type : "info";
+  const safe = (["info", "warn", "tip", "danger"] as const).includes(type)
+    ? type
+    : "info";
   return (
-    <aside className={`my-6 flex gap-3 rounded-md border px-4 py-3 ${STYLES[safe]}`}>
-      <span aria-hidden className="select-none text-lg">{ICONS[safe]}</span>
+    <aside
+      className={`my-6 flex gap-3 rounded-md border px-4 py-3 ${STYLES[safe]}`}
+    >
+      <span aria-hidden className="select-none text-lg">
+        {ICONS[safe]}
+      </span>
       <div className="prose prose-sm max-w-none">{children}</div>
     </aside>
   );
@@ -106,6 +115,7 @@ git commit -m "feat(mdx): Callout component (info/warn/tip/danger)"
 ### Task 2: Callout Tiptap Node + NodeView
 
 **Files:**
+
 - Create: `apps/web/src/components/admin/RichEditor/nodes/callout-node.ts`
 - Create: `apps/web/src/components/admin/RichEditor/nodes/callout-view.tsx`
 
@@ -162,10 +172,15 @@ export const Callout = Node.create({
 - [ ] **Step 2: NodeView**
 
 `callout-view.tsx`:
+
 ```tsx
 "use client";
 
-import { NodeViewContent, NodeViewWrapper, type NodeViewProps } from "@tiptap/react";
+import {
+  NodeViewContent,
+  NodeViewWrapper,
+  type NodeViewProps,
+} from "@tiptap/react";
 import type { CalloutType } from "./callout-node";
 
 const STYLES: Record<CalloutType, string> = {
@@ -175,7 +190,12 @@ const STYLES: Record<CalloutType, string> = {
   danger: "border-red-200 bg-red-50",
 };
 
-export function CalloutNodeView({ node, updateAttributes, deleteNode, selected }: NodeViewProps) {
+export function CalloutNodeView({
+  node,
+  updateAttributes,
+  deleteNode,
+  selected,
+}: NodeViewProps) {
   const type = (node.attrs.type as CalloutType) ?? "info";
   return (
     <NodeViewWrapper
@@ -225,6 +245,7 @@ return [
 - [ ] **Step 4: 슬래시 메뉴 항목 추가**
 
 `commands.ts`:
+
 ```ts
 export function buildCalloutSlashItems(): SlashItem[] {
   return [
@@ -248,6 +269,7 @@ export function buildCalloutSlashItems(): SlashItem[] {
 ```
 
 `index.tsx`:
+
 ```tsx
 const slashItems = useMemo<SlashItem[]>(
   () => [
@@ -274,6 +296,7 @@ git commit -m "feat(editor): Callout Tiptap node + slash command"
 ### Task 3: Callout MDX 직렬화
 
 **Files:**
+
 - Modify: `apps/web/src/components/admin/RichEditor/serialize.ts`
 - Create: `apps/web/src/components/admin/RichEditor/callout-serialize.test.ts`
 
@@ -283,9 +306,12 @@ git commit -m "feat(editor): Callout Tiptap node + slash command"
 
 ```ts
 export function htmlCalloutToMdx(markdown: string): string {
-  const RE = /<aside[^>]*data-callout="true"[^>]*data-callout-type="([^"]*)"[^>]*>([\s\S]*?)<\/aside>/g;
+  const RE =
+    /<aside[^>]*data-callout="true"[^>]*data-callout-type="([^"]*)"[^>]*>([\s\S]*?)<\/aside>/g;
   return markdown.replace(RE, (_match, type: string, inner: string) => {
-    const safeType = ["info", "warn", "tip", "danger"].includes(type) ? type : "info";
+    const safeType = ["info", "warn", "tip", "danger"].includes(type)
+      ? type
+      : "info";
     const trimmed = inner.trim();
     return `<Callout type="${safeType}">\n\n${trimmed}\n\n</Callout>`;
   });
@@ -299,6 +325,7 @@ export function postProcessMarkdown(md: string): string {
 - [ ] **Step 2: 테스트**
 
 `callout-serialize.test.ts`:
+
 ```ts
 import assert from "node:assert/strict";
 import test from "node:test";
@@ -347,6 +374,7 @@ git commit -m "test(editor): Callout MDX roundtrip"
 ### Task 4: Toast 시스템
 
 **Files:**
+
 - Create: `apps/web/src/components/admin/RichEditor/toast.tsx`
 
 - [ ] **Step 1: 컨텍스트 + 컴포넌트**
@@ -354,7 +382,14 @@ git commit -m "test(editor): Callout MDX roundtrip"
 ```tsx
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 type ToastKind = "info" | "error";
 type Toast = { id: string; kind: ToastKind; message: string };
@@ -434,6 +469,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 - [ ] **Step 2: EditOverlay 와 RichEditor 가 ToastProvider 안에 들어가도록 wrap**
 
 `EditOverlay.tsx` 의 editing 모드 wrapper 를 ToastProvider 로 감쌈:
+
 ```tsx
 import { ToastProvider, useToast } from "@/components/admin/RichEditor/toast";
 
@@ -485,6 +521,7 @@ git commit -m "feat(editor): unified Toast system replacing alert calls"
 ### Task 5: 키보드 단축키 모달
 
 **Files:**
+
 - Create: `apps/web/src/components/admin/RichEditor/keyboard-help.tsx`
 
 - [ ] **Step 1: 모달 컴포넌트**
@@ -511,7 +548,10 @@ export function KeyboardHelp() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
-      const inEditable = target?.isContentEditable || target?.tagName === "INPUT" || target?.tagName === "TEXTAREA";
+      const inEditable =
+        target?.isContentEditable ||
+        target?.tagName === "INPUT" ||
+        target?.tagName === "TEXTAREA";
       if (e.key === "?" && !inEditable) {
         e.preventDefault();
         setOpen((v) => !v);
@@ -535,7 +575,9 @@ export function KeyboardHelp() {
         className="w-full max-w-md rounded-md border border-paper-rule bg-paper p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-4 font-mono text-sm uppercase tracking-[0.12em] text-ink-700">Keyboard shortcuts</h2>
+        <h2 className="mb-4 font-mono text-sm uppercase tracking-[0.12em] text-ink-700">
+          Keyboard shortcuts
+        </h2>
         <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
           {SHORTCUTS.map(([key, desc]) => (
             <div key={key} className="contents">
@@ -592,7 +634,7 @@ cd apps/web/src/components && grep -rn "text-blue-\|bg-blue-\|text-red-\|text-gr
 
 찾은 항목 검토 — `<Callout>` 의 의미적 색상은 OK, 그 외엔 design token 으로 교체.
 
-- [ ] **Step 2: aria-* 누락 검수**
+- [ ] **Step 2: aria-\* 누락 검수**
 
 ```bash
 cd apps/web/src/components/admin/RichEditor && grep -L "aria-label" nodes/figure-view.tsx nodes/video-view.tsx nodes/callout-view.tsx embeds/embed-view.tsx
@@ -603,6 +645,7 @@ cd apps/web/src/components/admin/RichEditor && grep -L "aria-label" nodes/figure
 - [ ] **Step 3: 키보드 only 검증**
 
 `/admin/posts/<slug>` 또는 in-place 편집 진입 후 마우스 사용 0:
+
 1. Tab 으로 툴바 / 메타패널 / 에디터 본문 / 슬래시 메뉴 / Save / Cancel 모두 도달 가능
 2. 슬래시 메뉴 화살표 ↑↓ 로 이동, Enter 선택, Esc 닫기
 3. 이미지 NodeView 의 align/caption/delete 버튼 Tab 이동 + Enter 활성
@@ -628,16 +671,20 @@ git commit -am "fix(editor): a11y labels + dark-mode token sweep"
 
 본문에 다양한 블록을 집어넣는다.
 
-<Figure src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Cat_03.jpg/640px-Cat_03.jpg" alt="cat" width="60%" align="left" caption="외부 URL 이미지" />
+<Figure
+  src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Cat_03.jpg/640px-Cat_03.jpg"
+  alt="cat"
+  width="60%"
+  align="left"
+  caption="외부 URL 이미지"
+/>
 
-| 항목 | 상태 |
-| --- | --- |
-| Phase | 5 |
-| Slice | 1-6 |
+| 항목  | 상태 |
+| ----- | ---- |
+| Phase | 5    |
+| Slice | 1-6  |
 
-<Callout type="tip">
-이 글은 Phase 5 dogfood 입니다.
-</Callout>
+<Callout type="tip">이 글은 Phase 5 dogfood 입니다.</Callout>
 
 <YouTube id="dQw4w9WgXcQ" />
 
@@ -647,12 +694,18 @@ git commit -am "fix(editor): a11y labels + dark-mode token sweep"
 
 <GitHubRepo owner="ty-kim" repo="ai_survivor" />
 
-<Embed url="https://example.com" title="Example" description="Sample" siteName="Example" />
+<Embed
+  url="https://example.com"
+  title="Example"
+  description="Sample"
+  siteName="Example"
+/>
 ```
 
 - [ ] **Step 2: Save → 공개 페이지 확인**
 
 GitHub 커밋 → revalidate → 공개 페이지 새로고침 → 모든 블록이 다음을 만족:
+
 - 다크 / 라이트 모드 양쪽 깨짐 없음
 - iframe 컴포넌트는 `loading="lazy"` 부착
 - 외부 이미지는 `referrerpolicy="no-referrer"`
@@ -669,6 +722,7 @@ GitHub 커밋 → revalidate → 공개 페이지 새로고침 → 모든 블록
 ### Task 8: 문서 동기화 (spec §8)
 
 **Files:**
+
 - Modify: `docs/60_decisions/ADR-004-github-backed-admin-editor.md`
 - Modify: `docs/10_content/ARTICLE_TEMPLATE.md`
 - Modify: `docs/20_features/media-library.md`
@@ -681,7 +735,7 @@ ADR-004 의 `## Open Questions` 섹션 끝에 다음 추가:
 ```markdown
 ### Resolved (Phase 5, 2026-05-07)
 
-본 ADR 의 Open Questions 4개는 Phase 5 spec [phase-5-editor-media/_design/2026-05-07-rich-editor-overhaul.md](../50_execution/phase-5-editor-media/_design/2026-05-07-rich-editor-overhaul.md) 와 6개 slice (5.1-5.6) 로 답해졌다.
+본 ADR 의 Open Questions 4개는 Phase 5 spec [phase-5-editor-media/\_design/2026-05-07-rich-editor-overhaul.md](./_design/2026-05-07-rich-editor-overhaul.md) 와 6개 slice (5.1-5.6) 로 답해졌다.
 
 - 로그인 — GitHub OAuth (현행 유지)
 - 브랜치 — master 직접 commit (보호가 필요해지면 별 ADR)
@@ -692,10 +746,12 @@ ADR-004 의 `## Open Questions` 섹션 끝에 다음 추가:
 - [ ] **Step 2: ARTICLE_TEMPLATE.md 에 새 컴포넌트 사용 예 추가**
 
 기존 템플릿 끝에 다음 섹션 append:
+
 ```markdown
 ## Phase 5 컴포넌트 예 (선택)
 
 \`\`\`mdx
+
 <Figure src="..." alt="..." width="60%" align="left" caption="..." />
 <Video src="https://pub-xxx.r2.dev/posts/<slug>/<file>.mp4" caption="데모" />
 <YouTube id="..." />
@@ -714,6 +770,7 @@ ADR-004 의 `## Open Questions` 섹션 끝에 다음 추가:
 - [ ] **Step 3: media-library.md (보류 문서) 한 줄 메모**
 
 문서 상단 Status 줄 아래에:
+
 ```markdown
 > Phase 5 (2026-05-07): 이미지 = GitHub repo (현행), 비디오 = Cloudflare R2. 풀 미디어 라이브러리 UI 는 본 문서 부활 시 재설계.
 ```
@@ -780,5 +837,5 @@ git commit -am "chore(editor): final test/typecheck/build pass"
 ## Notes
 
 - **Callout children**: tiptap-markdown 이 `<aside>` 내부 children 을 markdown 으로 직렬화한다. `htmlCalloutToMdx` 가 그 결과를 `<Callout>` 으로 감싸준다 — children 안에서 `<Figure>` 등 다른 컴포넌트도 정상 작동 (중첩 round-trip).
-- **Toast vs alert**: 본 슬라이스에서 alert 호출을 모두 `pushError` 로 바꾼다. 그러나 *upload pre-flight reject* (예: 200MB 초과) 같은 즉시 결정은 alert 가 명료할 수도 — 자유 판단.
+- **Toast vs alert**: 본 슬라이스에서 alert 호출을 모두 `pushError` 로 바꾼다. 그러나 _upload pre-flight reject_ (예: 200MB 초과) 같은 즉시 결정은 alert 가 명료할 수도 — 자유 판단.
 - **자동 e2e 부재**: 키보드/포커스/색상 회귀는 manual 체크. 1인 운영 환경의 트레이드오프.

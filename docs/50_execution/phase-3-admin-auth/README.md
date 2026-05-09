@@ -1,29 +1,24 @@
 # Phase 3 — Admin Auth & Shell
 
 Status: Done via ADR-004
-Goal: 운영자만 브라우저에서 로그인하고 Git-backed 콘텐츠를 수정할 수 있다.
+Last Updated: 2026-05-09
 
-> Current path: ADR-004 이후 실제 구현은 Supabase Auth가 아니라 GitHub OAuth + HMAC-signed owner session이다. 아래 slice들은 ADR-002 Supabase/Admin CMS 경로를 위한 historical reference이며, 현재 진행률 계산에는 포함하지 않는다.
+Goal: 운영자만 브라우저에서 로그인해 Git-backed content를 수정할 수 있게 한다.
 
-## Current implementation
+## Current summary
 
-| 기능 | 상태 | 근거 |
-| --- | --- | --- |
-| GitHub OAuth 시작/콜백 | Implemented | `apps/web/app/api/admin/github/*` |
-| OAuth helper | Implemented | `apps/web/src/lib/admin/github-oauth.ts` |
-| signed owner session | Implemented | `apps/web/src/lib/admin/session*.ts` |
-| admin login page | Implemented | `apps/web/app/(admin)/admin/login/page.tsx` |
-| admin route boundary | Implemented | `apps/web/app/(admin)/admin/*` |
+완료/미완료 판단은 이 README와 상위 [`../EXECUTION_STATUS.md`](../EXECUTION_STATUS.md)를 우선한다.
 
-## Slices
+## Done
 
-| # | 파일 | 한 줄 |
-|---|---|---|
-| 3.1 | [slice-3.1-supabase-auth.md](./slice-3.1-supabase-auth.md) | Supabase Auth + Google OAuth |
-| 3.2 | [slice-3.2-allowlist.md](./slice-3.2-allowlist.md) | 이메일 allowlist + 라우트 보호 |
-| 3.3 | [slice-3.3-admin-shell.md](./slice-3.3-admin-shell.md) | `/admin` 레이아웃 + 대시보드 placeholder |
+- GitHub OAuth login/callback
+- HMAC-signed owner session
+- admin route boundary
 
-## Reactivation Criteria
+## Remaining / notes
 
-- Supabase/Auth.js/DB 기반 CMS로 되돌아갈 근거가 생긴다.
-- 새 ADR에서 Auth provider, content write path, media storage, preview policy를 다시 결정한다.
+- 아래 Supabase auth slices는 historical reference이며 현재 진행률에 포함하지 않는다.
+
+## Slice files
+
+세부 slice 문서는 작업 단위와 과거 계획을 보존한다. 현재 active implementation과 충돌하면 상위 상태 문서를 우선한다.

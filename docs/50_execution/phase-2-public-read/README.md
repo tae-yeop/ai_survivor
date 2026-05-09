@@ -1,30 +1,25 @@
-# Phase 2 — Git-backed MDX Public Read Path
+# Phase 2 — Public Read
 
-Status: Completed locally (2026-05-06)
-Goal: GitHub에 커밋된 MDX 글을 Next.js 공개 라우트의 실제 데이터로 연결한다. 이 시점부터 Supabase 없이도 신규 사이트를 도메인에 올릴 수 있다.
+Status: Done
+Last Updated: 2026-05-09
 
-## Decision Boundary
+Goal: Git에 커밋된 MDX 글을 공개 라우트와 SEO 출력으로 연결한다.
 
-- Source of truth: GitHub repository files
-- Authoring format: MDX + typed frontmatter
-- Rendered output: server/static HTML
-- Deferred: Supabase DB/Auth/Storage, Tiptap `/admin`
+## Current summary
 
-## Slices
+완료/미완료 판단은 이 README와 상위 [`../EXECUTION_STATUS.md`](../EXECUTION_STATUS.md)를 우선한다.
 
-| #   | 파일                                                                       | 기준                                      |
-| --- | -------------------------------------------------------------------------- | ----------------------------------------- |
-| 2.1 | [slice-2.1-mdx-content-model.md](./slice-2.1-mdx-content-model.md)         | MDX frontmatter schema + 폴더 규칙        |
-| 2.2 | [slice-2.2-git-content-import.md](./slice-2.2-git-content-import.md)       | 기존 글/샘플 글을 Git content tree로 이식 |
-| 2.3 | [slice-2.3-static-post-rendering.md](./slice-2.3-static-post-rendering.md) | 글 목록/상세 HTML 렌더링                  |
-| 2.4 | [slice-2.4-taxonomy.md](./slice-2.4-taxonomy.md)                           | categories/tags/series/tools 분류 페이지  |
-| 2.5 | [slice-2.5-sitemap-rss.md](./slice-2.5-sitemap-rss.md)                     | Sitemap / Robots / RSS 실콘텐츠 연결      |
+## Done
 
-## Phase Exit Criteria
+- frontmatter schema
+- published/draft/scheduled/archived public filtering
+- post detail/list/taxonomy
+- sitemap/rss/robots 연결
 
-- `/posts`와 `/posts/[slug]`가 fixture가 아니라 MDX content tree에서 데이터를 읽는다.
-- 글 상세 페이지가 JS 비활성 환경에서도 본문 HTML을 보여준다.
-- frontmatter 누락/오류가 build 또는 typecheck에서 실패한다.
-- `draft`, `scheduled`, `archived` 글이 sitemap/RSS/public listing에 노출되지 않는다.
-- categories/tags/series/tools 페이지가 MDX metadata 기준으로 정상 렌더링된다.
-- 이 시점의 사이트를 Vercel에 연결하면 Supabase 없이 외부 공개가 가능하다.
+## Remaining / notes
+
+- Supabase 없이도 공개 읽기 경로가 동작한다.
+
+## Slice files
+
+세부 slice 문서는 작업 단위와 과거 계획을 보존한다. 현재 active implementation과 충돌하면 상위 상태 문서를 우선한다.
