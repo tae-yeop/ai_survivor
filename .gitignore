@@ -28,7 +28,10 @@ pnpm-debug.log*
 
 # local agent/runtime state
 .omc/
-.omx/
+.omx/*
+!.omx/wiki/
+!.omx/wiki/**
+omx_wiki/
 .gstack/
 .playwright-mcp/
 .superpowers/
