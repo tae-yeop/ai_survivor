@@ -77,6 +77,9 @@ export function FigureNodeView({
         className={`relative ${selected ? "ring-2 ring-accent" : ""}`}
       >
         {src ? (
+          // Editor previews can use remote, blob, or GitHub asset URLs with
+          // user-controlled dimensions, so keep the browser image element here.
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={src}
             alt={alt}

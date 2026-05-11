@@ -168,7 +168,7 @@ Next route component
 - `<AudioEmbed />`
 - `<DocumentEmbed />`
 - `<YouTube />`
-- 기본 `<img />` lazy image wrapper
+- 기본 `<img />` lazy image wrapper. 외부 HTTP(S) 이미지 fallback은 page referrer를 새지 않게 `no-referrer`로 렌더하고, GitHub raw content asset과 repo-local path는 기존 정책을 유지한다.
 
 안전장치:
 
