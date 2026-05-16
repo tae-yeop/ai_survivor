@@ -4,7 +4,7 @@
 // Update SITE_URL to the production domain before deploying.
 
 export const SITE_URL = 'https://example.com';
-export const SITE_NAME = 'AI Vibe Lab';
+export const SITE_NAME = 'AI 시대 생존기';
 export const SITE_TAGLINE = 'AI 도구, 바이브코딩, 업무 자동화 실험 노트';
 export const SITE_DESCRIPTION =
   '개발자, 연구자, 직장인이 실제로 써먹을 수 있는 AI 도구와 바이브코딩, 업무 자동화 워크플로우를 직접 실험하고 검증한 기록.';

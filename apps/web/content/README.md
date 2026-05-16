@@ -1,6 +1,6 @@
 # Content Authoring Guide
 
-AI Vibe Lab의 공개 글 원본은 GitHub repository 안의 MDX 파일입니다. 현재 MVP는 Supabase, 브라우저 `/admin`, 외부 CMS 없이 Git commit/PR로 글을 발행합니다.
+AI 시대 생존기의 공개 글 원본은 GitHub repository 안의 MDX 파일입니다. 현재 MVP는 Supabase, 브라우저 `/admin`, 외부 CMS 없이 Git commit/PR로 글을 발행합니다.
 
 ## 1. 글쓰기 위치
 

@@ -1,4 +1,4 @@
-# AI Vibe Lab Web
+# AI 시대 생존기 Web
 
 Next.js App Router implementation for the ADR-003 GitHub/MDX content workflow. The legacy root Astro app remains transition/reference material while this app is the current Vercel target under `apps/web/`.
 

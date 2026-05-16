@@ -100,7 +100,7 @@ External platforms are distribution channels:
 - Medium only for selected republished essays.
 - Brunch only for narrative essays, not technical source-of-truth posts.
 
-Every cross-post should point back to the canonical article on `aivibelab.com` (aisurvivor) when possible. Do not design the main site around the limits of external platforms.
+Every cross-post should point back to the canonical article on the AI 시대 생존기 main site when possible. Do not design the main site around the limits of external platforms.
 
 ## Definition of done for public UI changes
 

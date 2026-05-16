@@ -1,5 +1,5 @@
 /**
- * AI Vibe Lab — Motion System
+ * AI 시대 생존기 — Motion System
  * Lightweight scroll animations, parallax, and reveal effects.
  * No framework dependency. Respects prefers-reduced-motion.
  */

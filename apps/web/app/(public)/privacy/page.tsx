@@ -3,7 +3,7 @@ import { pageMetadata } from "@/lib/seo/metadata";
 
 export const metadata = pageMetadata({
   title: "Privacy Policy",
-  description: "AI Vibe Lab의 개인정보 처리, 쿠키, 광고 및 분석 도구 사용 원칙을 안내합니다.",
+  description: "AI 시대 생존기의 개인정보 처리, 쿠키, 광고 및 분석 도구 사용 원칙을 안내합니다.",
   path: "/privacy",
 });
 
@@ -13,11 +13,11 @@ export default function PrivacyPage() {
       <PageHeader
         kicker="privacy"
         title="개인정보 처리방침"
-        description="AI Vibe Lab은 방문자의 개인정보를 최소한으로 처리하며, 광고와 분석 도구를 사용할 때에는 관련 법령과 플랫폼 정책을 준수하기 위해 노력합니다."
+        description="AI 시대 생존기은 방문자의 개인정보를 최소한으로 처리하며, 광고와 분석 도구를 사용할 때에는 관련 법령과 플랫폼 정책을 준수하기 위해 노력합니다."
       />
       <section className="container-prose prose py-12">
         <p>
-          본 개인정보 처리방침은 AI Vibe Lab에서 방문자 정보가 어떻게 처리될 수 있는지 설명합니다.
+          본 개인정보 처리방침은 AI 시대 생존기에서 방문자 정보가 어떻게 처리될 수 있는지 설명합니다.
           이 사이트는 회원가입, 로그인, 결제, 댓글 기능을 운영하지 않으며 민감한 개인정보를 직접
           수집하지 않습니다.
         </p>
@@ -31,7 +31,7 @@ export default function PrivacyPage() {
 
         <h2>쿠키와 광고</h2>
         <p>
-          AI Vibe Lab은 광고 심사와 정책 준수를 위해 광고 영역을 준비하고 있지만, 광고 기능은
+          AI 시대 생존기은 광고 심사와 정책 준수를 위해 광고 영역을 준비하고 있지만, 광고 기능은
           기본적으로 비활성화되어 있습니다. Google AdSense와 같은 광고 서비스가 활성화되는 경우 광고
           제공자는 맞춤 광고, 빈도 제한, 부정 클릭 방지 등을 위해 쿠키 또는 유사 기술을 사용할 수
           있습니다.

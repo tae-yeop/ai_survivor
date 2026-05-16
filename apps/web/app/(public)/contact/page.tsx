@@ -6,7 +6,7 @@ import { pageMetadata } from "@/lib/seo/metadata";
 export const metadata = pageMetadata({
   title: "Contact",
   description:
-    "AI Vibe Lab 운영자에게 콘텐츠 정정 제안, 협업 문의, 피드백을 보낼 수 있는 연락처 안내 페이지입니다.",
+    "AI 시대 생존기 운영자에게 콘텐츠 정정 제안, 협업 문의, 피드백을 보낼 수 있는 연락처 안내 페이지입니다.",
   path: "/contact",
 });
 

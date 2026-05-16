@@ -1,10 +1,10 @@
 <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">AI Vibe Lab</title>
-  <desc id="desc">AI tools, vibe coding, and workflow experiments journal.</desc>
+  <title id="title">AI 시대 생존기</title>
+  <desc id="desc">AI tools, vibe coding, and workflow experiments survival journal.</desc>
   <rect width="1200" height="630" fill="#0b0e13"/>
   <rect x="64" y="64" width="1072" height="502" fill="none" stroke="#22d3ee" stroke-width="3"/>
-  <text x="96" y="190" fill="#22d3ee" font-family="Arial, sans-serif" font-size="28" letter-spacing="8">AI VIBE LAB</text>
+  <text x="96" y="190" fill="#22d3ee" font-family="Arial, sans-serif" font-size="28" letter-spacing="8">AI SURVIVOR</text>
   <text x="96" y="305" fill="#f1f3f6" font-family="Arial, sans-serif" font-size="78" font-weight="700">Build, test, write.</text>
   <text x="96" y="390" fill="#c2c7cf" font-family="Arial, sans-serif" font-size="34">AI tools · vibe coding · workflow automation</text>
-  <text x="96" y="500" fill="#828a96" font-family="Arial, sans-serif" font-size="24">aivibelab.com</text>
+  <text x="96" y="500" fill="#828a96" font-family="Arial, sans-serif" font-size="24">AI 시대 생존기</text>
 </svg>

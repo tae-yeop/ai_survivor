@@ -55,7 +55,7 @@ Public blog, Git-backed admin writing, baseline SEO/monetization infrastructure,
 - 200 OK: `/sitemap.xml`, `/rss.xml`, `/robots.txt`, `/ads.txt`, `/admin/login`, `/api/admin/me`
 - `/api/admin/me`: anonymous visitor에게 `{ "admin": false }`를 200으로 반환
 - sitemap: `/resources` 포함, `/admin`과 `/write` 제외, 55 URLs
-- RSS: Vercel production URL 사용, `aivibelab.com` 미포함
+- RSS: Vercel production URL 사용, placeholder 도메인 미포함
 - PageSpeed: Desktop 84/100/100/100, Mobile 96/100/100/100
 
 결론: Vercel URL 기준 공개 읽기/SEO/a11y/BP는 launch-ready다. production 완료 여부는 도메인·검색·광고 계정 작업에 달려 있다.

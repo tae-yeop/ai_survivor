@@ -36,7 +36,7 @@ Last Updated: 2026-05-09
 - [x] `NEXT_PUBLIC_SITE_URL`이 실제 접근 가능한 Vercel production URL 또는 운영 도메인인지 확인
 - [x] sitemap URL이 `NEXT_PUBLIC_SITE_URL` 기준으로 생성되는지 확인
 - [x] RSS link/canonical/OG URL이 같은 기준 URL을 쓰는지 확인
-- [x] 기본값이 `aivibelab.com` 같은 placeholder를 canonical로 쓰지 않도록 보정
+- [x] 기본값이 placeholder 도메인을 canonical로 쓰지 않도록 보정
 
 ### Admin/editor
 

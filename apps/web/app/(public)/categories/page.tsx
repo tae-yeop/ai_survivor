@@ -6,7 +6,7 @@ import { pageMetadata } from "@/lib/seo/metadata";
 
 export const metadata = pageMetadata({
   title: "Categories",
-  description: "AI Vibe Lab의 카테고리별 글 묶음을 탐색합니다.",
+  description: "AI 시대 생존기의 카테고리별 글 묶음을 탐색합니다.",
   path: "/categories",
 });
 

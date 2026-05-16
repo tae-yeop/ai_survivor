@@ -5,7 +5,7 @@ import { pageMetadata } from "@/lib/seo/metadata";
 
 export const metadata = pageMetadata({
   title: "Tags",
-  description: "AI Vibe Lab 글의 세부 태그를 탐색합니다.",
+  description: "AI 시대 생존기 글의 세부 태그를 탐색합니다.",
   path: "/tags",
 });
 
