@@ -73,6 +73,7 @@ apps/web/
       posts/[slug]/save-action.ts      # in-place edit server action
       categories|tags|series|tools/    # taxonomy list/detail routes
       about|contact|privacy/           # AdSense/policy pages
+      resources/page.tsx               # monetization-aware resource cards
       write/page.tsx                   # owner-only new post editor
     (admin)/
       admin/page.tsx                   # owner-only post list
@@ -198,6 +199,8 @@ GET /api/admin/github/callback
 ```
 
 세션은 DB에 저장하지 않는다. `src/lib/admin/session-token.ts`가 JSON payload를 base64url로 인코딩하고 `ADMIN_SESSION_SECRET`으로 HMAC-SHA256 서명한다. 만료는 14일이다.
+
+Cookie 이름 prefix `aiv_` (`aiv_admin_oauth_state`, `aiv_admin_session`)는 옛 브랜드 wordmark "AI Vibe" 시절 잔재다. 변경하면 기존 owner 세션이 무효화되므로 코드 그대로 유지하고, 명명 의미만 알아두면 된다.
 
 ### 5-2. 관리자 목록
 
@@ -389,10 +392,11 @@ Code/content commit to GitHub branch
 
 새 서비스에서 반드시 바꿀 값:
 
-- `src/lib/site.ts`의 사이트 이름/설명/URL
+- `src/lib/site.ts`의 사이트 메타 (`SITE_NAME`, `SITE_NAME_EN`, `SITE_SUBTITLE`, `SITE_TAGLINE`, `SITE_DESCRIPTION`, `NAV_PRIMARY/NAV_FOOTER`, 기본 OG 이미지)
+- `src/lib/brand-copy.ts`의 author 페르소나와 hero/footer 카피 (`AUTHOR_DISPLAY_NAME`, `HERO_HEADLINE_*`, `SITE_HERO_COPY`, `FOOTER_SIGNATURE`) — `site.ts`가 이 값을 re-export하므로 두 파일이 단일 출처 페어다
+- `src/lib/labels.ts`의 카테고리 라벨/설명 매핑
 - `content/posts`의 frontmatter taxonomy
 - `components/home/*`의 랜딩 페이지 카피와 섹션
-- `src/lib/brand-copy.ts`
 - GitHub OAuth callback URL
 - `GITHUB_REPO`, `GITHUB_BRANCH`, token 권한
 - AdSense/analytics 설정
@@ -413,3 +417,5 @@ Code/content commit to GitHub branch
 | `../50_execution/IMPLEMENTATION_STATUS_2026-05-09.md`    | 현재 구현 상태                 |
 | `../60_decisions/ADR-003-github-mdx-content-workflow.md` | Git + MDX content 결정         |
 | `../60_decisions/ADR-004-github-backed-admin-editor.md`  | GitHub-backed admin 결정       |
+| `../60_decisions/ADR-005-ai-survivor-brand-and-freeform-taxonomy.md` | 브랜드 + free-form taxonomy 결정 |
+| `../60_decisions/ADR-006-clean-white-home-and-post-redesign.md` | clean white home/post 리디자인 결정 |
